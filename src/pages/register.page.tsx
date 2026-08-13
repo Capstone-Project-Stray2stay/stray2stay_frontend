@@ -9,11 +9,13 @@ import {
     Text,
 } from "@chakra-ui/react";
 
+import { registerAPI } from "../services/apis/auth.api";
+
 import { S2SInput, S2SButton } from "../components/S2S.components";
 
 export default function Register() {
     const navigate = useNavigate();
-    const [form, setForm] = useState({ Firstname: "", Lastname: "", Email: "", Password: "" });
+    const [form, setForm] = useState({ Firstname: "", Lastname: "", Email: "", Password: "", ConfirmPassword: "" });
     const [error, setError] = useState("");
     const [isPending, setIsPending] = useState(false);
 
@@ -23,17 +25,14 @@ export default function Register() {
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError("");
+
+        if (form.Password !== form.ConfirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
         setIsPending(true);
         try {
-            const res = await fetch("/api/user/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
-            if (!res.ok) {
-                const data = await res.json().catch(() => null);
-                throw new Error(data?.error || "Registration failed");
-            }
+            await registerAPI(form.Email, form.Password, form.Firstname, form.Lastname);
             navigate("/login");
         } catch (err: any) {
             setError(err.message || "Registration failed");
@@ -71,6 +70,12 @@ export default function Register() {
                         type="password"
                         value={form.Password}
                         onChange={handleChange("Password")}
+                    />
+                    <S2SInput
+                        placeholder="Confirm password"
+                        type="password"
+                        value={form.ConfirmPassword}
+                        onChange={handleChange("ConfirmPassword")}
                     />
                     {error && (
                         <Text color="red.500" fontSize="sm">

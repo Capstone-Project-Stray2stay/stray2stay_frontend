@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { authorizeAPI, loginAPI, logoutAPI } from "../../services/apis/auth.api"
+import {
+    authorizeAPI,
+    loginAPI,
+    logoutAPI,
+    newUserStatusAPI,
+} from "../../services/apis/auth.api"
 
 export function useAuth() {
     const { data: user, isLoading } = useQuery({
@@ -29,4 +34,16 @@ export function useLogout() {
             queryClient.invalidateQueries({ queryKey: ["user"] })
         },
     })
+}
+
+export function useNewUserStatus() {
+    const { data: userData, isLoading } = useQuery({
+        queryKey: ["newUserStatus"],
+        queryFn: async () => {
+            const res = await newUserStatusAPI()
+            return res.data.userData
+        },
+        retry: false,
+    })
+    return { userStatus: userData || false, loading: isLoading }
 }

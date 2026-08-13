@@ -28,10 +28,8 @@ export default function Login() {
         e.preventDefault();
         setError("");
         try {
-            const response = await login({ email, password });
-            if (response.status === 200) {
-                navigate("/");
-            }
+            await login({ email, password });
+            navigate("/");
         } catch {
             setError("Invalid email or password");
         }

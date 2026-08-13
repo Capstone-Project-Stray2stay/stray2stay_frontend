@@ -2,8 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 
 import Login from "../pages/login.page";
 import Register from "../pages/register.page";
-import Homepage from "../pages/home.page";
+import Home from "../pages/home.page";
 import NotFound from "../pages/notFound.page";
+import Profile from "../pages/profile.page";
+import Diary from "../pages/diary.page";
 
 import MainLayout from "../layouts/main.layout";
 import ProtectedRoute from "../middlewares/protectedRoute.middleware";
@@ -22,11 +24,21 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Homepage />,
+                element: <Home />,
             },
-            // add more pages here that should share the layout
-            // { path: "/profile", element: <Profile /> },
-            // { path: "/pets", element: <PetsList /> },
+            {
+                element: <ProtectedRoute />,
+                children: [
+                    {
+                        path: "/profile",
+                        element: <Profile />,
+                    },
+                    {
+                        path: "/diary",
+                        element: <Diary />,
+                    }
+                ]
+            }
         ],
     },
     {

@@ -27,7 +27,13 @@ export default function S2SNavbar() {
         ? { key: "logout", label: "Log Out", icon: LuLogOut, nav: "/" }
         : { key: "login", label: "Log In", icon: LuLogIn, nav: "/login" }
 
-    const NAV_ITEMS = [...BASE_NAV_ITEMS, authItem]
+    const AUTH_ONLY_KEYS = ["profile", "diary"]
+    const navItems = [
+        ...BASE_NAV_ITEMS.filter((item) =>
+            authorized ? true : !AUTH_ONLY_KEYS.includes(item.key)
+        ),
+        authItem,
+    ]
 
     const handleNavItemClick = (key: string, nav: string) => {
         if (key === "logout") {
@@ -72,7 +78,7 @@ export default function S2SNavbar() {
                             </Drawer.Header>
                             <Drawer.Body p={0}>
                                 <VStack gap={2} align="stretch" mt={2}>
-                                    {NAV_ITEMS.map((item) => (
+                                    {navItems.map((item) => (
                                         <NavItem
                                             key={item.key}
                                             icon={item.icon}
