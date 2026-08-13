@@ -23,7 +23,7 @@ export default function S2SSidebar() {
         : { key: "login", label: "Log In", icon: LuLogIn, nav: "/login" }
 
     const AUTH_ONLY_KEYS = ["profile", "diary"]
-    const navItems = [
+    const NAV_ITEMS = [
         ...BASE_NAV_ITEMS.filter((item) =>
             authorized ? true : !AUTH_ONLY_KEYS.includes(item.key)
         ),
@@ -63,7 +63,7 @@ export default function S2SSidebar() {
             </Heading>
 
             <VStack gap={2} align="stretch" mt={4}>
-                {navItems.map((item) => (
+                {NAV_ITEMS.map((item) => (
                     <NavItem
                         key={item.key}
                         icon={item.icon}

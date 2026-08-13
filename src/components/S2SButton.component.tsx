@@ -1,6 +1,6 @@
 import { Button, } from "@chakra-ui/react";
 
-export default function S2SButton({ type = "button", text, bgColor, width, loading, onClick }: { type?: "button" | "submit" | "reset", text: string, bgColor?: string, width?: string, loading?: boolean, onClick?: () => void }) {
+export default function S2SButton({ icon, type = "button", text, bgColor, width, loading, onClick }: { icon?: React.ReactNode, type?: "button" | "submit" | "reset", text: string, bgColor?: string, width?: string, loading?: boolean, onClick?: () => void }) {
     return (
         <Button
             type={type}
@@ -14,6 +14,7 @@ export default function S2SButton({ type = "button", text, bgColor, width, loadi
             loading={loading}
             onClick={onClick}
         >
+            {icon && <span className="mr-2">{icon}</span>}
             {text}
         </Button>
     );
