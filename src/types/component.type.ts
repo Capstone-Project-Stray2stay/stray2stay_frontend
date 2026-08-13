@@ -50,6 +50,7 @@ export interface S2SPageTitleType {
 }
 
 export interface S2SPetCardType {
+    rank?: number
     width: string | number
     petName?: string
     petImageURL: string

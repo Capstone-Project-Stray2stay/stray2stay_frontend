@@ -12,12 +12,19 @@ import {
 import { registerAPI } from "../services/apis/auth.api";
 
 import { S2SInput, S2SButton } from "../components/S2S.components";
+import { registerSchema } from "../validators/auth.validator";
 
 export default function Register() {
     const navigate = useNavigate();
-    const [form, setForm] = useState({ Firstname: "", Lastname: "", Email: "", Password: "", ConfirmPassword: "" });
-    const [error, setError] = useState("");
-    const [isPending, setIsPending] = useState(false);
+    const [form, setForm] = useState<{ Firstname: string; Lastname: string; Email: string; Password: string; ConfirmPassword: string }>({
+        Firstname: "",
+        Lastname: "",
+        Email: "",
+        Password: "",
+        ConfirmPassword: ""
+    });
+    const [error, setError] = useState<string>("");
+    const [isPending, setIsPending] = useState<boolean>(false);
 
     const handleChange = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -26,16 +33,23 @@ export default function Register() {
         e.preventDefault();
         setError("");
 
-        if (form.Password !== form.ConfirmPassword) {
-            setError("Passwords do not match");
+        const parsed = registerSchema.safeParse(form);
+        if (!parsed.success) {
+            setError(parsed.error.issues[0]?.message ?? "Please check your input");
             return;
         }
+
         setIsPending(true);
         try {
-            await registerAPI(form.Email, form.Password, form.Firstname, form.Lastname);
+            await registerAPI(
+                parsed.data.Email,
+                parsed.data.Password,
+                parsed.data.Firstname,
+                parsed.data.Lastname
+            );
             navigate("/login");
-        } catch (err: any) {
-            setError(err.message || "Registration failed");
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Registration failed");
         } finally {
             setIsPending(false);
         }

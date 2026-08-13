@@ -6,7 +6,7 @@ import { S2SChip } from "./S2S.components";
 
 import type { S2SPetCardType } from "../types/component.type"
 
-export default function S2SPetCard({ width, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
+export default function S2SPetCard({ rank, width, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
     return (
         <Box
             w={width}
@@ -22,7 +22,27 @@ export default function S2SPetCard({ width, petName, petImageURL, petAge, petBre
                 transform: "scale(1.01)",
             }}
         >
-            <Image src={petImageURL} alt={petName} w="full" h="200px" objectFit="cover" />
+            <Box position="relative">
+                <Image src={petImageURL} alt={petName} w="full" h="200px" objectFit="cover" />
+                {rank && rank <= 3 && (
+                    <Box
+                        position="absolute"
+                        top={0}
+                        left={4}
+                        w="40px"
+                        h="50px"
+                        bgColor="Yellow"
+                        clipPath="polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%)"
+                        display="flex"
+                        justifyContent="center"
+                        pt={2}
+                    >
+                        <Text color="white" fontWeight="bold" fontSize="lg">
+                            {rank}
+                        </Text>
+                    </Box>
+                )}
+            </Box>
             <Flex justify="space-between" align="center">
                 <Text px={4} py={2} fontSize="lg" fontWeight="bold">{petName}</Text>
                 {petGender === "Male" ? (
