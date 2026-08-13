@@ -12,6 +12,8 @@ export const BASE_NAV_ITEMS = [
     { key: "profile", label: "Profile", icon: IoPerson, nav: "/profile" },
 ]
 
+export const AUTH_ONLY_KEYS = ["profile", "diary"]
+
 export function NavItem({ icon, label, active = false, onClick }: {
     icon: React.ElementType
     label: string

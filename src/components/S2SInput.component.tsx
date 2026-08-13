@@ -1,6 +1,8 @@
 import { Input, InputGroup } from "@chakra-ui/react";
 
-export default function S2SInput({ startIcon, endIcon, placeholder, type = "text", value, onChange }: { startIcon?: React.ReactNode, endIcon?: React.ReactNode, placeholder?: string, type?: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+import type { S2SInputType } from "../types/component.type"
+
+export default function S2SInput({ startIcon, endIcon, placeholder, type = "text", value, onChange }: S2SInputType) {
     return (
         <InputGroup
             startElement={startIcon}

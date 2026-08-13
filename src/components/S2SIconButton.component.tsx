@@ -1,6 +1,8 @@
 import { IconButton } from "@chakra-ui/react"
 
-export default function S2SIconButton({ icon, ariaLabel, bgColor, iconColor, onClick }: { icon: React.ReactElement, ariaLabel?: string, bgColor?: string, iconColor?: string, onClick?: () => void }) {
+import type { S2SIconButtonType } from "../types/component.type"
+
+export default function S2SIconButton({ icon, ariaLabel, bgColor, iconColor, onClick }: S2SIconButtonType) {
     return (
         <IconButton
             aria-label={ariaLabel || "icon-button"}

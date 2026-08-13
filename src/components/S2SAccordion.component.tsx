@@ -1,17 +1,14 @@
 import { Accordion, Span } from "@chakra-ui/react"
 import { FaAngleDown } from "react-icons/fa6";
 
+import type { S2SAccordionType } from "../types/component.type"
+
 export default function S2SAccordion({
     title,
     content,
     value,
     width = "100%",
-}: {
-    title: string
-    content: string
-    value?: string
-    width?: string
-}) {
+}: S2SAccordionType) {
     const itemValue = value ?? title
 
     return (

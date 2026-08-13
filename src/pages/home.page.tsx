@@ -1,6 +1,5 @@
 import { Box } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
-
 import { S2SPageTitle } from "../components/S2S.components";
 
 export default function Home() {

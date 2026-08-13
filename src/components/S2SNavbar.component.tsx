@@ -9,7 +9,7 @@ import { useAppDispatch } from "../hooks/redux"
 import { setAuth } from "../store/slices/authSlices"
 import { useAuth, useLogout } from "../hooks/query/auth.query"
 
-import { NavItem, BASE_NAV_ITEMS } from "../utils/navigation.util"
+import { NavItem, BASE_NAV_ITEMS, AUTH_ONLY_KEYS } from "../utils/navigation.util"
 import { S2SAvatar } from "./S2S.components"
 
 export default function S2SNavbar() {
@@ -27,7 +27,6 @@ export default function S2SNavbar() {
         ? { key: "logout", label: "Log Out", icon: LuLogOut, nav: "/" }
         : { key: "login", label: "Log In", icon: LuLogIn, nav: "/login" }
 
-    const AUTH_ONLY_KEYS = ["profile", "diary"]
     const NAV_ITEMS = [
         ...BASE_NAV_ITEMS.filter((item) =>
             authorized ? true : !AUTH_ONLY_KEYS.includes(item.key)
