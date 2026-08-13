@@ -16,19 +16,27 @@ import { FcGoogle } from "react-icons/fc";
 import { S2SInput, S2SButton } from "../components/S2S.components";
 
 import { useLogin } from "../hooks/query/auth.query";
+import { loginSchema } from "../validators/auth.validator";
 
 export default function Login() {
     const { mutateAsync: login, isPending } = useLogin();
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [error, setError] = useState<string>("");
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError("");
+
+        const parsed = loginSchema.safeParse({ email, password });
+        if (!parsed.success) {
+            setError(parsed.error.issues[0]?.message ?? "Please check your input");
+            return;
+        }
+
         try {
-            await login({ email, password });
+            await login(parsed.data);
             navigate("/");
         } catch {
             setError("Invalid email or password");
