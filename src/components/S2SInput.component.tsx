@@ -15,6 +15,7 @@ export default function S2SInput({ startIcon, endIcon, placeholder, type = "text
                 rounded="full"
                 p={4}
                 borderColor="LightGrey"
+                bg="White"
                 _focus={{ borderColor: "Blue" }}
             />
         </InputGroup>
