@@ -27,7 +27,13 @@ export default function S2SNavbar() {
         ? { key: "logout", label: "Log Out", icon: LuLogOut, nav: "/" }
         : { key: "login", label: "Log In", icon: LuLogIn, nav: "/login" }
 
-    const NAV_ITEMS = [...BASE_NAV_ITEMS, authItem]
+    const AUTH_ONLY_KEYS = ["profile", "diary"]
+    const NAV_ITEMS = [
+        ...BASE_NAV_ITEMS.filter((item) =>
+            authorized ? true : !AUTH_ONLY_KEYS.includes(item.key)
+        ),
+        authItem,
+    ]
 
     const handleNavItemClick = (key: string, nav: string) => {
         if (key === "logout") {
