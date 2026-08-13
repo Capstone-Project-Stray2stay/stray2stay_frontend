@@ -5,7 +5,9 @@ import {
     useListCollection,
 } from "@chakra-ui/react"
 
-export default function S2SDropDown({ placeholder, width, data }: { placeholder: string, width: string, data: any[] }) {
+import type { S2SDropDownType } from "../types/component.type"
+
+export default function S2SDropDown({ placeholder, width, data }: S2SDropDownType) {
     const { contains } = useFilter({ sensitivity: "base" })
 
     const { collection, filter } = useListCollection({
@@ -20,7 +22,7 @@ export default function S2SDropDown({ placeholder, width, data }: { placeholder:
             width={width}
         >
             <Combobox.Control>
-                <Combobox.Input placeholder={placeholder} rounded="full"/>
+                <Combobox.Input placeholder={placeholder} rounded="full" />
                 <Combobox.IndicatorGroup>
                     <Combobox.ClearTrigger />
                     <Combobox.Trigger />

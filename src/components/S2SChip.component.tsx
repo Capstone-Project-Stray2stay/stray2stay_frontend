@@ -1,16 +1,13 @@
 import { HStack, Tag } from "@chakra-ui/react"
 
+import type { S2SChipType } from "../types/component.type"
+
 export default function S2SChip({
   text,
   selected = false,
   onToggle,
   readOnly = false,
-}: {
-  text: string
-  selected?: boolean
-  onToggle?: () => void
-  readOnly?: boolean
-}) {
+}: S2SChipType) {
   const isActive = readOnly ? true : selected
 
   return (

@@ -4,7 +4,9 @@ import { FaLocationDot } from "react-icons/fa6";
 
 import { S2SChip } from "./S2S.components";
 
-export default function S2SPetCard({ width, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: { width: string | number, petName?: string, petImageURL: string, petAge: string, petBreed: string, petGender: string, petLocation: string, onClick?: () => void }) {
+import type { S2SPetCardType } from "../types/component.type"
+
+export default function S2SPetCard({ width, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
     return (
         <Box
             w={width}
