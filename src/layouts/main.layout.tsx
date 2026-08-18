@@ -11,7 +11,7 @@ export default function MainLayout() {
       <S2SNavbar />
       <Box bgGradient="BlueYellow" minH="100vh" >
         <S2SSidebar />
-        <Flex ml={{base: "0", md: "12vw"}} px={{base: 8, md: 16}} pt={{base: 2, md: 8}} width={{base: "100vw", md: "88vw"}} justifyContent={"center"}>
+        <Flex ml={{base: "0", md: "12vw"}} pt={{base: 2, md: 10}} width={{base: "100vw", md: "88vw"}} justifyContent={"center"}>
           <Outlet context={{ userStatus }} />
         </Flex>
       </Box>

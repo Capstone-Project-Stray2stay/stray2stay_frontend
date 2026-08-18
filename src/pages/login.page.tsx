@@ -34,11 +34,10 @@ export default function Login() {
             setError(parsed.error.issues[0]?.message ?? "Please check your input");
             return;
         }
-
         try {
             await login(parsed.data);
             navigate("/");
-        } catch {
+        } catch (err: unknown) {
             setError("Invalid email or password");
         }
     }
