@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Flex, VStack, Drawer, Portal, Text, Heading } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { Turn as Hamburger } from 'hamburger-react'
 
 import { LuLogOut, LuLogIn } from "react-icons/lu";
@@ -9,18 +9,18 @@ import { useAppDispatch } from "../hooks/redux"
 import { setAuth } from "../store/slices/authSlices"
 import { useAuth, useLogout } from "../hooks/query/auth.query"
 
-import { NavItem, BASE_NAV_ITEMS, AUTH_ONLY_KEYS } from "../utils/navigation.util"
+import { NavItem, BASE_NAV_ITEMS, AUTH_ONLY_KEYS, getActiveNavKey } from "../utils/navigation.util"
 import { S2SAvatar } from "./S2S.components"
 
 export default function S2SNavbar() {
     const [open, setOpen] = useState<boolean>(false)
-    const [activeKey, setActiveKey] = useState<string>("home")
 
     const navigate = useNavigate()
+    const location = useLocation()
     const dispatch = useAppDispatch()
 
     const { user } = useAuth()
-    const authorized = user?.data?.authorized
+    const authorized: boolean = user?.data?.authorized ?? false
     const logoutMutation = useLogout()
 
     const authItem = authorized
@@ -33,6 +33,7 @@ export default function S2SNavbar() {
         ),
         authItem,
     ]
+    const activeKey = getActiveNavKey(location.pathname, NAV_ITEMS)
 
     const handleNavItemClick = (key: string, nav: string) => {
         if (key === "logout") {
@@ -46,7 +47,6 @@ export default function S2SNavbar() {
             })
             return
         }
-        setActiveKey(key)
         navigate(nav)
         setOpen(false)
     }

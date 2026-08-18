@@ -35,10 +35,6 @@ export default function Adopt() {
         setPage(1);
     };
 
-    // TODO: replace with a real pets API call once one exists — this is throwaway
-    // client-side filtering just to make the mock UI testable end-to-end. The 5
-    // dropdown filters below are display-only for now (S2SDropDown has no
-    // controlled value/onChange yet), so they don't affect this filter.
     const filteredPets = useMemo(() => {
         const kw = keyword.trim().toLowerCase();
         return mockPets.filter((p) => {

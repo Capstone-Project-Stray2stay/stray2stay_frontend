@@ -20,10 +20,11 @@ export default function S2SDropDown({ placeholder, width, data }: S2SDropDownTyp
             collection={collection}
             onInputValueChange={(e) => filter(e.inputValue)}
             width={width}
-            bg={"White"}
+            fontWeight="semibold"
+            color="Grey"
         >
             <Combobox.Control>
-                <Combobox.Input placeholder={placeholder} rounded="full" />
+                <Combobox.Input placeholder={placeholder} rounded="full" bg={"White"} />
                 <Combobox.IndicatorGroup>
                     <Combobox.ClearTrigger />
                     <Combobox.Trigger />
