@@ -60,3 +60,16 @@ export interface S2SPetCardType {
     petLocation: string
     onClick?: () => void
 }
+
+export interface S2SPetIconButtonType {
+    icon: React.ReactElement
+    label: string
+    selected?: boolean
+    onClick?: () => void
+}
+
+export interface S2SPaginationType {
+    page: number
+    totalPages: number
+    onPageChange: (page: number) => void
+}
