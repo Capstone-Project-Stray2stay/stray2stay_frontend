@@ -47,11 +47,10 @@ export default function Login() {
     };
 
     return (
-        <Box maxW="sm" mx="auto" mt={20}>
+        <Box maxW="sm" mx="auto" mt={20} px="25px">
             <Heading mb={6} size="lg" color="Grey">
                 Log in
             </Heading>
-
             <form onSubmit={handleSubmit}>
                 <VStack gap={4} mb={6}>
                     <S2SInput

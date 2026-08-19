@@ -1,21 +1,21 @@
 import { Outlet } from "react-router-dom";
 import { Box, Flex } from "@chakra-ui/react";
 
-import { S2SSidebar, S2SNavbar } from "../components/S2S.components";
+import { S2SSidebar, S2SNavbar, S2SFooter } from "../components/S2S.components";
 import { useNewUserStatus } from "../hooks/query/auth.query";
 
 export default function MainLayout() {
   const { userStatus } = useNewUserStatus();
   return (
-    <Box minH="100vh" width={"100%"}>
+    <Box minH="100vh" width={"100%"} bgGradient="BlueYellow">
       <S2SNavbar />
-      <Box bgGradient="BlueYellow" minH="100vh" >
+      <Box minH="100vh" >
         <S2SSidebar />
-        <Flex ml={{base: "0", md: "12vw"}} pt={{base: 2, md: 10}} width={{base: "100vw", md: "88vw"}} justifyContent={"center"}>
+        <Flex ml={{ base: "0", lg: "12vw" }} pt={{ base: 2, lg: 10 }} width={{ base: "100vw", lg: "88vw" }} justifyContent={"center"} alignItems={"center"} flexDirection={"column"}>
           <Outlet context={{ userStatus }} />
+          <S2SFooter />
         </Flex>
       </Box>
-      {/* <Footer /> */}
     </Box>
   );
 }

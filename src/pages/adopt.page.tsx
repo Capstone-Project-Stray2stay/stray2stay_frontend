@@ -86,6 +86,7 @@ export default function Adopt() {
                         key={p.id}
                         rank={page === 1 ? i + 1 : undefined}
                         width="100%"
+                        height="300px"
                         petName={p.name}
                         petImageURL={p.imageURL}
                         petAge={p.age}

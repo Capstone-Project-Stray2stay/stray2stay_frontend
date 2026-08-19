@@ -6,11 +6,11 @@ import { S2SChip } from "./S2S.components";
 
 import type { S2SPetCardType } from "../types/component.type"
 
-export default function S2SPetCard({ rank, width, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
+export default function S2SPetCard({ rank, width, height, petName, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
     return (
         <Box
             w={width}
-            h="auto"
+            h={height}
             rounded="30px"
             overflow="hidden"
             bgColor="White"
@@ -23,7 +23,7 @@ export default function S2SPetCard({ rank, width, petName, petImageURL, petAge, 
             }}
         >
             <Box position="relative">
-                <Image src={petImageURL} alt={petName} w="full" h="200px" objectFit="cover" />
+                <Image src={petImageURL} alt={petName} w="full" h="203px" objectFit="cover" />
                 {rank && rank <= 3 && (
                     <Box
                         position="absolute"
@@ -44,14 +44,31 @@ export default function S2SPetCard({ rank, width, petName, petImageURL, petAge, 
                 )}
             </Box>
             <Flex justify="space-between" align="center">
-                <Text px={4} py={2} fontSize="lg" fontWeight="bold">{petName}</Text>
-                {petGender === "Male" ? (
-                    <IoMaleOutline size={24} color="#87CFF0" style={{ marginLeft: "auto", marginRight: "1rem", marginTop: "0.5rem" }} />
-                ) : (
-                    <IoFemaleOutline size={24} color="#FF69B4" style={{ marginLeft: "auto", marginRight: "1rem", marginTop: "0.5rem" }} />
+                {petName && (
+                    <>
+                        <Text px={4} py={2} fontSize="18px" fontWeight="bold">
+                            {petName}
+                        </Text>
+                        {petGender === "Male" ? (
+                            <IoMaleOutline size={24} color="#87CFF0" style={{ marginLeft: "auto", marginRight: "1rem", marginTop: "0.5rem" }} />
+                        ) : (
+                            <IoFemaleOutline size={24} color="#FF69B4" style={{ marginLeft: "auto", marginRight: "1rem", marginTop: "0.5rem" }} />
+                        )}
+                    </>
                 )}
             </Flex>
-            <Text px={4} pb={2} fontSize="md" color="GrayText" justifyContent="left" alignItems="center" display="flex" gap={1}>
+            <Text
+                pt={petName ? 0 : 4}
+                px={4}
+                pb={2}
+                fontSize="md"
+                color="LightGrey"
+                justifyContent="left"
+                alignItems="center"
+                display="flex"
+                gap={1}
+                fontWeight={petName ? "normal" : "bold"}
+            >
                 <FaLocationDot /> {petLocation}
             </Text>
             <HStack px={4} pb={4} align="start" flexWrap="wrap">

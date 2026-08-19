@@ -19,6 +19,7 @@ export default function S2SDropDown({ placeholder, width, data }: S2SDropDownTyp
         <Combobox.Root
             collection={collection}
             onInputValueChange={(e) => filter(e.inputValue)}
+            openOnClick
             width={width}
             fontWeight="semibold"
             color="Grey"
