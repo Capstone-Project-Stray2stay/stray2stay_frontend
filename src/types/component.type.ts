@@ -9,9 +9,14 @@ export interface S2SButtonType {
     icon?: React.ReactNode
     type?: "button" | "submit" | "reset"
     text: string
+    /** Fill colour when solid, outline/text colour when variant is "outline". */
     bgColor?: string
+    variant?: "solid" | "outline"
     width?: string
+    height?: string
+    fontSize?: string
     loading?: boolean
+    disabled?: boolean
     onClick?: () => void
 }
 
@@ -22,10 +27,28 @@ export interface S2SChipType {
     readOnly?: boolean
 }
 
+export interface S2SDropDownOption {
+    value: string
+    label: string
+}
+
 export interface S2SDropDownType {
     placeholder: string
     width: string
-    data: any[]
+    data: S2SDropDownOption[]
+    /** Pass together with onValueChange to run controlled; omit for uncontrolled. */
+    value?: string
+    onValueChange?: (value: string) => void
+    disabled?: boolean
+    height?: string
+    borderColor?: string
+    bg?: string
+}
+
+export interface S2SCheckboxType {
+    label: string
+    checked: boolean
+    onChange: (checked: boolean) => void
 }
 
 export interface S2SIconButtonType {
@@ -66,6 +89,12 @@ export interface S2SPetIconButtonType {
     label: string
     selected?: boolean
     onClick?: () => void
+}
+
+export interface S2SStepperType {
+    steps: string[]
+    /** 1-based index of the step currently being shown */
+    current: number
 }
 
 export interface S2SPaginationType {

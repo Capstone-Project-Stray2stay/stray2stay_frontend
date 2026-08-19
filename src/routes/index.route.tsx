@@ -7,6 +7,8 @@ import Adopt from "../pages/adopt.page";
 import NotFound from "../pages/notFound.page";
 import Profile from "../pages/profile.page";
 import Diary from "../pages/diary.page";
+import Rehome from "../pages/rehome.page";
+import UserInformation from "../pages/userInformation.page";
 
 import MainLayout from "../layouts/main.layout";
 import ProtectedRoute from "../middlewares/protectedRoute.middleware";
@@ -41,6 +43,17 @@ export const router = createBrowserRouter([
                     {
                         path: "/diary",
                         element: <Diary />,
+                    },
+                    {
+                        path: "/rehome",
+                        element: <Rehome />,
+                    },
+                    {
+                        // One-time setup for a newly registered account.
+                        // TODO: redirect here automatically while
+                        // useNewUserStatus() reports the user is new.
+                        path: "/user-information",
+                        element: <UserInformation />,
                     }
                 ]
             }
