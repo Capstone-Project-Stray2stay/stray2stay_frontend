@@ -28,6 +28,9 @@ const config = defineConfig({
         BlueYellow: {
           value: "linear-gradient(180deg, #d3eefb 0%, #FFFBF1 100%)",
         },
+        YellowBlue: {
+          value: "linear-gradient(180deg, #FFEEC3 0%, #d3eefb 100%)",
+        },
       },
       fonts: {
         heading: { value: "'Montserrat', sans-serif" },

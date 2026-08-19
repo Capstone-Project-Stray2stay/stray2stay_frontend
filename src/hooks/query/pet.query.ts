@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-
 import {
     classifyPetAPI,
     petBreedsAPI,
     petColorsAPI,
     registerPetAPI,
+  getRandomPetsAPI,
+  type RandomPetResponseItem
 } from "../../services/apis/pet.api"
 import type { PetType, RehomeDraft } from "../../pages/rehome/rehome.type"
 
@@ -52,4 +53,19 @@ export function useRegisterPet() {
             return res.data.petId as number
         },
     })
+  
+export function useRandomPets() {
+  const { data, isLoading, isError, error } = useQuery<RandomPetResponseItem[]>({
+    queryKey: ["pets", "random"],
+    queryFn: getRandomPetsAPI,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return {
+    recommendedPets: data ?? [],
+    isLoading,
+    isError,
+    error,
+  };
 }

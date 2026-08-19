@@ -4,8 +4,8 @@ import { setAuth } from "../store/slices/authSlices";
 import { authorizeAPI } from "../services/apis/auth.api";
 
 export function useCheckAuth() {
-    const [loading, setLoading] = useState(true);
-    const [authorized, setAuthorized] = useState(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [authorized, setAuthorized] = useState<boolean>(false);
     const dispatch = useAppDispatch();
 
     useEffect(() => {

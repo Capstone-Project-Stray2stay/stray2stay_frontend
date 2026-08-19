@@ -9,12 +9,11 @@ export interface S2SButtonType {
     icon?: React.ReactNode
     type?: "button" | "submit" | "reset"
     text: string
-    /** Fill colour when solid, outline/text colour when variant is "outline". */
     bgColor?: string
     variant?: "solid" | "outline"
-    width?: string
     height?: string
     fontSize?: string
+    width?: string | Record<string, string>
     loading?: boolean
     disabled?: boolean
     onClick?: () => void
@@ -36,7 +35,6 @@ export interface S2SDropDownType {
     placeholder: string
     width: string
     data: S2SDropDownOption[]
-    /** Pass together with onValueChange to run controlled; omit for uncontrolled. */
     value?: string
     onValueChange?: (value: string) => void
     disabled?: boolean
@@ -75,6 +73,7 @@ export interface S2SPageTitleType {
 export interface S2SPetCardType {
     rank?: number
     width: string | number
+    height: string | number
     petName?: string
     petImageURL: string
     petAge: string
@@ -93,7 +92,6 @@ export interface S2SPetIconButtonType {
 
 export interface S2SStepperType {
     steps: string[]
-    /** 1-based index of the step currently being shown */
     current: number
 }
 
@@ -101,4 +99,9 @@ export interface S2SPaginationType {
     page: number
     totalPages: number
     onPageChange: (page: number) => void
+}
+
+export interface S2SPetCardSkeletonType {
+    width: string | number
+    height: string | number
 }

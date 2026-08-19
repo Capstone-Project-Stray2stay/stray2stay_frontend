@@ -9,7 +9,7 @@ export default function S2SAccordion({
     value,
     width = "100%",
 }: S2SAccordionType) {
-    const itemValue = value ?? title
+    const itemValue: string = value ?? title
 
     return (
         <Accordion.Root collapsible width={width} bg="white" borderRadius="25px" overflow="hidden">
