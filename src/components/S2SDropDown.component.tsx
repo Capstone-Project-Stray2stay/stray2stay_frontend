@@ -17,7 +17,7 @@ export default function S2SDropDown({
     disabled,
     height,
     borderColor,
-    bg,
+    bg="white",
 }: S2SDropDownType) {
     const { contains } = useFilter({ sensitivity: "base" })
 
@@ -25,17 +25,10 @@ export default function S2SDropDown({
         initialItems: data,
         filter: contains,
     })
-
-    // initialItems is only read on the first render, so options that arrive
-    // asynchronously (e.g. breeds fetched per species) would never show up
-    // without pushing them into the collection here.
     useEffect(() => {
         set(data)
     }, [data, set])
 
-    // Only hand Combobox a `value` when the caller actually drives it —
-    // passing value={[]} unconditionally would make uncontrolled usages
-    // (the Adopt page filters) permanently stuck on empty.
     const controlProps = onValueChange
         ? {
             value: value ? [value] : [],
@@ -47,6 +40,7 @@ export default function S2SDropDown({
         <Combobox.Root
             collection={collection}
             onInputValueChange={(e) => filter(e.inputValue)}
+            openOnClick
             disabled={disabled}
             width={width}
             {...controlProps}

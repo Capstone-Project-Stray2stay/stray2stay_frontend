@@ -1,3 +1,5 @@
+import type { InputProps } from "@chakra-ui/react"
+
 export interface S2SAccordionType {
     title: string
     content: string
@@ -57,7 +59,7 @@ export interface S2SIconButtonType {
     onClick?: () => void
 }
 
-export interface S2SInputType {
+export interface S2SInputType extends Omit<InputProps, "value" | "onChange" | "type" | "placeholder"> {
     startIcon?: React.ReactNode
     endIcon?: React.ReactNode
     placeholder?: string

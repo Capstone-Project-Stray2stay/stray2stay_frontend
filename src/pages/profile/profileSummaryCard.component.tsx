@@ -29,7 +29,7 @@ function MenuItem({
             _hover={{ color: "BlueText" }}
         >
             <Icon as={icon} boxSize="24px" />
-            <Text fontSize="18px" fontWeight="600" whiteSpace="nowrap">
+            <Text fontSize={{base: "16px", md: "18px"}} fontWeight="600" whiteSpace="nowrap">
                 {label}
             </Text>
         </Flex>
@@ -51,24 +51,24 @@ export default function ProfileSummaryCard({
         <VStack
             bg="white"
             borderRadius="16px"
-            px="32px"
-            py="32px"
-            gap="24px"
-            justify="center"
-            flex={{ base: "none", lg: "1 1 0" }}
+            gap={{base: "20px", md:"24px"}}
+            justify={{base: "start", md: "center"}}
+            flex={{ base: "none", lg: "3 1 0" }}
+            p={{ base: "15px", md: "20px" }}
             minW={{ base: "auto", lg: "300px" }}
+            flexDirection={{ base: "row", md: "column" }}
         >
-            <Box position="relative">
-                <Avatar.Root boxSize="162px">
-                    <Avatar.Fallback name={name} />
+            <Flex position="relative">
+                <Avatar.Root boxSize={{base: "80px", md: "162px"}}>
+                    <Avatar.Fallback name={name} fontSize={"36px"} />
                     <Avatar.Image src={imageURL} />
                 </Avatar.Root>
                 {/* TODO: open a file picker and upload once an avatar endpoint
                     exists — the backend only reads user_imageAddress today. */}
                 <Circle
                     position="absolute"
-                    right="6px"
-                    bottom="6px"
+                    right={{base: "-6px", md: "6px"}}
+                    bottom={{base: "-6px", md: "6px"}}
                     size="32px"
                     bg="Blue"
                     color="white"
@@ -77,26 +77,27 @@ export default function ProfileSummaryCard({
                 >
                     <Icon as={LuPencil} boxSize="14px" />
                 </Circle>
+            </Flex>
+            <Box>
+                <Text fontSize={{base: "18px", md: "24px"}} fontWeight="600" color="Grey" textAlign={{base: "left", md: "center"}}>
+                    {name}
+                </Text>
+
+                <VStack align="flex-start" gap="10px" w="100%" pt="20px">
+                    <MenuItem
+                        icon={LuUser}
+                        label="Personal Information"
+                        active={activeTab === "personal"}
+                        onClick={() => onTabChange("personal")}
+                    />
+                    <MenuItem
+                        icon={MdPets}
+                        label="Pet Preferences"
+                        active={activeTab === "preferences"}
+                        onClick={() => onTabChange("preferences")}
+                    />
+                </VStack>
             </Box>
-
-            <Text fontSize="24px" fontWeight="600" color="Grey" textAlign="center">
-                {name}
-            </Text>
-
-            <VStack align="flex-start" gap="20px" w="100%">
-                <MenuItem
-                    icon={LuUser}
-                    label="Personal Information"
-                    active={activeTab === "personal"}
-                    onClick={() => onTabChange("personal")}
-                />
-                <MenuItem
-                    icon={MdPets}
-                    label="Pet Preferences"
-                    active={activeTab === "preferences"}
-                    onClick={() => onTabChange("preferences")}
-                />
-            </VStack>
         </VStack>
     );
 }

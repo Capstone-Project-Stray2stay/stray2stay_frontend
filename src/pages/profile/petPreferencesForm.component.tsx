@@ -19,11 +19,10 @@ export default function PetPreferencesForm({
         <S2SCardShell
             railColor="Cream"
             bg="white"
-            flex={{ base: "none", lg: "2 1 0" }}
+            flex={{ base: "none", lg: "7 1 0" }}
             minW={0}
             py="32px"
-            px="48px"
-            pl="62px"
+            px={{ base: "36px", md: "48px" }}
             align="flex-start"
         >
             <PetPreferencesFields

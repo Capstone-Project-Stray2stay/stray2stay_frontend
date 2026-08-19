@@ -16,10 +16,10 @@ export default function ListTabs({
 }) {
     return (
         <VStack align="stretch" gap="0" w="100%">
-            <Flex justify="center" gap={{ base: "32px", md: "64px" }} wrap="wrap">
+            <Flex justify="center" gap={{ base: "16px", md: "64px" }} wrap="wrap">
                 {TABS.map((tab) => {
                     const active = tab.id === value;
-                    return (
+                    return (            
                         <VStack
                             key={tab.id}
                             as="button"
@@ -28,8 +28,8 @@ export default function ListTabs({
                             onClick={() => onChange(tab.id)}
                         >
                             <Text
-                                px="12px"
-                                fontSize="24px"
+                                px={{base: "8px", md: "12px"}}
+                                fontSize={{base: "16px", md: "24px"}}
                                 fontWeight="600"
                                 color={active ? "BlueText" : "Grey"}
                                 whiteSpace="nowrap"
@@ -41,7 +41,7 @@ export default function ListTabs({
                                 the row's height by 6px. */}
                             <Box
                                 w="100%"
-                                h="6px"
+                                h={{base: "4px", md: "6px"}}
                                 borderRadius="61px"
                                 bg={active ? "SkyBlue" : "transparent"}
                             />

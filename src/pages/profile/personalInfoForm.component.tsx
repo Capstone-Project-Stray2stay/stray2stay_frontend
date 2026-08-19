@@ -15,12 +15,10 @@ export default function PersonalInfoForm({
         <S2SCardShell
             railColor="SkyBlue"
             bg="white"
-            flex={{ base: "none", lg: "2 1 0" }}
+            flex={{ base: "none", lg: "7 1 0" }}
             minW={0}
             py="32px"
-            px="48px"
-            // +14px so the content clears the rail, matching the diary cards.
-            pl="62px"
+            px={{base: "36px", md: "48px"}}
             align="flex-start"
         >
             <PersonalInfoFields value={value} onChange={onChange} />

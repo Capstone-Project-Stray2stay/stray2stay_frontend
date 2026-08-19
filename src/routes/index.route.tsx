@@ -12,6 +12,7 @@ import UserInformation from "../pages/userInformation.page";
 
 import MainLayout from "../layouts/main.layout";
 import ProtectedRoute from "../middlewares/protectedRoute.middleware";
+import NewUserRedirect from "../middlewares/newUserRedirect.middleware";
 
 export const router = createBrowserRouter([
     {
@@ -26,34 +27,40 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
             {
-                path: "/",
-                element: <Home />,
-            },
-            {
-                path: "/adopt",
-                element: <Adopt />,
-            },
-            {
-                element: <ProtectedRoute />,
+                // Forces any signed-in account that hasn't completed setup
+                // (useNewUserStatus() reports new) back to /user-information,
+                // no matter which route under MainLayout it tries to reach.
+                element: <NewUserRedirect />,
                 children: [
                     {
-                        path: "/profile",
-                        element: <Profile />,
+                        path: "/",
+                        element: <Home />,
                     },
                     {
-                        path: "/diary",
-                        element: <Diary />,
+                        path: "/adopt",
+                        element: <Adopt />,
                     },
                     {
-                        path: "/rehome",
-                        element: <Rehome />,
-                    },
-                    {
-                        // One-time setup for a newly registered account.
-                        // TODO: redirect here automatically while
-                        // useNewUserStatus() reports the user is new.
-                        path: "/user-information",
-                        element: <UserInformation />,
+                        element: <ProtectedRoute />,
+                        children: [
+                            {
+                                path: "/profile",
+                                element: <Profile />,
+                            },
+                            {
+                                path: "/diary",
+                                element: <Diary />,
+                            },
+                            {
+                                path: "/rehome",
+                                element: <Rehome />,
+                            },
+                            {
+                                // One-time setup for a newly registered account.
+                                path: "/user-information",
+                                element: <UserInformation />,
+                            }
+                        ]
                     }
                 ]
             }
