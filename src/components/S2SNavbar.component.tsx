@@ -52,7 +52,7 @@ export default function S2SNavbar() {
     }
 
     return (
-        <Flex display={{ base: "flex", md: "none" }} width="100%" justifyContent="space-between" alignItems="center" px={8} py={4} bg="LightBlue">
+        <Flex display={{ base: "flex", lg: "none" }} width="100%" justifyContent="space-between" alignItems="center" px={8} py={4}>
             <Text fontWeight={"semibold"} color="Grey" fontSize={"20px"}>Stray2Stay</Text>
             <Drawer.Root placement="start" size="full" open={open} onOpenChange={(e) => setOpen(e.open)}>
                 <Drawer.Trigger asChild p={0}>

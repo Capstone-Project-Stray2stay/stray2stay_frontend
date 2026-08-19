@@ -10,7 +10,7 @@ export interface S2SButtonType {
     type?: "button" | "submit" | "reset"
     text: string
     bgColor?: string
-    width?: string
+    width?: string | Record<string, string>
     loading?: boolean
     onClick?: () => void
 }
@@ -52,6 +52,7 @@ export interface S2SPageTitleType {
 export interface S2SPetCardType {
     rank?: number
     width: string | number
+    height: string | number
     petName?: string
     petImageURL: string
     petAge: string
@@ -72,4 +73,9 @@ export interface S2SPaginationType {
     page: number
     totalPages: number
     onPageChange: (page: number) => void
+}
+
+export interface S2SPetCardSkeletonType {
+    width: string | number
+    height: string | number
 }
