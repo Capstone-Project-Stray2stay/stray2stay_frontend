@@ -15,17 +15,10 @@ export const colorOptions = [
     { value: "mixed", label: "Mixed" },
 ];
 
-export const genderOptions = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
-];
-
-export const ageGroupOptions = [
-    { value: "baby", label: "Baby" },
-    { value: "young", label: "Young" },
-    { value: "adult", label: "Adult" },
-    { value: "senior", label: "Senior" },
-];
+// Gender and age group are shared with the Rehome wizard — single source of
+// truth lives in utils so the values Adopt filters on can't drift from the
+// values Rehome writes. Re-exported here so existing imports keep working.
+export { genderOptions, ageGroupOptions } from "../../utils/petOptions.util";
 
 export const locationOptions = [
     { value: "bangkok", label: "Bangkok" },

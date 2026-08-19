@@ -12,7 +12,7 @@ export const BASE_NAV_ITEMS = [
     { key: "profile", label: "Profile", icon: IoPerson, nav: "/profile" },
 ]
 
-export const AUTH_ONLY_KEYS = ["profile", "diary"]
+export const AUTH_ONLY_KEYS = ["profile", "diary", "rehome"]
 
 export function getActiveNavKey(
     pathname: string,

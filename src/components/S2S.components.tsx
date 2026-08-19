@@ -12,6 +12,9 @@ import S2SAccordion from "./S2SAccordion.component";
 import S2SPageTitle from "./S2SPageTitle.component";
 import S2SPetIconButton from "./S2SPetIconButton.component";
 import S2SPagination from "./S2SPagination.component";
+import S2SStepper from "./S2SStepper.component";
+import S2SCheckbox from "./S2SCheckbox.component";
+import S2SCardShell from "./S2SCardShell.component";
 import S2SFooter from "./S2SFooter.component";
 
-export { S2SButton, S2SInput, S2SDropDown, S2SChip, S2SIconButton, S2SPetCard, S2SPetCardSkeleton, S2SAvatar, S2SNavbar, S2SSidebar, S2SAccordion, S2SPageTitle, S2SPetIconButton, S2SPagination, S2SFooter };
+export { S2SButton, S2SInput, S2SDropDown, S2SChip, S2SIconButton, S2SPetCard, S2SAvatar, S2SNavbar, S2SSidebar, S2SAccordion, S2SPageTitle, S2SPetIconButton, S2SPagination, S2SStepper, S2SCheckbox, S2SCardShell, S2SFooter };

@@ -28,11 +28,16 @@ export default function Adopt() {
     const [category, setCategory] = useState<"dog" | "cat" | "all">("all");
     const [keyword, setKeyword] = useState("");
     const [page, setPage] = useState(1);
+    // S2SDropDown is uncontrolled (no value/onChange), so the only way to clear
+    // a selection from outside it without editing that component is to force a
+    // remount by changing its key — bumping this counter does that for all 5.
+    const [filterResetKey, setFilterResetKey] = useState(0);
 
     const resetFilters = () => {
         setCategory("all");
         setKeyword("");
         setPage(1);
+        setFilterResetKey((k) => k + 1);
     };
 
     const filteredPets = useMemo(() => {
@@ -70,11 +75,11 @@ export default function Adopt() {
             </Flex>
 
             <Flex justify="space-between" mt="32px" wrap="wrap" gap={4}>
-                <S2SDropDown placeholder="Breed" width="190px" data={breedOptions} />
-                <S2SDropDown placeholder="Color" width="190px" data={colorOptions} />
-                <S2SDropDown placeholder="Gender" width="190px" data={genderOptions} />
-                <S2SDropDown placeholder="Age Group" width="190px" data={ageGroupOptions} />
-                <S2SDropDown placeholder="Location" width="190px" data={locationOptions} />
+                <S2SDropDown key={`breed-${filterResetKey}`} placeholder="Breed" width="190px" data={breedOptions} />
+                <S2SDropDown key={`color-${filterResetKey}`} placeholder="Color" width="190px" data={colorOptions} />
+                <S2SDropDown key={`gender-${filterResetKey}`} placeholder="Gender" width="190px" data={genderOptions} />
+                <S2SDropDown key={`age-${filterResetKey}`} placeholder="Age Group" width="190px" data={ageGroupOptions} />
+                <S2SDropDown key={`location-${filterResetKey}`} placeholder="Location" width="190px" data={locationOptions} />
             </Flex>
             <Flex justify="flex-end" mt="32px">
                 <S2SButton text="Clear" bgColor="Blue" onClick={resetFilters} />

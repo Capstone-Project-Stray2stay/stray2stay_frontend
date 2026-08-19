@@ -10,8 +10,12 @@ export interface S2SButtonType {
     type?: "button" | "submit" | "reset"
     text: string
     bgColor?: string
+    variant?: "solid" | "outline"
+    height?: string
+    fontSize?: string
     width?: string | Record<string, string>
     loading?: boolean
+    disabled?: boolean
     onClick?: () => void
 }
 
@@ -22,10 +26,27 @@ export interface S2SChipType {
     readOnly?: boolean
 }
 
+export interface S2SDropDownOption {
+    value: string
+    label: string
+}
+
 export interface S2SDropDownType {
     placeholder: string
     width: string
-    data: any[]
+    data: S2SDropDownOption[]
+    value?: string
+    onValueChange?: (value: string) => void
+    disabled?: boolean
+    height?: string
+    borderColor?: string
+    bg?: string
+}
+
+export interface S2SCheckboxType {
+    label: string
+    checked: boolean
+    onChange: (checked: boolean) => void
 }
 
 export interface S2SIconButtonType {
@@ -67,6 +88,11 @@ export interface S2SPetIconButtonType {
     label: string
     selected?: boolean
     onClick?: () => void
+}
+
+export interface S2SStepperType {
+    steps: string[]
+    current: number
 }
 
 export interface S2SPaginationType {
