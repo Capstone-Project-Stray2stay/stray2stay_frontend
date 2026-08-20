@@ -4,6 +4,7 @@ import {
     loginAPI,
     logoutAPI,
     newUserStatusAPI,
+    updateNewUserStatusAPI,
 } from "../../services/apis/auth.api"
 
 export function useAuth() {
@@ -46,4 +47,18 @@ export function useNewUserStatus() {
         retry: false,
     })
     return { userStatus: userData || false, loading: isLoading }
+}
+
+export function useUpdateNewUserStatus() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: updateNewUserStatusAPI,
+        // Must be awaited: NewUserRedirect reads this same cache synchronously
+        // on the next render, so navigating away before the refetch resolves
+        // would still see the stale `true` and bounce straight back to
+        // /user-information.
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["newUserStatus"] })
+        },
+    })
 }

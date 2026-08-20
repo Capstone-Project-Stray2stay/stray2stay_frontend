@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { Box, Flex, Icon, IconButton, Input, Text, Textarea } from "@chakra-ui/react";
+import { Box, Flex, Icon, IconButton, Text, Textarea } from "@chakra-ui/react";
 import { IoAdd, IoInformationCircleOutline } from "react-icons/io5";
 
-import { S2SChip, S2SCheckbox, S2SDropDown } from "../../components/S2S.components";
+import { S2SChip, S2SCheckbox, S2SDropDown, S2SInput } from "../../components/S2S.components";
 import { ageGroupOptions, genderOptions } from "../../utils/petOptions.util";
 import DetailField, { DetailSection } from "./detailField.component";
 import { detailDropDownStyle, detailInputStyle } from "./detailField.style";
@@ -83,7 +83,7 @@ export default function Step3Details({
             <DetailSection title="Pet's Profile">
                 <Flex direction="column" align="stretch" gap="21px">
                     <DetailField label="Name (optional)">
-                        <Input
+                        <S2SInput
                             {...detailInputStyle}
                             placeholder="Leave blank if this pet has no name yet"
                             value={draft.name}
@@ -151,7 +151,7 @@ export default function Step3Details({
                     ))}
 
                     {isAddingPersonality ? (
-                        <Input
+                        <S2SInput
                             {...detailInputStyle}
                             w="150px"
                             autoFocus
@@ -243,7 +243,7 @@ export default function Step3Details({
                         </Text>
                         <Flex direction="column" gap="12px">
                             <Flex align="center" gap="13px">
-                                <Input
+                                <S2SInput
                                     {...detailInputStyle}
                                     w="250px"
                                     borderRadius="132px"

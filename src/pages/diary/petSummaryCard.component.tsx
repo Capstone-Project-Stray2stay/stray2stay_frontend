@@ -37,7 +37,6 @@ export default function PetSummaryCard({
             w="100%"
             py="16px"
             px="32px"
-            pl="46px"
             gap="32px"
             align="flex-start"
             wrap="wrap"

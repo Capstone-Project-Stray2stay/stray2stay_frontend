@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
 
 import { S2SPageTitle, S2SButton } from "../components/S2S.components";
 
@@ -17,6 +17,14 @@ import MyAdoptionsModal from "./diary/myAdoptionsModal.component";
 
 export default function Diary() {
     const navigate = useNavigate();
+
+    // The desktop layout is two independently-flowing columns, and the
+    // finder card moves from the right column into the middle of the mobile
+    // flow — a reorder plain CSS direction:column can't express. So the
+    // arrangement is picked once here, in JS, rather than mounting the page
+    // twice behind display:none (which would double up DayEntries' internal
+    // edit-mode state for nothing).
+    const isDesktop = useBreakpointValue({ base: false, lg: true }) ?? false;
 
     const [selectedPetId, setSelectedPetId] = useState(mockAdoptedPets[0].id);
     const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -88,69 +96,97 @@ export default function Diary() {
         });
     };
 
+    // Each piece is built exactly once and just gets slotted into whichever
+    // grouping matches the breakpoint below.
+    const petCard = <PetSummaryCard pet={selectedPet} onChangeClick={() => setIsPetModalOpen(true)} />;
+
+    const finderCard = <FinderCard finder={mockFinder} />;
+
+    const monthCalendar = (
+        <MonthCalendar
+            viewMonth={viewMonth}
+            selectedDate={selectedDate}
+            onMonthChange={(delta) => setViewMonth((month) => addMonths(month, delta))}
+            onSelect={setSelectedDate}
+        />
+    );
+
+    const weekStrip = (
+        <WeekStrip selectedDate={selectedDate} entryDateKeys={entryDateKeys} onSelect={handleSelectDate} />
+    );
+
+    const dayEntries = (
+        <DayEntries
+            key={`${selectedPetId}-${selectedKey}`}
+            date={selectedDate}
+            entry={dayEntry}
+            onSaveEntry={handleSaveEntry}
+        />
+    );
+
+    const finishButton = (
+        <Flex justify="flex-end" w={isDesktop ? "auto" : "100%"}>
+            <S2SButton
+                text="Finish"
+                width="115px"
+                height="45px"
+                fontSize="20px"
+                onClick={() => navigate("/")}
+            />
+        </Flex>
+    );
+
+    // TODO: swap for the exported Figma illustration.
+    const illustration = (
+        <Flex
+            alignSelf={isDesktop ? "auto" : "center"}
+            w={isDesktop ? "279px" : "219px"}
+            h={isDesktop ? "189px" : "148px"}
+            align="center"
+            justify="center"
+            bg="rgba(255,255,255,0.45)"
+            borderRadius="16px"
+        >
+            <Text fontSize="14px" fontWeight="500" color="GreyMuted">
+                Illustration
+            </Text>
+        </Flex>
+    );
+
     return (
-        <Box width={{ base: "100%", md: "80vw" }}>
+        <Box width="100%" px={{ base: "30px", md: "9%" }}>
             <S2SPageTitle title="Pet Diary" />
 
-            <Flex
-                mt="64px"
-                gap="40px"
-                align="flex-start"
-                direction={{ base: "column", lg: "row" }}
-            >
-                <VStack flex="1" minW="0" maxW={{ base: "100%", lg: "602px" }} align="stretch" gap="32px">
-                    <PetSummaryCard pet={selectedPet} onChangeClick={() => setIsPetModalOpen(true)} />
-
-                    <VStack align="stretch" gap="16px">
-                        <WeekStrip
-                            selectedDate={selectedDate}
-                            entryDateKeys={entryDateKeys}
-                            onSelect={handleSelectDate}
-                        />
-                        {/* Keyed so the editor's draft state is dropped when the
-                            day or the pet changes, rather than carrying over. */}
-                        <DayEntries
-                            key={`${selectedPetId}-${selectedKey}`}
-                            date={selectedDate}
-                            entry={dayEntry}
-                            onSaveEntry={handleSaveEntry}
-                        />
+            {isDesktop ? (
+                <Flex mt="64px" gap="40px" align="flex-start">
+                    <VStack flex="1" minW="0" maxW="602px" align="stretch" gap="32px">
+                        {petCard}
+                        <VStack align="stretch" gap="16px">
+                            {weekStrip}
+                            {dayEntries}
+                        </VStack>
+                        {finishButton}
                     </VStack>
 
-                    <Flex justify="flex-end">
-                        <S2SButton
-                            text="Finish"
-                            width="115px"
-                            height="45px"
-                            fontSize="20px"
-                            onClick={() => navigate("/")}
-                        />
-                    </Flex>
+                    <VStack flex="1" minW="0" align="center" gap="32px">
+                        {finderCard}
+                        {monthCalendar}
+                        {illustration}
+                    </VStack>
+                </Flex>
+            ) : (
+                // Mobile flow, following the Figma order: pet card, finder
+                // card, month calendar, week strip, then the day's entry.
+                <VStack mt="32px" gap="24px" align="stretch" w="100%">
+                    {petCard}
+                    {finderCard}
+                    {monthCalendar}
+                    {weekStrip}
+                    {dayEntries}
+                    {finishButton}
+                    {illustration}
                 </VStack>
-
-                <VStack flex="1" minW="0" align="center" gap="32px">
-                    <FinderCard finder={mockFinder} />
-                    <MonthCalendar
-                        viewMonth={viewMonth}
-                        selectedDate={selectedDate}
-                        onMonthChange={(delta) => setViewMonth((month) => addMonths(month, delta))}
-                        onSelect={setSelectedDate}
-                    />
-                    {/* TODO: swap for the exported Figma illustration (279x189). */}
-                    <Flex
-                        w="279px"
-                        h="189px"
-                        align="center"
-                        justify="center"
-                        bg="rgba(255,255,255,0.45)"
-                        borderRadius="16px"
-                    >
-                        <Text fontSize="14px" fontWeight="500" color="GreyMuted">
-                            Illustration
-                        </Text>
-                    </Flex>
-                </VStack>
-            </Flex>
+            )}
 
             <MyAdoptionsModal
                 isOpen={isPetModalOpen}

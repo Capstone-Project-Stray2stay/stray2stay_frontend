@@ -1,14 +1,17 @@
+import { useMemo } from "react";
 import { Circle, Flex, Image, Text, VStack } from "@chakra-ui/react";
 
 import { S2SDropDown } from "../../components/S2S.components";
 import { detailDropDownStyle } from "../rehome/detailField.style";
 import { ageGroupOptions, genderOptions } from "../../utils/petOptions.util";
+import { useBreeds, usePetColors } from "../../hooks/query/pet.query";
 
 import ProfileField from "./profileField.component";
-import { mockBreedOptions, mockColorOptions } from "./mockProfile";
 import type { PetPreferenceDraft, Species } from "./profile.type";
 
 const LABEL = { labelColor: "GreyText", labelSize: "13.05px" } as const;
+
+const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
 function SpeciesColumn({
     species,
@@ -20,6 +23,12 @@ function SpeciesColumn({
     onChange: (patch: Partial<PetPreferenceDraft>) => void;
 }) {
     const isDog = species === "dog";
+
+    const { breeds } = useBreeds(species);
+    const { colors } = usePetColors(species, value.breed);
+
+    const breedItems = useMemo(() => toOptions(breeds), [breeds]);
+    const colorItems = useMemo(() => toOptions(colors), [colors]);
 
     return (
         <VStack align="stretch" gap="12px" flex="1 1 265px" minW="240px" maxW="320px">
@@ -62,18 +71,28 @@ function SpeciesColumn({
             <VStack align="stretch" gap="12px">
                 <ProfileField label="Breed" {...LABEL}>
                     <S2SDropDown
+                        // Remount once options finish loading: the underlying
+                        // combobox doesn't resync its displayed text if `data`
+                        // arrives async (useBreeds) after `value` is already
+                        // set — it looks empty even though a value is selected
+                        // (same fix as the address selects in
+                        // personalInfoFields.component.tsx).
+                        key={breedItems.length === 0 ? "loading" : "loaded"}
                         {...detailDropDownStyle}
                         placeholder=""
-                        data={mockBreedOptions[species]}
+                        data={breedItems}
                         value={value.breed}
-                        onValueChange={(breed) => onChange({ breed })}
+                        // Colors are breed-specific, so a breed change
+                        // invalidates any colour already picked.
+                        onValueChange={(breed) => onChange({ breed, color: "" })}
                     />
                 </ProfileField>
                 <ProfileField label="Color" {...LABEL}>
                     <S2SDropDown
+                        key={colorItems.length === 0 ? "loading" : "loaded"}
                         {...detailDropDownStyle}
                         placeholder=""
-                        data={mockColorOptions}
+                        data={colorItems}
                         value={value.color}
                         onValueChange={(color) => onChange({ color })}
                     />

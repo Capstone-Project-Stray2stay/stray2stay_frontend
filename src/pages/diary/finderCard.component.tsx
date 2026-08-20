@@ -6,7 +6,7 @@ import type { DiaryFinder } from "./diary.type";
 
 export default function FinderCard({ finder }: { finder: DiaryFinder }) {
     return (
-        <S2SCardShell railColor="Cream" w="100%" py="16px" px="32px" pl="46px" align="center">
+        <S2SCardShell railColor="Cream" w="100%" py="16px" px="32px" align="center">
             <Flex gap="24px" align="center">
                 <Avatar.Root boxSize="85px">
                     <Avatar.Fallback name={finder.name} />

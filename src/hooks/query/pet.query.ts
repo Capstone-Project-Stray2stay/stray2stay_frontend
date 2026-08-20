@@ -53,6 +53,7 @@ export function useRegisterPet() {
             return res.data.petId as number
         },
     })
+}
   
 export function useRandomPets() {
   const { data, isLoading, isError, error } = useQuery<RandomPetResponseItem[]>({

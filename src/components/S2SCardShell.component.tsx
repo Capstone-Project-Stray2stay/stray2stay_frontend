@@ -31,7 +31,7 @@ export default function S2SCardShell({
                 left="0.2px"
                 top="0"
                 bottom="0"
-                w="14px"
+                w={{base: "8px", md: "14px"}}
                 bg={railColor}
                 borderRadius="25px"
             />

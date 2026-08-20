@@ -17,4 +17,4 @@ import S2SCheckbox from "./S2SCheckbox.component";
 import S2SCardShell from "./S2SCardShell.component";
 import S2SFooter from "./S2SFooter.component";
 
-export { S2SButton, S2SInput, S2SDropDown, S2SChip, S2SIconButton, S2SPetCard, S2SAvatar, S2SNavbar, S2SSidebar, S2SAccordion, S2SPageTitle, S2SPetIconButton, S2SPagination, S2SStepper, S2SCheckbox, S2SCardShell, S2SFooter };
+export { S2SButton, S2SInput, S2SDropDown, S2SChip, S2SIconButton, S2SPetCard, S2SAvatar, S2SNavbar, S2SSidebar, S2SAccordion, S2SPageTitle, S2SPetIconButton, S2SPagination, S2SStepper, S2SCheckbox, S2SCardShell, S2SFooter, S2SPetCardSkeleton };
