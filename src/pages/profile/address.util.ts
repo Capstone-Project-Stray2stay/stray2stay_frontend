@@ -14,6 +14,16 @@ export function joinAddress(parts: AddressParts): string {
         .join(", ");
 }
 
+/**
+ * Same fields, minus the street, for geocoding queries. The street is
+ * free text the user typed (often not a real, geocodable name), so
+ * including it just makes Nominatim return no match — the sub-district is
+ * the finest-grained piece guaranteed to actually resolve.
+ */
+export function joinAddressForGeocode(parts: Omit<AddressParts, "street">): string {
+    return [parts.subDistrict, parts.district, parts.state].filter(Boolean).join(", ");
+}
+
 /** Inverse of joinAddress. Best-effort: a free-text address has no guaranteed structure. */
 export function splitAddress(address: string): AddressParts {
     const [street = "", subDistrict = "", district = "", state = ""] = address

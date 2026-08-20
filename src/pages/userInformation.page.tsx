@@ -8,7 +8,7 @@ import { useUpdateNewUserStatus } from "../hooks/query/auth.query";
 import { useUpdateUser, useUserInfo } from "../hooks/query/user.query";
 import { geocodeAddressAPI } from "../services/apis/address.api";
 
-import { joinAddress } from "./profile/address.util";
+import { joinAddress, joinAddressForGeocode } from "./profile/address.util";
 import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "./profile/profile.type";
 import type { PersonalInfoDraft, PetPreferenceDraft } from "./profile/profile.type";
 
@@ -62,11 +62,14 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
         const address = joinAddress(personalInfo);
 
         // The picked sub-district usually comes with coordinates already (see
-        // PersonalInfoFields); this only hits the network for the ~4% that don't.
+        // PersonalInfoFields); this only hits the network for the ones that
+        // don't (all of Bangkok, notably). Geocoded on the sub-district/
+        // district/state only — the street is free text the user typed, and
+        // including it just makes Nominatim return no match.
         let { lat, long } = personalInfo;
         if (lat === null || long === null) {
             setResolvingLocation(true);
-            const geocoded = await geocodeAddressAPI(address).catch(() => null);
+            const geocoded = await geocodeAddressAPI(joinAddressForGeocode(personalInfo)).catch(() => null);
             setResolvingLocation(false);
             lat = geocoded?.lat ?? 0;
             long = geocoded?.long ?? 0;
