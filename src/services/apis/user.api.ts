@@ -1,4 +1,3 @@
-import axiosInstance from "../axios/axiosInstance";
 
 export interface UpdateUserPayload {
     firstName: string;

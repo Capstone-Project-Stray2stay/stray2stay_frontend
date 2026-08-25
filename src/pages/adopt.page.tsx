@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Box, Flex, Image, SimpleGrid } from "@chakra-ui/react";
 import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 import {
     S2SPageTitle,
@@ -25,6 +26,7 @@ import {
 const PAGE_SIZE = 16;
 
 export default function Adopt() {
+    const navigate = useNavigate();
     const [category, setCategory] = useState<"dog" | "cat" | "all">("all");
     const [keyword, setKeyword] = useState("");
     const [page, setPage] = useState(1);
@@ -93,11 +95,12 @@ export default function Adopt() {
                         width="100%"
                         height="300px"
                         petName={p.name}
-                        petImageURL={p.imageURL}
+                        petImageURL={p.imageURL || "/assets/icons/paw.png"}
                         petAge={p.age}
                         petBreed={p.breed}
                         petGender={p.gender}
                         petLocation={p.location}
+                        onClick={() => navigate("/pet-profile")}
                     />
                 ))}
             </SimpleGrid>
