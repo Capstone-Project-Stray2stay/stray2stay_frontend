@@ -1,8 +1,17 @@
+type ResponsiveSpace = string | number | { base?: string | number; sm?: string | number; md?: string | number; lg?: string | number; xl?: string | number }
+
 export interface S2SAccordionType {
     title: string
     content: string
     value?: string
     width?: string
+    px?: ResponsiveSpace
+    py?: ResponsiveSpace
+    fontSize?: ResponsiveSpace
+    contentFontSize?: ResponsiveSpace
+    contentPt?: ResponsiveSpace
+    contentPb?: ResponsiveSpace
+    contentColor?: string
 }
 
 export interface S2SButtonType {
