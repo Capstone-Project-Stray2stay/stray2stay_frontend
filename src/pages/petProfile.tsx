@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Flex,
   Icon,
   Image,
@@ -9,6 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   LuCheck,
   LuChevronLeft,
@@ -19,32 +19,54 @@ import {
   LuSyringe,
   LuX,
 } from "react-icons/lu";
-import { IoFemaleOutline } from "react-icons/io5";
+import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion } from "../components/S2S.components";
+import { usePetInfo } from "../hooks/query/pet.query";
+import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
 
-const galleryImages = [
-  "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1583511655826-407a4f1f6ef7?auto=format&fit=crop&w=1200&q=80",
-];
+const FALLBACK_IMAGE = "/assets/images/house.png";
 
-const vaccinations = [
-  { label: "DHPPI", received: true },
-  { label: "Rabies", received: false },
-];
+/** Vaccine names the backend accepts (see PetRegisterRequest.PetVaccination validation). */
+const KNOWN_VACCINES = ["DHPPi", "Rabies", "FVRCP"];
 
-const personalityTags = ["Friendly", "Sociable"];
+function formatAgeGroup(ageGroup: string): string {
+  const match = ageGroupOptions.find((o) => o.value === ageGroup);
+  return match?.label ?? ageGroup;
+}
 
 export default function PetProfile() {
+  const { pid } = useParams();
+  const { pet, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+  if (isLoading) {
+    return (
+      <Box width={{ base: "100%", md: "80vw" }}>
+        <S2SPageTitle title="Pet Profile" />
+        <Text mt="48px" color="Grey" textAlign="center">Loading...</Text>
+      </Box>
+    );
+  }
+
+  if (isError || !pet) {
+    return (
+      <Box width={{ base: "100%", md: "80vw" }}>
+        <S2SPageTitle title="Pet Profile" />
+        <Text mt="48px" color="Grey" textAlign="center">Pet not found.</Text>
+      </Box>
+    );
+  }
+
+  const images = pet.petImageAddress.length > 0 ? pet.petImageAddress : [FALLBACK_IMAGE];
+  const activeImage = images[Math.min(activeImageIndex, images.length - 1)];
+
   const prevImage = () => {
-    setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+    setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const nextImage = () => {
-    setActiveImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+    setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -65,68 +87,66 @@ export default function PetProfile() {
           <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap">
             <Box flex="1 1 320px" maxW="320px">
               <Box position="relative" borderRadius="13px" overflow="hidden">
-                <Image src={galleryImages[activeImageIndex]} alt="Happy the Golden Retriever" w="100%" h="300px" objectFit="cover" />
+                <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="auto" display="block" />
 
-                <Button
-                  onClick={prevImage}
-                  variant="ghost"
-                  position="absolute"
-                  left={2}
-                  top="50%"
-                  transform="translateY(-50%)"
-                  minW={0}
-                  p={1}
-                  h="auto"
-                  color="white"
-                  bg="transparent"
-                  _hover={{ bg: "transparent", opacity: 0.75 }}
-                  _active={{ bg: "transparent" }}
-                >
-                  <LuChevronLeft size={20} />
-                </Button>
+                {images.length > 1 && (
+                  <>
+                    <Box
+                      as="button"
+                      onClick={prevImage}
+                      position="absolute"
+                      left={2}
+                      top="50%"
+                      transform="translateY(-50%)"
+                      color="white"
+                      bg="transparent"
+                      _hover={{ opacity: 0.75 }}
+                    >
+                      <LuChevronLeft size={20} />
+                    </Box>
 
-                <Button
-                  onClick={nextImage}
-                  variant="ghost"
-                  position="absolute"
-                  right={2}
-                  top="50%"
-                  transform="translateY(-50%)"
-                  minW={0}
-                  p={1}
-                  h="auto"
-                  color="white"
-                  bg="transparent"
-                  _hover={{ bg: "transparent", opacity: 0.75 }}
-                  _active={{ bg: "transparent" }}
-                >
-                  <LuChevronRight size={20} />
-                </Button>
+                    <Box
+                      as="button"
+                      onClick={nextImage}
+                      position="absolute"
+                      right={2}
+                      top="50%"
+                      transform="translateY(-50%)"
+                      color="white"
+                      bg="transparent"
+                      _hover={{ opacity: 0.75 }}
+                    >
+                      <LuChevronRight size={20} />
+                    </Box>
 
-                <Flex position="absolute" bottom={3} left="50%" transform="translateX(-50%)" gap={2}>
-                  {galleryImages.map((_, index) => (
-                    <Box key={index} w="6px" h="6px" borderRadius="full" bg={index === activeImageIndex ? "white" : "rgba(255,255,255,0.5)"} />
-                  ))}
-                </Flex>
+                    <Flex position="absolute" bottom={3} left="50%" transform="translateX(-50%)" gap={2}>
+                      {images.map((_, index) => (
+                        <Box key={index} w="6px" h="6px" borderRadius="full" bg={index === activeImageIndex ? "white" : "rgba(255,255,255,0.5)"} />
+                      ))}
+                    </Flex>
+                  </>
+                )}
               </Box>
 
-              <Flex mt={4} gap={4}>
-                {galleryImages.map((src, index) => (
-                  <Box
-                    key={src}
-                    w="80px"
-                    h="80px"
-                    borderRadius="13px"
-                    overflow="hidden"
-                    border={index === activeImageIndex ? "2px solid #85BFE2" : "1px solid #E9E9E9"}
-                    bg="#E9E9E9"
-                    cursor="pointer"
-                    onClick={() => setActiveImageIndex(index)}
-                  >
-                    <Image src={src} alt={`Pet thumbnail ${index + 1}`} w="100%" h="100%" objectFit="cover" />
-                  </Box>
-                ))}
-              </Flex>
+              {images.length > 1 && (
+                <Flex mt={4} gap={4}>
+                  {images.map((src, index) => (
+                    <Box
+                      key={src}
+                      w="80px"
+                      h="80px"
+                      borderRadius="13px"
+                      overflow="hidden"
+                      border={index === activeImageIndex ? "2px solid #85BFE2" : "1px solid #E9E9E9"}
+                      bg="#E9E9E9"
+                      cursor="pointer"
+                      onClick={() => setActiveImageIndex(index)}
+                    >
+                      <Image src={src} alt={`Pet thumbnail ${index + 1}`} w="100%" h="100%" objectFit="cover" />
+                    </Box>
+                  ))}
+                </Flex>
+              )}
             </Box>
 
             <VStack flex="1 1 340px" align="flex-start" gap={6}>
@@ -135,7 +155,7 @@ export default function PetProfile() {
                   Name
                 </Text>
                 <Badge bg="#FFEEC1" color="Grey" borderRadius="full" px={4} py={1.5} fontSize="18px" fontWeight="500">
-                  Happy
+                  {pet.petName || "Unnamed"}
                 </Badge>
               </Box>
 
@@ -145,7 +165,7 @@ export default function PetProfile() {
                     Breed
                   </Text>
                   <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
-                    Golden Retriever
+                    {pet.petBreed || "Mixed breed"}
                   </Text>
                 </Box>
                 <Box>
@@ -153,7 +173,7 @@ export default function PetProfile() {
                     Color
                   </Text>
                   <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
-                    Light Golden
+                    {pet.petColor || "Unknown"}
                   </Text>
                 </Box>
               </Flex>
@@ -164,7 +184,7 @@ export default function PetProfile() {
                     Age Group
                   </Text>
                   <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
-                    Baby
+                    {formatAgeGroup(pet.petAgeGroup)}
                   </Text>
                 </Box>
                 <Box>
@@ -172,9 +192,13 @@ export default function PetProfile() {
                     Gender
                   </Text>
                   <Flex align="center" gap={1.5}>
-                    <IoFemaleOutline size={16} color="#FF69B4" />
+                    {pet.petGender?.toUpperCase() === "MALE" ? (
+                      <IoMaleOutline size={16} color="#87CFF0" />
+                    ) : (
+                      <IoFemaleOutline size={16} color="#FF69B4" />
+                    )}
                     <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
-                      Female
+                      {formatGender(pet.petGender)}
                     </Text>
                   </Flex>
                 </Box>
@@ -185,7 +209,7 @@ export default function PetProfile() {
                   Location
                 </Text>
                 <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
-                  Lorem ipsum dolor sit amet consectetur. Amet aliquam non elementum
+                  {pet.petAddress || "Unknown"}
                 </Text>
               </Box>
 
@@ -194,11 +218,15 @@ export default function PetProfile() {
                   Personality
                 </Text>
                 <Flex gap={3} wrap="wrap">
-                  {personalityTags.map((tag) => (
-                    <Badge key={tag} bg="#E3F4FF" color="#7E7E7E" borderRadius="full" px={4} py={2} fontSize="16px" fontWeight="500">
-                      {tag}
-                    </Badge>
-                  ))}
+                  {pet.petPersonality.length > 0 ? (
+                    pet.petPersonality.map((tag) => (
+                      <Badge key={tag} bg="#E3F4FF" color="#7E7E7E" borderRadius="full" px={4} py={2} fontSize="16px" fontWeight="500">
+                        {tag}
+                      </Badge>
+                    ))
+                  ) : (
+                    <Text color="#7E7E7E" fontSize="16px">None</Text>
+                  )}
                 </Flex>
               </Box>
             </VStack>
@@ -221,14 +249,17 @@ export default function PetProfile() {
                   Vaccinations
                 </Text>
                 <VStack align="flex-start" gap={1}>
-                  {vaccinations.map((vaccine) => (
-                    <Flex key={vaccine.label} align="center" gap={1.5}>
-                      <Icon as={vaccine.received ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={vaccine.received ? "#76CAAC" : "#F57676"} />
-                      <Text color="#969696" fontSize="18px" fontWeight="400">
-                        {vaccine.label}
-                      </Text>
-                    </Flex>
-                  ))}
+                  {KNOWN_VACCINES.map((vaccine) => {
+                    const received = pet.petVaccination.includes(vaccine);
+                    return (
+                      <Flex key={vaccine} align="center" gap={1.5}>
+                        <Icon as={received ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={received ? "#76CAAC" : "#F57676"} />
+                        <Text color="#969696" fontSize="18px" fontWeight="400">
+                          {vaccine}
+                        </Text>
+                      </Flex>
+                    );
+                  })}
                 </VStack>
               </Box>
             </Flex>
@@ -242,9 +273,9 @@ export default function PetProfile() {
                   Sterilized
                 </Text>
                 <Flex align="center" gap={1.5}>
-                  <Icon as={LuCheck} boxSize={5} strokeWidth={3} color="#76CAAC" />
+                  <Icon as={pet.petSterilized ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={pet.petSterilized ? "#76CAAC" : "#F57676"} />
                   <Text color="#969696" fontSize="18px" fontWeight="400">
-                    Yes
+                    {pet.petSterilized ? "Yes" : "No"}
                   </Text>
                 </Flex>
               </Box>
@@ -259,7 +290,7 @@ export default function PetProfile() {
                   Special Care
                 </Text>
                 <Text color="#969696" fontSize="18px" fontWeight="400">
-                  None
+                  {pet.petSpecialCare || "None"}
                 </Text>
               </Box>
             </Flex>
@@ -272,16 +303,14 @@ export default function PetProfile() {
           </Text>
           <Box height="1px" bg="#C6E7F7" mb={4} />
           <Text color="#969696" fontSize="18px" fontWeight="400" lineHeight="1.7">
-            Lorem ipsum dolor sit amet consectetur. Consectetur sed velit tincidunt dolor. Vitae
-            consectetur purus laoreet gravida. Tincidunt non et quis sem aliquet justo. Eget faucibus
-            amet tortor congue lectus sed ullamcorper nisl.
+            {pet.note || "No additional notes."}
           </Text>
         </Box>
 
         <Box mt={8} boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" borderRadius="25px">
           <S2SAccordion
-            title="Pet’s Nature Personality"
-            content="Happy, calm, and gentle with people. Loves social interaction, playful activities, and kindness during daily care."
+            title="Pet's Nature Personality"
+            content={pet.petDetail || "No description available."}
             width="100%"
             px={{ base: 5, md: 10 }}
             py={{ base: 5, md: 8 }}
@@ -292,12 +321,6 @@ export default function PetProfile() {
             contentColor="#969696"
           />
         </Box>
-
-        <Flex justify="center" mt="64px">
-          <Button bg="#FFD387" color="White" borderRadius="full" px={10} py={6} fontSize="20px" fontWeight="600" _hover={{ bg: "#f5c76a" }} _active={{ bg: "#f0bd59" }}>
-            Pending Approval
-          </Button>
-        </Flex>
       </Box>
     </Box>
   );

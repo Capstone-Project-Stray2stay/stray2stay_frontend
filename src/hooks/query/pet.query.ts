@@ -5,6 +5,7 @@ import {
     petColorsAPI,
     registerPetAPI,
   getRandomPetsAPI,
+  getPetInfoAPI,
   searchPetsAPI,
   type PetSearchParams,
   type RandomPetResponseItem
@@ -110,6 +111,17 @@ export function useRandomPets() {
     isError,
     error,
   };
+}
+
+export function usePetInfo(pid: string | undefined) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["pets", "info", pid],
+    queryFn: () => getPetInfoAPI(pid as string),
+    enabled: !!pid,
+    retry: false,
+  })
+
+  return { pet: data, isLoading, isError }
 }
 
 export function useSearchPets(params: PetSearchParams) {

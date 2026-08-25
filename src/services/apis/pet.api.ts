@@ -137,6 +137,36 @@ export interface PetSearchResult {
   totalPages: number;
 }
 
+export interface PetInfoResponse {
+  pid: number;
+  petName: string;
+  petDetail: string;
+  petImageAddress: string[];
+  petPersonality: string[];
+  petSpecialCare: string | null;
+  petAgeGroup: string;
+  petGender: string;
+  petType: string;
+  petBreed: string;
+  petColor: string;
+  petSterilized: boolean;
+  petVaccination: string[];
+  petAddress: string;
+  petAddressLat: number;
+  petAddressLong: number;
+  status: string;
+  note: string;
+}
+
+/** Backed by GetPetInfo in the MySQL adapter. */
+export async function getPetInfoAPI(pid: string | number): Promise<PetInfoResponse> {
+  const res = await axiosInstance.get(`/pets/${pid}`);
+  if (res.status === 200) {
+    return res.data.petsInfo;
+  }
+  throw new Error("Failed to fetch pet info");
+}
+
 /** Backed by GetPetsInfo in the MySQL adapter — filters map to its pet_* enum columns. */
 export async function searchPetsAPI(params: PetSearchParams): Promise<PetSearchResult> {
   const query = new URLSearchParams({

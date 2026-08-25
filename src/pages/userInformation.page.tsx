@@ -74,7 +74,6 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
             lat = geocoded?.lat ?? 0;
             long = geocoded?.long ?? 0;
         }
-
         updateUserMutation.mutate(
             {
                 firstName: personalInfo.firstName,

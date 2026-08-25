@@ -36,10 +36,15 @@ export default function Adopt() {
 
     const changeCategory = (next: "dog" | "cat" | "all") => {
         setCategory(next);
-        // Breed (and by extension color, which cascades from it) is
-        // species-specific, so a species change invalidates both.
+        // All the structured filters are species-specific (breed/color
+        // cascade from species, and gender/ageGroup/location filter results
+        // that a new species selection invalidates), so a species change
+        // clears them rather than leaving stale filters applied.
         setBreed("");
         setColor("");
+        setGender("");
+        setAgeGroup("");
+        setLocation("");
         setPage(1);
     };
 
@@ -307,6 +312,7 @@ export default function Adopt() {
                                 petBreed={p.petBreed || "Mixed breed"}
                                 petGender={formatGender(p.petGender)}
                                 petLocation={p.petAddress || "Location unavailable"}
+                                onClick={() => navigate(`/pet-profile/${p.pid}`)}
                             />
                         ))}
                     </Grid>
