@@ -70,7 +70,7 @@ export const router = createBrowserRouter([
                                 element: <Adopt />,
                             },
                             {
-                                path: "/pet-profile",
+                                path: "/pet-profile/:pid",
                                 element: <PetProfile />,
                             },
                         ]

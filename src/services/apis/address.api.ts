@@ -57,6 +57,7 @@ export async function getThaiSubDistrictsAPI() {
 export async function geocodeAddressAPI(address: string): Promise<{ lat: number; long: number } | null> {
     const res = await axios.get<{ lat: string; lon: string }[]>("https://nominatim.openstreetmap.org/search", {
         params: { format: "json", limit: 1, q: address, countrycodes: "th" },
+        timeout: 5000,
     });
 
     const [match] = res.data;
