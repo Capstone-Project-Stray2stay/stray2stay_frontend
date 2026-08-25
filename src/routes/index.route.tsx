@@ -4,6 +4,7 @@ import Login from "../pages/login.page";
 import Register from "../pages/register.page";
 import Home from "../pages/home.page";
 import Adopt from "../pages/adopt.page";
+import PetProfile from "../pages/petProfile";
 import NotFound from "../pages/notFound.page";
 import Profile from "../pages/profile.page";
 import Diary from "../pages/diary.page";
@@ -27,9 +28,6 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
             {
-                // Forces any signed-in account that hasn't completed setup
-                // (useNewUserStatus() reports new) back to /user-information,
-                // no matter which route under MainLayout it tries to reach.
                 element: <NewUserRedirect />,
                 children: [
                     {
@@ -59,7 +57,15 @@ export const router = createBrowserRouter([
                                 // One-time setup for a newly registered account.
                                 path: "/user-information",
                                 element: <UserInformation />,
-                            }
+                            },
+                            {
+                                path: "/adopt",
+                                element: <Adopt />,
+                            },
+                            {
+                                path: "/pet-profile",
+                                element: <PetProfile />,
+                            },
                         ]
                     }
                 ]
