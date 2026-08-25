@@ -6,22 +6,28 @@ import { S2SChip, S2SCheckbox, S2SDropDown, S2SInput } from "../../components/S2
 import { ageGroupOptions, genderOptions } from "../../utils/petOptions.util";
 import DetailField, { DetailSection } from "./detailField.component";
 import { detailDropDownStyle, detailInputStyle } from "./detailField.style";
+import PetLocationSection from "./petLocationSection.component";
 import { PERSONALITY_OPTIONS } from "./personalityOptions";
-import { VACCINE_OPTIONS, type PetType, type RehomeDraft } from "./rehome.type";
+import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "./rehome.type";
 
 /** Options for the breed/color dropdowns come back as plain strings. */
 const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
+/**
+ * The whole pet-details form. Typed on PetDetailsDraft rather than RehomeDraft
+ * so both the wizard's step 3 and the Edit Pet's Profile page can drive it —
+ * the two differ only in how they store photos, which this form never touches.
+ */
 export default function Step3Details({
     draft,
     breeds,
     colors,
     onChange,
 }: {
-    draft: RehomeDraft;
+    draft: PetDetailsDraft;
     breeds: string[];
     colors: string[];
-    onChange: (patch: Partial<RehomeDraft>) => void;
+    onChange: (patch: Partial<PetDetailsDraft>) => void;
 }) {
     const [customPersonality, setCustomPersonality] = useState("");
     const [isAddingPersonality, setIsAddingPersonality] = useState(false);
@@ -170,7 +176,6 @@ export default function Step3Details({
                     ) : (
                         <Flex
                             as="button"
-                            type="button"
                             align="center"
                             justify="center"
                             gap="6px"
@@ -190,6 +195,12 @@ export default function Step3Details({
                     )}
                 </Flex>
             </DetailSection>
+
+            {/* ---------------- Pet's Location ---------------- */}
+            <PetLocationSection
+                value={draft.location}
+                onChange={(patch) => onChange({ location: { ...draft.location, ...patch } })}
+            />
 
             {/* ---------------- Health & Conditions ---------------- */}
             <DetailSection title="Health & Conditions">

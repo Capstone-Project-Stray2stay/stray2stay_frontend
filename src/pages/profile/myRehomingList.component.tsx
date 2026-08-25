@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Flex, Icon, Text, VStack } from "@chakra-ui/react";
 import { LuChevronDown, LuChevronUp, LuPencil, LuPhone, LuTrash2 } from "react-icons/lu";
 
 import RoundIconButton from "./roundIconButton.component";
+import ScreeningAnswersModal from "./screeningAnswersModal.component";
 import type { RehomingInterest, RehomingPet } from "./profile.type";
 
 /** Outlined pill button — 38px tall, colour drives the ring only. */
@@ -42,6 +44,8 @@ function PillButton({
 }
 
 function InterestRow({ interest }: { interest: RehomingInterest }) {
+    const [showAnswers, setShowAnswers] = useState(false);
+
     return (
         <Flex justify="space-between" align="center" gap="24px" wrap="wrap" w="100%">
             <Flex align="center" gap="32px">
@@ -63,18 +67,32 @@ function InterestRow({ interest }: { interest: RehomingInterest }) {
             </Flex>
 
             <Flex align="center" gap="16px" wrap="wrap">
-                {/* TODO: open the screening answers. GET /pets/:pid/screening-answer
-                    exists but is registered as GET while its handler parses a
-                    request body, so it can't be called as-is. */}
-                <PillButton label="View Screening Answers" borderColor="Blue" width="276px" />
+                {/* TODO: fetch on open instead of reading the mock's inline copy.
+                    GET /pets/:pid/screening-answer takes the request's rehomeId,
+                    but is registered as GET while its handler parses a request
+                    body, so it can't be called as-is. */}
+                <PillButton
+                    label="View Screening Answers"
+                    borderColor="Blue"
+                    width="276px"
+                    onClick={() => setShowAnswers(true)}
+                />
                 {/* TODO: POST /pets/:pid/select-adopter once this page is wired up. */}
                 <PillButton label="Accept" borderColor="GreenBorder" width="115px" />
             </Flex>
+
+            <ScreeningAnswersModal
+                isOpen={showAnswers}
+                adopterName={interest.name}
+                answers={interest.answers}
+                onClose={() => setShowAnswers(false)}
+            />
         </Flex>
     );
 }
 
 function RehomingRow({ pet }: { pet: RehomingPet }) {
+    const navigate = useNavigate();
     const [expanded, setExpanded] = useState(false);
 
     return (
@@ -99,8 +117,14 @@ function RehomingRow({ pet }: { pet: RehomingPet }) {
                 </Flex>
 
                 <Flex align="center" gap="16px">
-                    {/* TODO: no PUT /pets/:pid route exists yet. */}
-                    <RoundIconButton icon={LuPencil} ariaLabel={`Edit ${pet.name}`} color="Blue" />
+                    {/* The form is built; saving it still needs PUT /pets/:pid,
+                        so the edit page reads mock data — see mockEditPet.ts. */}
+                    <RoundIconButton
+                        icon={LuPencil}
+                        ariaLabel={`Edit ${pet.name}`}
+                        color="Blue"
+                        onClick={() => navigate(`/rehome/${pet.id}/edit`)}
+                    />
                     {/* TODO: no DELETE /pets/:pid route exists yet. */}
                     <RoundIconButton
                         icon={LuTrash2}

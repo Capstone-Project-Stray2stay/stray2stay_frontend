@@ -7,16 +7,20 @@ export interface ResolvedLocation {
 }
 
 /**
- * TODO: delete this and the `!hasLocation` branch below once the "Pet's
- * Location" section is built.
+ * Last-resort stand-in, Bangkok centroid.
  *
- * The backend marks petAddress/petAddressLat/petAddressLong as `required` and
- * go-validator rejects both "" and 0, so a submit cannot succeed without a
- * stand-in. Bangkok centroid.
+ * The "Pet's Location" section now exists (petLocationSection.component.tsx)
+ * and missingFields() refuses to submit without it, so this should never be
+ * reached in practice. It stays because the backend marks
+ * petAddress/petAddressLat/petAddressLong as `required` and go-validator
+ * rejects both "" and 0 — sending nothing fails the request outright.
  *
- * While this is in use every registered pet gets the same coordinates, which
- * feeds the Adopt page's distance sorting — fine for testing, wrong for real
- * data.
+ * If it ever does fire, the pet lands on Bangkok's coordinates and sorts wrong
+ * on the Adopt page's distance ordering.
+ *
+ * TODO: drop this once the sub-districts with null coordinates (~4% of the
+ * dataset) are covered by geocodeAddressAPI at submit time, the way
+ * userInformation.page.tsx's handleFinish does it.
  */
 const PLACEHOLDER: ResolvedLocation = {
     address: "Bangkok, Thailand",

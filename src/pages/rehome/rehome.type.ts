@@ -1,6 +1,6 @@
 export type PetType = "dog" | "cat";
 
-/** Filled in by the "Pet's Location" section, which is not built yet. */
+/** Filled in by the "Pet's Location" section (petLocationSection.component.tsx). */
 export interface RehomeLocation {
     state: string;
     district: string;
@@ -10,17 +10,20 @@ export interface RehomeLocation {
     long: number | null;
 }
 
-/** Everything the 3-step Register a Pet wizard collects before it is submitted. */
-export interface RehomeDraft {
-    petType: PetType | null;
-    /** All photos kept for the listing. Capped at MAX_PHOTOS. */
-    photos: File[];
-    /** The subset of `photos` sent to the AI classifier. Capped at MAX_AI_PHOTOS. */
-    aiPhotos: File[];
-    /** Breed reported by the AI classifier, or null if it was skipped or failed. */
-    detectedBreed: string | null;
+/**
+ * One photo in a form. The wizard only ever holds freshly picked `File`s, but
+ * the Edit page starts out with photos already on the server, which are just
+ * URLs — PhotoPicker handles both, and only builds (and revokes) object URLs
+ * for the `File` half.
+ */
+export type PetPhoto = File | string;
 
-    // Step 3 — Fill in Details
+/**
+ * Every field Step3Details edits. Split out of RehomeDraft so the Edit page can
+ * share that whole form while storing its photos differently.
+ */
+export interface PetDetailsDraft {
+    petType: PetType | null;
     name: string;
     breed: string;
     color: string;
@@ -33,6 +36,25 @@ export interface RehomeDraft {
     specialCare: string[];
     note: string;
     location: RehomeLocation;
+}
+
+/** Everything the 3-step Register a Pet wizard collects before it is submitted. */
+export interface RehomeDraft extends PetDetailsDraft {
+    /** All photos kept for the listing. Capped at MAX_PHOTOS. */
+    photos: File[];
+    /** The subset of `photos` sent to the AI classifier. Capped at MAX_AI_PHOTOS. */
+    aiPhotos: File[];
+    /** Breed reported by the AI classifier, or null if it was skipped or failed. */
+    detectedBreed: string | null;
+}
+
+/**
+ * What the Edit Pet's Profile page holds. Same fields as the wizard collects,
+ * minus the AI-classifier bookkeeping (the breed is already decided by then),
+ * and with photos that may already live on the server.
+ */
+export interface EditPetDraft extends PetDetailsDraft {
+    photos: PetPhoto[];
 }
 
 export const emptyRehomeLocation: RehomeLocation = {
