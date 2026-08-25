@@ -9,6 +9,7 @@ import NotFound from "../pages/notFound.page";
 import Profile from "../pages/profile.page";
 import Diary from "../pages/diary.page";
 import Rehome from "../pages/rehome.page";
+import EditPet from "../pages/editPet.page";
 import UserInformation from "../pages/userInformation.page";
 
 import MainLayout from "../layouts/main.layout";
@@ -52,6 +53,12 @@ export const router = createBrowserRouter([
                             {
                                 path: "/rehome",
                                 element: <Rehome />,
+                            },
+                            {
+                                // Nested under /rehome so the sidebar keeps
+                                // highlighting Rehome — see getActiveNavKey.
+                                path: "/rehome/:petId/edit",
+                                element: <EditPet />,
                             },
                             {
                                 // One-time setup for a newly registered account.

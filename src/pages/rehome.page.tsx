@@ -11,6 +11,7 @@ import Step2Photos from "./rehome/step2Photos.component";
 import Step3Details from "./rehome/step3Details.component";
 import SelectAiPhotosModal from "./rehome/selectAiPhotosModal.component";
 import { emptyRehomeDraft, MAX_AI_PHOTOS, type RehomeDraft } from "./rehome/rehome.type";
+import { missingFields } from "./rehome/validation";
 
 const STEPS = ["Select Species", "Upload Photos", "Fill in Details"];
 
@@ -99,26 +100,8 @@ export default function Rehome() {
         );
     };
 
-    /**
-     * The backend answers a rejected payload with a generic "Incorrect request
-     * format", so checking here is the only way the user learns what's wrong.
-     */
-    const missingFields = () => {
-        const missing: string[] = [];
-        // Name is deliberately not required — plenty of strays being rehomed
-        // have never been named. registerPetAPI substitutes a fallback.
-        if (draft.breed === "") missing.push("Breed");
-        if (draft.color === "") missing.push("Color");
-        if (draft.ageGroup === "") missing.push("Age Group");
-        if (draft.gender === "") missing.push("Gender");
-        if (draft.personality.length === 0) missing.push("at least one Personality");
-        if (draft.vaccinations.length === 0) missing.push("at least one Vaccination");
-        if (draft.sterilized === null) missing.push("Sterilized");
-        return missing;
-    };
-
     const handleSubmit = () => {
-        const missing = missingFields();
+        const missing = missingFields(draft);
         if (missing.length > 0) {
             setFormError(`Please fill in: ${missing.join(", ")}.`);
             return;
