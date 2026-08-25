@@ -52,3 +52,19 @@ export async function getUserInfoAPI() {
     }
     throw new Error("Failed to fetch user info");
 }
+
+export async function updateUserImageAPI(image: File) {
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const res = await axiosInstance.put("/user/image", formData, {
+        // Content-Type is deliberately left unset so the browser adds the
+        // multipart boundary — setting it by hand produces an unparseable body.
+        timeout: 30000,
+    });
+
+    if (res.status === 200) {
+        return res;
+    }
+    throw new Error("Failed to update user image");
+}

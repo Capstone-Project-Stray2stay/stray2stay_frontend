@@ -56,65 +56,68 @@ export default function Register() {
     }
 
     return (
-        <Box maxW="sm" mx="auto" mt={20} px="25px">
-            <Heading mb={6} size="lg" color="Grey">
-                Sign up
-            </Heading>
+        <Box w="100%" h="100vh" bgGradient="BlueYellow">
 
-            <form onSubmit={handleSubmit}>
-                <VStack gap={4} mb={6}>
-                    <S2SInput
-                        placeholder="First name"
-                        value={form.Firstname}
-                        onChange={handleChange("Firstname")}
-                    />
-                    <S2SInput
-                        placeholder="Last name"
-                        value={form.Lastname}
-                        onChange={handleChange("Lastname")}
-                    />
-                    <S2SInput
-                        placeholder="Email"
-                        type="email"
-                        value={form.Email}
-                        onChange={handleChange("Email")}
-                    />
-                    <S2SInput
-                        placeholder="Password"
-                        type="password"
-                        value={form.Password}
-                        onChange={handleChange("Password")}
-                    />
-                    <S2SInput
-                        placeholder="Confirm password"
-                        type="password"
-                        value={form.ConfirmPassword}
-                        onChange={handleChange("ConfirmPassword")}
-                    />
-                    {error && (
-                        <Text color="red.500" fontSize="sm">
-                            {error}
-                        </Text>
-                    )}
-                    <S2SButton type="submit" text="Sign up" bgColor="Blue" width="full" loading={isPending} />
-                </VStack>
-            </form>
+            <Box maxW="sm" mx="auto" pt={20} px="25px">
+                <Heading mb={6} size="lg" color="Grey">
+                    Sign up
+                </Heading>
 
-            <Flex justify="center" align="center" gap={1}>
-                <Text fontSize="sm" color="LightGrey">
-                    Already have an account?{" "}
-                </Text>
-                <Link to="/login">
-                    <Text
-                        fontSize="sm"
-                        color="Blue"
-                        fontWeight="medium"
-                        _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}
-                    >
-                        Log in
+                <form onSubmit={handleSubmit}>
+                    <VStack gap={4} mb={6}>
+                        <S2SInput
+                            placeholder="First name"
+                            value={form.Firstname}
+                            onChange={handleChange("Firstname")}
+                        />
+                        <S2SInput
+                            placeholder="Last name"
+                            value={form.Lastname}
+                            onChange={handleChange("Lastname")}
+                        />
+                        <S2SInput
+                            placeholder="Email"
+                            type="email"
+                            value={form.Email}
+                            onChange={handleChange("Email")}
+                        />
+                        <S2SInput
+                            placeholder="Password"
+                            type="password"
+                            value={form.Password}
+                            onChange={handleChange("Password")}
+                        />
+                        <S2SInput
+                            placeholder="Confirm password"
+                            type="password"
+                            value={form.ConfirmPassword}
+                            onChange={handleChange("ConfirmPassword")}
+                        />
+                        {error && (
+                            <Text color="red.500" fontSize="sm">
+                                {error}
+                            </Text>
+                        )}
+                        <S2SButton type="submit" text="Sign up" bgColor="Blue" width="full" loading={isPending} />
+                    </VStack>
+                </form>
+
+                <Flex justify="center" align="center" gap={1}>
+                    <Text fontSize="sm" color="LightGrey">
+                        Already have an account?{" "}
                     </Text>
-                </Link>
-            </Flex>
+                    <Link to="/login">
+                        <Text
+                            fontSize="sm"
+                            color="BlueText"
+                            fontWeight="medium"
+                            _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}
+                        >
+                            Log in
+                        </Text>
+                    </Link>
+                </Flex>
+            </Box>
         </Box>
     );
 }

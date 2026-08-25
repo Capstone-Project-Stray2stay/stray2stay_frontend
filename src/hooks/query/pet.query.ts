@@ -1,10 +1,12 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import {
     classifyPetAPI,
     petBreedsAPI,
     petColorsAPI,
     registerPetAPI,
   getRandomPetsAPI,
+  searchPetsAPI,
+  type PetSearchParams,
   type RandomPetResponseItem
 } from "../../services/apis/pet.api"
 import type { PetType, RehomeDraft } from "../../pages/rehome/rehome.type"
@@ -29,6 +31,45 @@ export function useBreeds(petType: PetType | null) {
         retry: false,
     })
     return { breeds: data ?? [], loading: isLoading }
+}
+
+export interface BreedFilterOption {
+    value: string
+    label: string
+    species: PetType
+}
+
+/**
+ * Breed options for the Adopt page's filter, where the species picker also
+ * allows "all". useBreeds needs one concrete species, so this fetches dog and
+ * cat breeds separately (skipping whichever one isn't relevant) and merges
+ * them when no species is picked, tagging each with its species so a later
+ * usePetColors(species, breed) call knows which one to use.
+ */
+export function useAdoptBreeds(category: PetType | "all") {
+    const dogQuery = useBreeds(category !== "cat" ? "dog" : null)
+    const catQuery = useBreeds(category !== "dog" ? "cat" : null)
+
+    const dogItems: BreedFilterOption[] = dogQuery.breeds.map((b) => ({ value: b, label: b, species: "dog" }))
+    const catItems: BreedFilterOption[] = catQuery.breeds.map((b) => ({ value: b, label: b, species: "cat" }))
+
+    let breedItems: BreedFilterOption[]
+    if (category === "dog") breedItems = dogItems
+    else if (category === "cat") breedItems = catItems
+    else {
+        // "All": union of both species' breeds, deduped by name. If a breed
+        // name happens to exist for both dog and cat, whichever came first
+        // wins the species tag used for the color lookup — an inherent
+        // limitation of a flat breed list when no species is picked.
+        const seen = new Set<string>()
+        breedItems = [...dogItems, ...catItems].filter((item) => {
+            if (seen.has(item.value)) return false
+            seen.add(item.value)
+            return true
+        })
+    }
+
+    return { breedItems, loading: dogQuery.loading || catQuery.loading }
 }
 
 export function usePetColors(petType: PetType | null, petBreed: string) {
@@ -69,4 +110,24 @@ export function useRandomPets() {
     isError,
     error,
   };
+}
+
+export function useSearchPets(params: PetSearchParams) {
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["pets", "search", params],
+    queryFn: () => searchPetsAPI(params),
+    // Keeps the current page's cards on screen while the next page loads,
+    // instead of flashing empty/skeleton state on every click.
+    placeholderData: keepPreviousData,
+    retry: 1,
+  })
+
+  return {
+    pets: data?.petsInfo ?? [],
+    totalPages: data?.totalPages ?? 1,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+  }
 }

@@ -22,3 +22,11 @@ export const ageGroupOptions = [
     { value: "MATURE", label: "Mature" },
     { value: "SENIOR", label: "Senior" },
 ];
+
+/** Normalizes pet_gender ("MALE"/"FEMALE", any case) into the display label S2SPetCard expects. */
+export function formatGender(gender: string): string {
+    const normalized = gender?.toLowerCase();
+    if (normalized === "male") return "Male";
+    if (normalized === "female") return "Female";
+    return gender || "Unknown";
+}

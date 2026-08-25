@@ -57,9 +57,16 @@ function AddressSelect({
 export default function PersonalInfoFields({
     value,
     onChange,
+    disabled = false,
+    headerAction,
 }: {
     value: PersonalInfoDraft;
     onChange: (patch: Partial<PersonalInfoDraft>) => void;
+    /** Read-only mode — the Profile page uses this while not in edit mode; the
+     * User Information page never passes it, so it stays always-editable there. */
+    disabled?: boolean;
+    /** Slot next to the heading — the Profile page's edit/save toggle lives here. */
+    headerAction?: React.ReactNode;
 }) {
     const { provinces, districts, subDistricts } = useThaiAddressData();
 
@@ -89,9 +96,12 @@ export default function PersonalInfoFields({
 
     return (
         <VStack align="stretch" gap="16px" w="100%" minW={0}>
-            <Text fontSize={{base: "18px", md: "24px"}} fontWeight="600" color="Grey">
-                Personal Information
-            </Text>
+            <Flex align="center" justify="space-between">
+                <Text fontSize={{base: "18px", md: "24px"}} fontWeight="600" color="Grey">
+                    Personal Information
+                </Text>
+                {headerAction}
+            </Flex>
 
             <VStack align="stretch" gap="12px" w="100%">
                 <ProfileField label="FirstName">
@@ -99,6 +109,7 @@ export default function PersonalInfoFields({
                         {...detailInputStyle}
                         value={value.firstName}
                         onChange={(e) => onChange({ firstName: e.target.value })}
+                        disabled={disabled}
                     />
                 </ProfileField>
 
@@ -107,6 +118,7 @@ export default function PersonalInfoFields({
                         {...detailInputStyle}
                         value={value.lastName}
                         onChange={(e) => onChange({ lastName: e.target.value })}
+                        disabled={disabled}
                     />
                 </ProfileField>
 
@@ -116,6 +128,7 @@ export default function PersonalInfoFields({
                         type="tel"
                         value={value.phone}
                         onChange={(e) => onChange({ phone: e.target.value })}
+                        disabled={disabled}
                     />
                 </ProfileField>
 
@@ -125,6 +138,7 @@ export default function PersonalInfoFields({
                             label="State"
                             data={provinceItems}
                             value={value.state}
+                            disabled={disabled}
                             onValueChange={(state) =>
                                 onChange({ state, district: "", subDistrict: "", lat: null, long: null })
                             }
@@ -133,7 +147,7 @@ export default function PersonalInfoFields({
                             label="District"
                             data={districtItems}
                             value={value.district}
-                            disabled={value.state === ""}
+                            disabled={disabled || value.state === ""}
                             onValueChange={(district) =>
                                 onChange({ district, subDistrict: "", lat: null, long: null })
                             }
@@ -142,7 +156,7 @@ export default function PersonalInfoFields({
                             label="Sub District"
                             data={subDistrictItems}
                             value={value.subDistrict}
-                            disabled={value.district === ""}
+                            disabled={disabled || value.district === ""}
                             onValueChange={(subDistrict) => {
                                 // Comes with real coordinates for ~96% of sub-districts; the
                                 // rest fall back to geocoding the address on submit (see
@@ -161,6 +175,7 @@ export default function PersonalInfoFields({
                                     {...detailInputStyle}
                                     value={value.street}
                                     onChange={(e) => onChange({ street: e.target.value })}
+                                    disabled={disabled}
                                 />
                             </ProfileField>
                         </Box>

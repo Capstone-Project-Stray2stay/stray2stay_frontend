@@ -17,10 +17,12 @@ function SpeciesColumn({
     species,
     value,
     onChange,
+    disabled,
 }: {
     species: Species;
     value: PetPreferenceDraft;
     onChange: (patch: Partial<PetPreferenceDraft>) => void;
+    disabled?: boolean;
 }) {
     const isDog = species === "dog";
 
@@ -85,6 +87,7 @@ function SpeciesColumn({
                         // Colors are breed-specific, so a breed change
                         // invalidates any colour already picked.
                         onValueChange={(breed) => onChange({ breed, color: "" })}
+                        disabled={disabled}
                     />
                 </ProfileField>
                 <ProfileField label="Color" {...LABEL}>
@@ -95,6 +98,7 @@ function SpeciesColumn({
                         data={colorItems}
                         value={value.color}
                         onValueChange={(color) => onChange({ color })}
+                        disabled={disabled}
                     />
                 </ProfileField>
                 <ProfileField label="Age Group" {...LABEL}>
@@ -104,6 +108,7 @@ function SpeciesColumn({
                         data={ageGroupOptions}
                         value={value.ageGroup}
                         onValueChange={(ageGroup) => onChange({ ageGroup })}
+                        disabled={disabled}
                     />
                 </ProfileField>
                 <ProfileField label="Gender" {...LABEL}>
@@ -113,6 +118,7 @@ function SpeciesColumn({
                         data={genderOptions}
                         value={value.gender}
                         onValueChange={(gender) => onChange({ gender })}
+                        disabled={disabled}
                     />
                 </ProfileField>
             </VStack>
@@ -129,21 +135,31 @@ export default function PetPreferencesFields({
     cat,
     onDogChange,
     onCatChange,
+    disabled = false,
+    headerAction,
 }: {
     dog: PetPreferenceDraft;
     cat: PetPreferenceDraft;
     onDogChange: (patch: Partial<PetPreferenceDraft>) => void;
     onCatChange: (patch: Partial<PetPreferenceDraft>) => void;
+    /** Read-only mode — the Profile page uses this while not in edit mode; the
+     * User Information page never passes it, so it stays always-editable there. */
+    disabled?: boolean;
+    /** Slot next to the heading — the Profile page's edit/save toggle lives here. */
+    headerAction?: React.ReactNode;
 }) {
     return (
         <VStack align="stretch" gap="16px" w="100%" minW={0}>
-            <Text fontSize="24px" fontWeight="600" color="Grey">
-                Pet Preferences
-            </Text>
+            <Flex align="center" justify="space-between">
+                <Text fontSize="24px" fontWeight="600" color="Grey">
+                    Pet Preferences
+                </Text>
+                {headerAction}
+            </Flex>
 
             <Flex gap="32px" wrap="wrap" justify="space-between" w="100%">
-                <SpeciesColumn species="dog" value={dog} onChange={onDogChange} />
-                <SpeciesColumn species="cat" value={cat} onChange={onCatChange} />
+                <SpeciesColumn species="dog" value={dog} onChange={onDogChange} disabled={disabled} />
+                <SpeciesColumn species="cat" value={cat} onChange={onCatChange} disabled={disabled} />
             </Flex>
         </VStack>
     );

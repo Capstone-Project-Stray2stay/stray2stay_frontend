@@ -52,9 +52,11 @@ export default function S2SDropDown({
                     h={height}
                     borderColor={borderColor}
                     bg={bg}
+                    // Same fix as S2SInput: don't let Chakra's default disabled
+                    // 50% opacity wash the selected value's text out.
+                    _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed" }}
                 />
                 <Combobox.IndicatorGroup>
-                    <Combobox.ClearTrigger />
                     <Combobox.Trigger />
                 </Combobox.IndicatorGroup>
             </Combobox.Control>
