@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Avatar, Box, Circle, Flex, Icon, Text, VStack } from "@chakra-ui/react";
 import { LuPencil, LuUser } from "react-icons/lu";
 import { MdPets } from "react-icons/md";
@@ -39,14 +40,25 @@ function MenuItem({
 export default function ProfileSummaryCard({
     name,
     imageURL,
+    onImageChange,
     activeTab,
     onTabChange,
 }: {
     name: string;
     imageURL: string;
+    onImageChange: (file: File) => void;
     activeTab: InfoTab;
     onTabChange: (tab: InfoTab) => void;
 }) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) onImageChange(file);
+        // Reset so picking the same file again still fires onChange.
+        e.target.value = "";
+    };
+
     return (
         <VStack
             bg="white"
@@ -63,9 +75,16 @@ export default function ProfileSummaryCard({
                     <Avatar.Fallback name={name} fontSize={"36px"} />
                     <Avatar.Image src={imageURL} />
                 </Avatar.Root>
-                {/* TODO: open a file picker and upload once an avatar endpoint
-                    exists — the backend only reads user_imageAddress today. */}
+                <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    ref={fileInputRef}
+                    onChange={handleFileSelected}
+                />
                 <Circle
+                    as="button"
+                    onClick={() => fileInputRef.current?.click()}
                     position="absolute"
                     right={{base: "-6px", md: "6px"}}
                     bottom={{base: "-6px", md: "6px"}}
@@ -74,6 +93,7 @@ export default function ProfileSummaryCard({
                     color="white"
                     borderWidth="2px"
                     borderColor="white"
+                    cursor="pointer"
                 >
                     <Icon as={LuPencil} boxSize="14px" />
                 </Circle>

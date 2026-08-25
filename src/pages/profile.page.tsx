@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Box, Flex, VStack } from "@chakra-ui/react";
 
 import { S2SPageTitle } from "../components/S2S.components";
-import { useUserInfo } from "../hooks/query/user.query";
+import { useUpdateUser, useUpdateUserImage, useUserInfo } from "../hooks/query/user.query";
+import { geocodeAddressAPI } from "../services/apis/address.api";
 
+import { joinAddress, joinAddressForGeocode } from "./profile/address.util";
 import { mockAdoptedPets, mockRehomingPets } from "./profile/mockProfile";
 import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "./profile/profile.type";
 import type {
@@ -26,7 +28,7 @@ import MyAdoptionsList from "./profile/myAdoptionsList.component";
  * in after the fact via an effect.
  */
 export default function Profile() {
-    const { personalInfo, dogPreference, catPreference, loading } = useUserInfo();
+    const { personalInfo, dogPreference, catPreference, imageURL, loading } = useUserInfo();
 
     if (loading) return <Box></Box>;
 
@@ -35,6 +37,7 @@ export default function Profile() {
             initialPersonalInfo={personalInfo ?? EMPTY_PERSONAL_INFO}
             initialDogPreference={dogPreference ?? EMPTY_PET_PREFERENCE}
             initialCatPreference={catPreference ?? EMPTY_PET_PREFERENCE}
+            initialImageURL={imageURL ?? ""}
         />
     );
 }
@@ -43,10 +46,12 @@ function ProfileContent({
     initialPersonalInfo,
     initialDogPreference,
     initialCatPreference,
+    initialImageURL,
 }: {
     initialPersonalInfo: PersonalInfoDraft;
     initialDogPreference: PetPreferenceDraft;
     initialCatPreference: PetPreferenceDraft;
+    initialImageURL: string;
 }) {
     // The two tab rows are independent: switching the list at the bottom must
     // not reset which form the left card is showing, or vice versa.
@@ -56,12 +61,74 @@ function ProfileContent({
     const [personalInfo, setPersonalInfo] = useState<PersonalInfoDraft>(initialPersonalInfo);
     const [dogPreference, setDogPreference] = useState<PetPreferenceDraft>(initialDogPreference);
     const [catPreference, setCatPreference] = useState<PetPreferenceDraft>(initialCatPreference);
+    const [imageURL, setImageURL] = useState<string>(initialImageURL);
 
-    // Both forms are kept mounted-by-value rather than saved: the mockups have
-    // no Save control, so edits live in this state until PUT /user/update is
-    // wired up.
     const patchPersonal = (patch: Partial<PersonalInfoDraft>) =>
         setPersonalInfo((current) => ({ ...current, ...patch }));
+
+    // Both tabs start read-only; each header's pencil button switches its own
+    // tab into edit mode and turns into a checkmark. PUT /user/update always
+    // takes the whole profile at once (not a partial patch), so both
+    // checkmarks submit via the same helper — the current draft of
+    // everything, personal info and both species' preferences together —
+    // and only differ in which tab's edit state they drop back out of on
+    // success.
+    const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+    const [isEditingPreferences, setIsEditingPreferences] = useState(false);
+    const [resolvingLocation, setResolvingLocation] = useState(false);
+    const updateUserMutation = useUpdateUser();
+
+    const handleSaveProfile = async (onSuccess: () => void) => {
+        const address = joinAddress(personalInfo);
+
+        // Same fallback as the User Information page's Finish: most picked
+        // sub-districts already carry coordinates, only the rest need a
+        // geocode call. Needed even when only Pet Preferences changed, since
+        // the backend requires non-zero lat/long on every update.
+        let { lat, long } = personalInfo;
+        if (lat === null || long === null) {
+            setResolvingLocation(true);
+            const geocoded = await geocodeAddressAPI(joinAddressForGeocode(personalInfo)).catch(() => null);
+            setResolvingLocation(false);
+            lat = geocoded?.lat ?? 0;
+            long = geocoded?.long ?? 0;
+        }
+
+        updateUserMutation.mutate(
+            {
+                firstName: personalInfo.firstName,
+                lastName: personalInfo.lastName,
+                phoneNumber: personalInfo.phone,
+                address,
+                addressLat: lat,
+                addressLong: long,
+                dogBreed: dogPreference.breed,
+                dogColor: dogPreference.color,
+                dogAgeGroup: dogPreference.ageGroup,
+                dogGender: dogPreference.gender,
+                catBreed: catPreference.breed,
+                catColor: catPreference.color,
+                catAgeGroup: catPreference.ageGroup,
+                catGender: catPreference.gender,
+            },
+            { onSuccess }
+        );
+    };
+
+    const updateUserImage = useUpdateUserImage();
+    const handleImageChange = async (file: File) => {
+        // Optimistic preview while the upload is in flight; replaced by the
+        // Cloudinary URL that GET /user/info returns once the mutation settles.
+        const previewURL = URL.createObjectURL(file);
+        setImageURL(previewURL);
+
+        try {
+            const res = await updateUserImage.mutateAsync(file);
+            setImageURL(res.data.imageAddress);
+        } finally {
+            URL.revokeObjectURL(previewURL);
+        }
+    };
 
     return (
         <Box width="100%" px={{ base: "30px", md: "9%"}}>
@@ -70,13 +137,21 @@ function ProfileContent({
                 <Flex gap="32px" width={"100%"} direction={{ base: "column", lg: "row" }}>
                     <ProfileSummaryCard
                         name={`${personalInfo.firstName} ${personalInfo.lastName}`.trim()}
-                        imageURL=""
+                        imageURL={imageURL}
+                        onImageChange={handleImageChange}
                         activeTab={infoTab}
                         onTabChange={setInfoTab}
                     />
 
                     {infoTab === "personal" ? (
-                        <PersonalInfoForm value={personalInfo} onChange={patchPersonal} />
+                        <PersonalInfoForm
+                            value={personalInfo}
+                            onChange={patchPersonal}
+                            isEditing={isEditingPersonal}
+                            saving={resolvingLocation || updateUserMutation.isPending}
+                            onToggleEdit={() => setIsEditingPersonal(true)}
+                            onSave={() => handleSaveProfile(() => setIsEditingPersonal(false))}
+                        />
                     ) : (
                         <PetPreferencesForm
                             dog={dogPreference}
@@ -87,6 +162,10 @@ function ProfileContent({
                             onCatChange={(patch) =>
                                 setCatPreference((current) => ({ ...current, ...patch }))
                             }
+                            isEditing={isEditingPreferences}
+                            saving={resolvingLocation || updateUserMutation.isPending}
+                            onToggleEdit={() => setIsEditingPreferences(true)}
+                            onSave={() => handleSaveProfile(() => setIsEditingPreferences(false))}
                         />
                     )}
                 </Flex>

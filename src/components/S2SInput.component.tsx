@@ -24,7 +24,8 @@ export default function S2SInput({
     return (
         <InputGroup
             startElement={startIcon}
-            endElement={endIcon}>
+            endElement={endIcon}
+        >
             <Input
                 placeholder={placeholder}
                 type={type}
@@ -37,6 +38,11 @@ export default function S2SInput({
                 borderRadius={borderRadius}
                 borderColor={borderColor}
                 _focus={{ borderColor: "Blue" }}
+                // Chakra's default disabled state dims the whole input to 50%
+                // opacity, which washes the text out — keep it fully readable
+                // (still Grey, not the placeholder's lighter tone) and rely on
+                // the not-allowed cursor for the disabled affordance instead.
+                _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed" }}
                 {...rest}
             />
         </InputGroup>

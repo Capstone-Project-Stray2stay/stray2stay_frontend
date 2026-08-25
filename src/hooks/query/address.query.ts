@@ -11,6 +11,18 @@ import {
 // the external dataset each session, never something we copy into our own DB.
 const REFERENCE_DATA_STALE_TIME = 24 * 60 * 60 * 1000;
 
+/** Just the province list — for callers (like the Adopt filter) that don't need districts/sub-districts too. */
+export function useThaiProvinces() {
+    const { data, isLoading } = useQuery({
+        queryKey: ["thaiProvinces"],
+        queryFn: getThaiProvincesAPI,
+        staleTime: REFERENCE_DATA_STALE_TIME,
+        retry: false,
+    })
+
+    return { provinces: data ?? [], loading: isLoading }
+}
+
 export function useThaiAddressData() {
     const provinces = useQuery({
         queryKey: ["thaiProvinces"],

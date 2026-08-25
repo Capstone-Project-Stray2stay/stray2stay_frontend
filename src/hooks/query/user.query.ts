@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { getUserInfoAPI, updateUserAPI } from "../../services/apis/user.api"
+import { getUserInfoAPI, updateUserAPI, updateUserImageAPI } from "../../services/apis/user.api"
 import type { UpdateUserPayload } from "../../services/apis/user.api"
 import { splitAddress } from "../../pages/profile/address.util"
 import type { PersonalInfoDraft, PetPreferenceDraft } from "../../pages/profile/profile.type"
@@ -11,7 +11,18 @@ export function useUpdateUser() {
     })
 }
 
-export function useUserInfo() {
+export function useUpdateUserImage() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (image: File) => updateUserImageAPI(image),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["userInfo"] })
+        },
+    })
+}
+
+export function useUserInfo(options?: { enabled?: boolean }) {
     const { data, isLoading } = useQuery({
         queryKey: ["userInfo"],
         queryFn: async () => {
@@ -19,6 +30,7 @@ export function useUserInfo() {
             return res.data.userData
         },
         retry: false,
+        enabled: options?.enabled ?? true,
     })
 
     const personalInfo: PersonalInfoDraft | undefined = data
@@ -53,5 +65,7 @@ export function useUserInfo() {
         }
         : undefined
 
-    return { personalInfo, dogPreference, catPreference, loading: isLoading }
+    const imageURL: string | null = data?.CoverImage ?? null
+
+    return { personalInfo, dogPreference, catPreference, imageURL, loading: isLoading }
 }

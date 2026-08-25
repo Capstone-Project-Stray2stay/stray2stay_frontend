@@ -3,18 +3,12 @@ import { FaCamera, FaHouse, FaPaw } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.components";
 import { useRandomPets } from "../hooks/query/pet.query";
+import { formatGender } from "../utils/petOptions.util";
 
 export default function Home() {
   const navigate = useNavigate();
   const { recommendedPets, isLoading, isError } = useRandomPets();
   const displayPets = recommendedPets.slice(0, 4);
-
-  const formatGender = (gender: string) => {
-    const normalized = gender?.toLowerCase();
-    if (normalized === "male") return "Male";
-    if (normalized === "female") return "Female";
-    return gender || "Unknown";
-  };
 
   return (
     <Box width="100%">

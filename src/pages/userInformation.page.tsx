@@ -103,11 +103,11 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
     };
 
     return (
-        <Box width={{ base: "100%", md: "80vw" }} pb="64px">
+        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%"}}>
             <S2SPageTitle title="User Information" />
 
             <Flex justify="center" w="100%">
-                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="596px">
+                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="628px">
                     <VStack gap="48px" align="stretch">
                         <PersonalInfoFields
                             value={personalInfo}

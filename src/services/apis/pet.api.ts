@@ -119,3 +119,44 @@ export async function getRandomPetsAPI(): Promise<RandomPetResponseItem[]> {
 
   throw new Error("Failed to fetch random pets");
 }
+
+export interface PetSearchParams {
+  page: number;
+  pageSize: number;
+  petType?: "dog" | "cat";
+  petGender?: string;
+  petAgeGroup?: string;
+  petBreed?: string;
+  petColor?: string;
+  petLocation?: string;
+}
+
+export interface PetSearchResult {
+  petsInfo: RandomPetResponseItem[];
+  totalCount: number;
+  totalPages: number;
+}
+
+/** Backed by GetPetsInfo in the MySQL adapter — filters map to its pet_* enum columns. */
+export async function searchPetsAPI(params: PetSearchParams): Promise<PetSearchResult> {
+  const query = new URLSearchParams({
+    page: String(params.page),
+    pageSize: String(params.pageSize),
+  });
+  if (params.petType) query.set("petType", params.petType);
+  if (params.petGender) query.set("petGender", params.petGender);
+  if (params.petAgeGroup) query.set("petAgeGroup", params.petAgeGroup);
+  if (params.petBreed) query.set("petBreed", params.petBreed);
+  if (params.petColor) query.set("petColor", params.petColor);
+  if (params.petLocation) query.set("petLocation", params.petLocation);
+
+  const res = await axiosInstance.get(`/pets?${query.toString()}`);
+  if (res.status === 200) {
+    return {
+      petsInfo: res.data.petsInfo ?? [],
+      totalCount: res.data.totalCount ?? 0,
+      totalPages: res.data.totalPages ?? 1,
+    };
+  }
+  throw new Error("Failed to fetch pets");
+}

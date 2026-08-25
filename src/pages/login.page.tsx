@@ -47,54 +47,56 @@ export default function Login() {
     };
 
     return (
-        <Box maxW="sm" mx="auto" mt={20} px="25px">
-            <Heading mb={6} size="lg" color="Grey">
-                Log in
-            </Heading>
-            <form onSubmit={handleSubmit}>
-                <VStack gap={4} mb={6}>
-                    <S2SInput
-                        placeholder="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <S2SInput
-                        placeholder="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    {error && <Text color="red.500" fontSize="sm">
-                        {error}
-                    </Text>}
-                    <S2SButton type="submit" text="Log in" bgColor="Blue" width="full" loading={isPending} />
-                </VStack>
-            </form>
+        <Box w="100%" h="100vh" bgGradient="BlueYellow">
+            <Box maxW="sm" mx="auto" pt={20} px="25px">
+                <Heading mb={6} size="lg" color="Grey">
+                    Log in
+                </Heading>
+                <form onSubmit={handleSubmit}>
+                    <VStack gap={4} mb={6}>
+                        <S2SInput
+                            placeholder="Email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <S2SInput
+                            placeholder="Password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        {error && <Text color="red.500" fontSize="sm">
+                            {error}
+                        </Text>}
+                        <S2SButton type="submit" text="Log in" bgColor="Blue" width="full" loading={isPending} />
+                    </VStack>
+                </form>
 
-            <Flex justify="center" align="center" mb={6} gap={1}>
-                <Text fontSize="sm" color="LightGrey">
-                    Don't have an account?{" "}
-                </Text>
-                <Link to="/register">
-                    <Text fontSize="sm" color="Blue" fontWeight="medium" _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}>
-                        Register
+                <Flex justify="center" align="center" mb={6} gap={1}>
+                    <Text fontSize="sm" color="LightGrey">
+                        Don't have an account?{" "}
                     </Text>
-                </Link>
-            </Flex>
+                    <Link to="/register">
+                        <Text fontSize="sm" color="BlueText" fontWeight="medium" _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}>
+                            Register
+                        </Text>
+                    </Link>
+                </Flex>
 
-            <HStack mb={6}>
-                <Separator flex="1" />
-                <Text fontSize="sm" color="Grey" whiteSpace="nowrap">
-                    or continue with Google
-                </Text>
-                <Separator flex="1" />
-            </HStack>
+                <HStack mb={6}>
+                    <Separator flex="1" />
+                    <Text fontSize="sm" color="Grey" whiteSpace="nowrap">
+                        or continue with Google
+                    </Text>
+                    <Separator flex="1" />
+                </HStack>
 
-            <Button onClick={handleGoogleLogin} w="full" variant="outline" rounded="full" _hover={{ bg: "grey.200" }}>
-                <FcGoogle size={20} />
-                Sign in with Google
-            </Button>
+                <Button onClick={handleGoogleLogin} w="full" bg="white" variant="outline" rounded="full" _hover={{ bg: "grey.200" }}>
+                    <FcGoogle size={20} />
+                    Sign in with Google
+                </Button>
+            </Box>
         </Box>
     );
 }
