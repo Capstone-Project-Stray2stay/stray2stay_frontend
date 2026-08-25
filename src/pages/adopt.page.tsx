@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Box, Drawer, Flex, Grid, Image, Portal, Text, VStack } from "@chakra-ui/react";
 import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
 import { LuFilter } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 import {
     S2SPageTitle,
@@ -22,6 +23,7 @@ import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOption
 const PAGE_SIZE = 16;
 
 export default function Adopt() {
+    const navigate = useNavigate();
     const [category, setCategory] = useState<"dog" | "cat" | "all">("all");
     const [keyword, setKeyword] = useState("");
     const [breed, setBreed] = useState("");
