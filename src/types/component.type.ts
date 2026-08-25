@@ -22,9 +22,9 @@ export interface S2SButtonType {
     text: string
     bgColor?: string
     variant?: "solid" | "outline"
-    height?: string
-    fontSize?: string
-    width?: string | Record<string, string>
+    height?: ResponsiveSpace
+    fontSize?: ResponsiveSpace
+    width?: ResponsiveSpace
     loading?: boolean
     disabled?: boolean
     onClick?: () => void
@@ -44,12 +44,13 @@ export interface S2SDropDownOption {
 
 export interface S2SDropDownType {
     placeholder: string
-    width: string
+    width: ResponsiveSpace
     data: S2SDropDownOption[]
     value?: string
     onValueChange?: (value: string) => void
     disabled?: boolean
-    height?: string
+    height?: ResponsiveSpace
+    fontSize?: ResponsiveSpace
     borderColor?: string
     bg?: string
 }

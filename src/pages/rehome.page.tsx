@@ -146,14 +146,14 @@ export default function Rehome() {
     };
 
     return (
-        <Box width={{ base: "100%", md: "80vw" }}>
+        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%" }}>
             <S2SPageTitle title="Register a Pet" />
 
-            <Flex justify="center" mt="64px" overflowX="auto">
+            <Flex justify="center" mt={{ base: "32px", md: "64px" }} overflowX="auto">
                 <S2SStepper steps={STEPS} current={step} />
             </Flex>
 
-            <Box maxW="736px" mx="auto" mt="80px">
+            <Box maxW="736px" mx="auto" mt={{ base: "40px", md: "80px" }}>
                 {step === 1 && (
                     <Step1Species
                         value={draft.petType}
@@ -188,24 +188,26 @@ export default function Rehome() {
 
                 {/* Back and Next share one space-between row; Back is absent on the
                     first step, matching the design's hidden Back button there. */}
-                <Flex justify="space-between" gap={4} mt="80px">
+                <Flex justify="space-between" gap={4} mt={{ base: "48px", md: "80px" }}>
                     {step > 1 ? (
                         <S2SButton
                             text="Back"
                             variant="outline"
-                            width="134.39px"
-                            height="44.80px"
-                            fontSize="20px"
+                            width={{ base: "106.94px", md: "134.39px" }}
+                            height={{ base: "35.65px", md: "44.80px" }}
+                            fontSize={{ base: "14.32px", md: "20px" }}
                             onClick={() => setStep((s) => s - 1)}
                         />
                     ) : (
                         <Box />
                     )}
                     <S2SButton
-                        text="Next"
-                        width="134.39px"
-                        height="44.80px"
-                        fontSize="20px"
+                        // Step 3 submits rather than advancing, which is what
+                        // the mobile design's label reflects.
+                        text={step === STEPS.length ? "Finish" : "Next"}
+                        width={{ base: "106.94px", md: "134.39px" }}
+                        height={{ base: "35.65px", md: "44.80px" }}
+                        fontSize={{ base: "14.32px", md: "20px" }}
                         disabled={!canGoNext}
                         loading={classify.isPending || register.isPending}
                         onClick={handleNext}

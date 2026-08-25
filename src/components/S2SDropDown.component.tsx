@@ -16,6 +16,7 @@ export default function S2SDropDown({
     onValueChange,
     disabled,
     height,
+    fontSize,
     borderColor,
     bg="white",
 }: S2SDropDownType) {
@@ -50,6 +51,7 @@ export default function S2SDropDown({
                     placeholder={placeholder}
                     rounded="full"
                     h={height}
+                    fontSize={fontSize}
                     borderColor={borderColor}
                     bg={bg}
                     // Same fix as S2SInput: don't let Chakra's default disabled

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 
-/** One labelled field: 16px/500 GreyText label above the control. */
+/** One labelled field: the label sits above its control. */
 export default function DetailField({
     label,
     children,
@@ -10,8 +10,8 @@ export default function DetailField({
     children: ReactNode;
 }) {
     return (
-        <Flex direction="column" align="stretch" gap="6.52px" w="100%">
-            <Text fontSize="16px" fontWeight="500" color="GreyText">
+        <Flex direction="column" align="stretch" gap={{ base: "5.71px", md: "6.52px" }} w="100%">
+            <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyText">
                 {label}
             </Text>
             {children}
@@ -19,7 +19,11 @@ export default function DetailField({
     );
 }
 
-/** A section row: fixed 200px heading on the left, content on the right. */
+/**
+ * A section of the form. Desktop puts the heading in a fixed 200px column to
+ * the left of the fields; mobile stacks it above them, where there is no room
+ * for a side column.
+ */
 export function DetailSection({
     title,
     children,
@@ -28,11 +32,22 @@ export function DetailSection({
     children: ReactNode;
 }) {
     return (
-        <Flex align="flex-start" w="100%" gap="32px">
-            <Text w="200px" flexShrink={0} fontSize="20px" fontWeight="600" color="Grey">
+        <Flex
+            direction={{ base: "column", md: "row" }}
+            align={{ base: "stretch", md: "flex-start" }}
+            w="100%"
+            gap={{ base: "20px", md: "32px" }}
+        >
+            <Text
+                w={{ base: "auto", md: "200px" }}
+                flexShrink={0}
+                fontSize={{ base: "16px", md: "20px" }}
+                fontWeight="600"
+                color="Grey"
+            >
                 {title}
             </Text>
-            <Flex direction="column" align="stretch" flex="1 1 0" minW={0}>
+            <Flex direction="column" align="stretch" flex={{ base: "0 1 auto", md: "1 1 0" }} minW={0}>
                 {children}
             </Flex>
         </Flex>
