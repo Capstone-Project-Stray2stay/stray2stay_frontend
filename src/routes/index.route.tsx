@@ -8,9 +8,12 @@ import PetProfile from "../pages/petProfile";
 import NotFound from "../pages/notFound.page";
 import Profile from "../pages/profile.page";
 import Diary from "../pages/diary.page";
+import Rehome from "../pages/rehome.page";
+import UserInformation from "../pages/userInformation.page";
 
 import MainLayout from "../layouts/main.layout";
 import ProtectedRoute from "../middlewares/protectedRoute.middleware";
+import NewUserRedirect from "../middlewares/newUserRedirect.middleware";
 
 export const router = createBrowserRouter([
     {
@@ -25,27 +28,45 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
             {
-                path: "/",
-                element: <Home />,
-            },
-            {
-                path: "/adopt",
-                element: <Adopt />,
-            },
-            {
-                path: "/pet-profile",
-                element: <PetProfile />,
-            },
-            {
-                element: <ProtectedRoute />,
+                element: <NewUserRedirect />,
                 children: [
                     {
-                        path: "/profile",
-                        element: <Profile />,
+                        path: "/",
+                        element: <Home />,
                     },
                     {
-                        path: "/diary",
-                        element: <Diary />,
+                        path: "/adopt",
+                        element: <Adopt />,
+                    },
+                    {
+                        element: <ProtectedRoute />,
+                        children: [
+                            {
+                                path: "/profile",
+                                element: <Profile />,
+                            },
+                            {
+                                path: "/diary",
+                                element: <Diary />,
+                            },
+                            {
+                                path: "/rehome",
+                                element: <Rehome />,
+                            },
+                            {
+                                // One-time setup for a newly registered account.
+                                path: "/user-information",
+                                element: <UserInformation />,
+                            },
+                            {
+                                path: "/adopt",
+                                element: <Adopt />,
+                            },
+                            {
+                                path: "/pet-profile",
+                                element: <PetProfile />,
+                            },
+                        ]
                     }
                 ]
             }

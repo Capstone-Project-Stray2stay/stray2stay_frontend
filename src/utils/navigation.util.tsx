@@ -12,7 +12,22 @@ export const BASE_NAV_ITEMS = [
     { key: "profile", label: "Profile", icon: IoPerson, nav: "/profile" },
 ]
 
-export const AUTH_ONLY_KEYS = ["profile", "diary"]
+export const AUTH_ONLY_KEYS = ["profile", "diary", "rehome"]
+
+export function getActiveNavKey(
+    pathname: string,
+    items: Array<{ key: string; nav: string }>
+): string {
+    const exactMatch = items.find((item) => item.nav === pathname)
+    if (exactMatch) return exactMatch.key
+
+    const nestedMatch = items.find(
+        (item) => item.nav !== "/" && pathname.startsWith(`${item.nav}/`)
+    )
+    if (nestedMatch) return nestedMatch.key
+
+    return "home"
+}
 
 export function NavItem({ icon, label, active = false, onClick }: {
     icon: React.ElementType
@@ -25,7 +40,7 @@ export function NavItem({ icon, label, active = false, onClick }: {
             onClick={onClick}
             cursor="pointer"
             w="full"
-            px={{ base: 8, md: 5 }}
+            px={{ base: 8, md: 10, lg: 5 }}
             py={3}
             gap={3}
             position="relative"

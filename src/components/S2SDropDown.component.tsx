@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import {
     Combobox,
     Portal,
@@ -7,23 +8,51 @@ import {
 
 import type { S2SDropDownType } from "../types/component.type"
 
-export default function S2SDropDown({ placeholder, width, data }: S2SDropDownType) {
+export default function S2SDropDown({
+    placeholder,
+    width,
+    data,
+    value,
+    onValueChange,
+    disabled,
+    height,
+    borderColor,
+    bg="white",
+}: S2SDropDownType) {
     const { contains } = useFilter({ sensitivity: "base" })
 
-    const { collection, filter } = useListCollection({
+    const { collection, filter, set } = useListCollection({
         initialItems: data,
         filter: contains,
     })
+    useEffect(() => {
+        set(data)
+    }, [data, set])
+
+    const controlProps = onValueChange
+        ? {
+            value: value ? [value] : [],
+            onValueChange: (e: { value: string[] }) => onValueChange(e.value[0] ?? ""),
+        }
+        : {}
 
     return (
         <Combobox.Root
             collection={collection}
             onInputValueChange={(e) => filter(e.inputValue)}
+            openOnClick
+            disabled={disabled}
             width={width}
-            bg={"White"}
+            {...controlProps}
         >
             <Combobox.Control>
-                <Combobox.Input placeholder={placeholder} rounded="full" />
+                <Combobox.Input
+                    placeholder={placeholder}
+                    rounded="full"
+                    h={height}
+                    borderColor={borderColor}
+                    bg={bg}
+                />
                 <Combobox.IndicatorGroup>
                     <Combobox.ClearTrigger />
                     <Combobox.Trigger />
