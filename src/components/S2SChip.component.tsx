@@ -19,8 +19,10 @@ export default function S2SChip({
         bg={isActive ? "Blue" : "white"}
         color={isActive ? "white" : "Grey"}
         rounded="full"
-        px={4}
-        py={2}
+        // Tighter on a phone: the personality picker fits ~3 chips per row at
+        // these paddings instead of spilling one per line.
+        px={{ base: "12px", md: 4 }}
+        py={{ base: "6px", md: 2 }}
         borderWidth="1px"
         borderColor={isActive ? "LightBlue" : "Blue"}
         _hover={

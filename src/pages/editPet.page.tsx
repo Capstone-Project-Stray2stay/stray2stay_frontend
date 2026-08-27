@@ -66,16 +66,18 @@ function EditPetForm({ initialDraft }: { initialDraft: EditPetDraft }) {
     };
 
     return (
-        <Box width={{ base: "100%", md: "80vw" }}>
+        // The sidebar is hidden below lg, so on a phone the page is the whole
+        // viewport and has to supply its own side padding.
+        <Box width={{ base: "100%", md: "80vw" }} px={{ base: "30px", md: "0" }}>
             <S2SPageTitle title="Edit Pet's Profile" />
 
-            <Box maxW="736px" mx="auto" mt="64px">
+            <Box maxW="736px" mx="auto" mt={{ base: "32px", md: "64px" }}>
                 <PhotoPicker
                     photos={draft.photos}
                     onChange={(photos) => patchDraft({ photos })}
                 />
 
-                <Box mt="48px">
+                <Box mt={{ base: "32px", md: "48px" }}>
                     <Step3Details
                         draft={draft}
                         breeds={breeds}
@@ -90,20 +92,20 @@ function EditPetForm({ initialDraft }: { initialDraft: EditPetDraft }) {
                     </Text>
                 )}
 
-                <Flex justify="space-between" gap={4} mt="80px">
+                <Flex justify="space-between" gap={4} mt={{ base: "48px", md: "80px" }}>
                     <S2SButton
                         text="Back"
                         variant="outline"
-                        width="134.39px"
-                        height="44.80px"
-                        fontSize="20px"
+                        width={{ base: "116.42px", md: "134.39px" }}
+                        height={{ base: "38.81px", md: "44.80px" }}
+                        fontSize={{ base: "17.33px", md: "20px" }}
                         onClick={() => navigate(-1)}
                     />
                     <S2SButton
-                        text="Next"
-                        width="134.39px"
-                        height="44.80px"
-                        fontSize="20px"
+                        text="Finish"
+                        width={{ base: "116.42px", md: "134.39px" }}
+                        height={{ base: "38.81px", md: "44.80px" }}
+                        fontSize={{ base: "17.33px", md: "20px" }}
                         onClick={handleSave}
                     />
                 </Flex>

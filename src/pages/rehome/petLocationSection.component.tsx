@@ -56,7 +56,7 @@ export default function PetLocationSection({
 
     return (
         <DetailSection title="Pet's Location">
-            <Flex direction="column" align="stretch" gap="14px">
+            <Flex direction="column" align="stretch" gap={{ base: "18.38px", md: "14px" }}>
                 <DetailField label="State">
                     <S2SDropDown
                         // Remount once options finish loading: the underlying combobox

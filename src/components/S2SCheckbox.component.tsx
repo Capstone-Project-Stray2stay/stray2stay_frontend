@@ -8,20 +8,21 @@ export default function S2SCheckbox({ label, checked, onChange }: S2SCheckboxTyp
             checked={checked}
             onCheckedChange={(e) => onChange(!!e.checked)}
             cursor="pointer"
-            gap="15px"
+            gap={{ base: "13.73px", md: "15px" }}
         >
             <Checkbox.HiddenInput />
             <Checkbox.Control
-                boxSize="20px"
+                boxSize={{ base: "18.31px", md: "20px" }}
+                flexShrink={0}
                 bg="white"
-                borderRadius="3px"
-                borderWidth="1px"
+                borderRadius={{ base: "2.75px", md: "3px" }}
+                borderWidth={{ base: "0.92px", md: "1px" }}
                 borderColor="BlueText"
                 _checked={{ bg: "Blue", borderColor: "Blue" }}
             >
                 <Checkbox.Indicator />
             </Checkbox.Control>
-            <Checkbox.Label fontSize="16px" fontWeight="500" color="Grey">
+            <Checkbox.Label fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="Grey">
                 {label}
             </Checkbox.Label>
         </Checkbox.Root>

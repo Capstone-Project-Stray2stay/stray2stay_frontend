@@ -6,14 +6,14 @@ export default function S2SPetIconButton({ icon, label, selected = false, onClic
     return (
         <VStack gap={2} cursor="pointer" onClick={onClick} userSelect="none">
             <Circle
-                size={{base: "51px", md: "73px"}}
+                size={{ base: "51px", md: "73px" }}
                 // Selecting fills the whole circle rather than just ringing it.
                 bg={selected ? "Yellow" : "Cream"}
                 transition="background 0.15s ease"
             >
                 {icon}
             </Circle>
-            <Text fontSize={{base: "14px", md: "20px"}} fontWeight="600" color="Grey">{label}</Text>
+            <Text fontSize={{ base: "14px", md: "20px" }} fontWeight="600" color="Grey">{label}</Text>
         </VStack>
     );
 }

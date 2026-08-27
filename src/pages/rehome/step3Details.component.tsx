@@ -84,10 +84,10 @@ export default function Step3Details({
     const divider = <Box h="1px" bg="SkyBlue" w="100%" />;
 
     return (
-        <Flex direction="column" align="stretch" gap="51px" w="100%">
+        <Flex direction="column" align="stretch" gap={{ base: "30px", md: "51px" }} w="100%">
             {/* ---------------- Pet's Profile ---------------- */}
             <DetailSection title="Pet's Profile">
-                <Flex direction="column" align="stretch" gap="21px">
+                <Flex direction="column" align="stretch" gap={{ base: "18.38px", md: "21px" }}>
                     <DetailField label="Name (optional)">
                         <S2SInput
                             {...detailInputStyle}
@@ -146,7 +146,7 @@ export default function Step3Details({
 
             {/* ---------------- Pet's Personality ---------------- */}
             <DetailSection title="Pet's Personality">
-                <Flex wrap="wrap" gap="12px" align="center">
+                <Flex wrap="wrap" gap={{ base: "6.97px", md: "12px" }} align="center">
                     {personalityChips.map((text) => (
                         <S2SChip
                             key={text}
@@ -179,16 +179,16 @@ export default function Step3Details({
                             align="center"
                             justify="center"
                             gap="6px"
-                            h="38px"
-                            px="16px"
-                            borderRadius="48px"
+                            h={{ base: "30px", md: "38px" }}
+                            px={{ base: "12px", md: "16px" }}
+                            borderRadius={{ base: "27.88px", md: "48px" }}
                             bg="rgba(255,255,255,0.70)"
-                            borderWidth="1px"
+                            borderWidth={{ base: "0.58px", md: "1px" }}
                             borderColor="BlueText"
                             onClick={() => setIsAddingPersonality(true)}
                         >
-                            <Icon as={IoAdd} boxSize="10.5px" color="GreyText" />
-                            <Text fontSize="16px" fontWeight="500" color="GreyText">
+                            <Icon as={IoAdd} boxSize={{ base: "7.22px", md: "10.5px" }} color="GreyText" />
+                            <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyText">
                                 Add
                             </Text>
                         </Flex>
@@ -204,15 +204,32 @@ export default function Step3Details({
 
             {/* ---------------- Health & Conditions ---------------- */}
             <DetailSection title="Health & Conditions">
-                <Flex direction="column" align="stretch" gap="24px">
-                    <Flex align="center" wrap="wrap">
-                        <Flex w="180px" align="center" gap="9px" flexShrink={0}>
-                            <Text fontSize="18px" fontWeight="500" color="Grey">
+                <Flex direction="column" align="stretch" gap={{ base: "16px", md: "24px" }}>
+                    {/* Mobile keeps the label on the left but stacks the boxes
+                        down the right-hand side; there isn't room for a row. */}
+                    <Flex align="flex-start" justify="space-between" gap="12px">
+                        <Flex
+                            w={{ base: "auto", md: "180px" }}
+                            align="center"
+                            gap={{ base: "8.24px", md: "9px" }}
+                            flexShrink={0}
+                        >
+                            <Text fontSize={{ base: "16px", md: "18px" }} fontWeight="500" color="Grey">
                                 Vaccinations
                             </Text>
-                            <Icon as={IoInformationCircleOutline} boxSize="18px" color="BlueText" />
+                            <Icon
+                                as={IoInformationCircleOutline}
+                                boxSize={{ base: "16.48px", md: "18px" }}
+                                color="BlueText"
+                            />
                         </Flex>
-                        <Flex align="center" gap="32px">
+                        <Flex
+                            direction={{ base: "column", md: "row" }}
+                            align="flex-start"
+                            gap={{ base: "16.48px", md: "32px" }}
+                            w={{ base: "94px", md: "auto" }}
+                            flexShrink={0}
+                        >
                             {VACCINE_OPTIONS[petType].map((vaccine) => (
                                 <S2SCheckbox
                                     key={vaccine}
@@ -226,13 +243,26 @@ export default function Step3Details({
 
                     {divider}
 
-                    <Flex align="center" wrap="wrap">
-                        <Text w="180px" flexShrink={0} fontSize="18px" fontWeight="500" color="Grey">
+                    <Flex align="flex-start" justify="space-between" gap="12px">
+                        <Text
+                            w={{ base: "auto", md: "180px" }}
+                            flexShrink={0}
+                            fontSize={{ base: "16px", md: "18px" }}
+                            fontWeight="500"
+                            color="Grey"
+                        >
                             Sterilized
                         </Text>
                         {/* Drawn as two checkboxes but mutually exclusive, so
                             they act as a radio pair over one boolean. */}
-                        <Flex w="180px" justify="space-between" align="center">
+                        <Flex
+                            direction={{ base: "column", md: "row" }}
+                            w={{ base: "94px", md: "180px" }}
+                            justify={{ base: "flex-start", md: "space-between" }}
+                            align="flex-start"
+                            gap={{ base: "16.48px", md: "0" }}
+                            flexShrink={0}
+                        >
                             <S2SCheckbox
                                 label="Yes"
                                 checked={draft.sterilized === true}
@@ -248,16 +278,32 @@ export default function Step3Details({
 
                     {divider}
 
-                    <Flex align="flex-start" wrap="wrap" gap="12px">
-                        <Text w="180px" flexShrink={0} fontSize="18px" fontWeight="500" color="Grey">
+                    {/* Mobile puts the label on its own line and drops the add
+                        button below the input, aligned right. */}
+                    <Flex
+                        direction={{ base: "column", md: "row" }}
+                        align={{ base: "stretch", md: "flex-start" }}
+                        gap={{ base: "11.90px", md: "12px" }}
+                    >
+                        <Text
+                            w={{ base: "auto", md: "180px" }}
+                            flexShrink={0}
+                            fontSize={{ base: "16px", md: "18px" }}
+                            fontWeight="500"
+                            color="Grey"
+                        >
                             Special Care
                         </Text>
-                        <Flex direction="column" gap="12px">
-                            <Flex align="center" gap="13px">
+                        <Flex direction="column" gap={{ base: "11.90px", md: "12px" }} w="100%">
+                            <Flex
+                                direction={{ base: "column", md: "row" }}
+                                align={{ base: "flex-end", md: "center" }}
+                                gap={{ base: "11.90px", md: "13px" }}
+                            >
                                 <S2SInput
                                     {...detailInputStyle}
-                                    w="250px"
-                                    borderRadius="132px"
+                                    w={{ base: "100%", md: "250px" }}
+                                    borderRadius={{ base: "120.86px", md: "132px" }}
                                     placeholder="e.g. Disabilities , Chronic"
                                     value={specialCareDraft}
                                     onChange={(e) => setSpecialCareDraft(e.target.value)}
@@ -270,14 +316,15 @@ export default function Step3Details({
                                 />
                                 <IconButton
                                     aria-label="Add special care"
-                                    boxSize="30px"
+                                    boxSize={{ base: "27.47px", md: "30px" }}
                                     minW="unset"
+                                    flexShrink={0}
                                     rounded="full"
                                     bg="Blue"
                                     color="white"
                                     onClick={addSpecialCare}
                                 >
-                                    <Icon as={IoAdd} boxSize="15px" />
+                                    <Icon as={IoAdd} boxSize={{ base: "13.73px", md: "15px" }} />
                                 </IconButton>
                             </Flex>
 
@@ -310,11 +357,11 @@ export default function Step3Details({
                     h="114px"
                     px="16px"
                     py="12px"
+                    borderRadius={{ base: "15px", md: "21px" }}
                     bg="rgba(255,255,255,0.70)"
-                    borderRadius="21px"
                     borderWidth="1px"
                     borderColor="BlueText"
-                    fontSize="16px"
+                    fontSize={{ base: "14px", md: "16px" }}
                     color="Grey"
                     resize="none"
                     value={draft.note}

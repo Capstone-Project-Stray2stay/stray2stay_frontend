@@ -19,22 +19,22 @@ export default function MonthCalendar({
     return (
         <VStack
             w="100%"
-            maxW="398.99px"
-            p="32px"
-            gap="24px"
+            maxW={{ base: "100%", md: "398.99px" }}
+            p={{ base: "24px", md: "32px" }}
+            gap={{ base: "15.40px", md: "24px" }}
             align="stretch"
             bg="rgba(255,255,255,0.70)"
             borderRadius="16px"
         >
             <Flex justify="space-between" align="center">
-                <Text fontSize="20px" fontWeight="600" color="Grey">
+                <Text fontSize={{ base: "16px", md: "20px" }} fontWeight="600" color="Grey">
                     {MONTHS_LONG[viewMonth.getMonth()]} {viewMonth.getFullYear()}
                 </Text>
                 <Flex gap="16px">
                     <Icon
                         as={LuChevronLeft}
                         aria-label="Previous month"
-                        boxSize="16.28px"
+                        boxSize={{ base: "13.20px", md: "16.28px" }}
                         color="GreyText"
                         cursor="pointer"
                         onClick={() => onMonthChange(-1)}
@@ -42,7 +42,7 @@ export default function MonthCalendar({
                     <Icon
                         as={LuChevronRight}
                         aria-label="Next month"
-                        boxSize="16.28px"
+                        boxSize={{ base: "13.20px", md: "16.28px" }}
                         color="GreyText"
                         cursor="pointer"
                         onClick={() => onMonthChange(1)}
@@ -54,9 +54,9 @@ export default function MonthCalendar({
                 {WEEKDAYS.map((label) => (
                     <Text
                         key={label}
-                        w="34px"
+                        w={{ base: "27.56px", md: "34px" }}
                         textAlign="center"
-                        fontSize="14px"
+                        fontSize={{ base: "12px", md: "14px" }}
                         fontWeight="500"
                         color="GreyText"
                     >
@@ -80,16 +80,23 @@ export default function MonthCalendar({
                         bg={holdsSelection ? "rgba(198,231,247,0.30)" : "transparent"}
                     >
                         {row.map((day, cellIndex) => {
-                            if (!day) return <Box key={cellIndex} w="34px" h="17px" />;
+                            if (!day)
+                                return (
+                                    <Box
+                                        key={cellIndex}
+                                        w={{ base: "27.56px", md: "34px" }}
+                                        h={{ base: "13.78px", md: "17px" }}
+                                    />
+                                );
 
                             const selected = isSameDay(day, selectedDate);
                             return (
                                 <Text
                                     key={toDateKey(day)}
                                     as="button"
-                                    w="34px"
+                                    w={{ base: "27.56px", md: "34px" }}
                                     textAlign="center"
-                                    fontSize="14px"
+                                    fontSize={{ base: "12px", md: "14px" }}
                                     fontWeight={selected ? "600" : "500"}
                                     color={selected ? "BlueText" : "Grey"}
                                     cursor="pointer"
