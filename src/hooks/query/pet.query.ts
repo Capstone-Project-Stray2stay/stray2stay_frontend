@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
     classifyPetAPI,
     petBreedsAPI,
@@ -6,6 +6,7 @@ import {
     registerPetAPI,
   getRandomPetsAPI,
   getPetInfoAPI,
+  deletePetAPI,
   searchPetsAPI,
   type PetSearchParams,
   type RandomPetResponseItem
@@ -80,7 +81,9 @@ export function usePetColors(petType: PetType | null, petBreed: string) {
             const res = await petColorsAPI(petType as PetType, petBreed)
             // Capitalised keys — see petColorsAPI for why.
             const colorData = (res.data.colorData ?? []) as { Color: string; Image: string }[]
-            return colorData.map((entry) => entry.Color).filter(Boolean)
+            return colorData
+                .filter((entry) => entry.Color)
+                .map((entry) => ({ value: entry.Color, label: entry.Color, image: entry.Image }))
         },
         enabled: petType !== null && petBreed !== "",
         retry: false,
@@ -121,7 +124,18 @@ export function usePetInfo(pid: string | undefined) {
     retry: false,
   })
 
-  return { pet: data, isLoading, isError }
+  return { pet: data?.pet, isOwner: data?.isOwner ?? false, isLoading, isError }
+}
+
+export function useDeletePet() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (pid: string | number) => deletePetAPI(pid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pets"] })
+    },
+  })
 }
 
 export function useSearchPets(params: PetSearchParams) {

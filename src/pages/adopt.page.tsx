@@ -19,6 +19,7 @@ import {
 import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.query";
 import { useThaiProvinces } from "../hooks/query/address.query";
 import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOptions.util";
+import { districtState } from "./profile/address.util";
 
 const PAGE_SIZE = 16;
 
@@ -70,8 +71,7 @@ export default function Adopt() {
     // it came from — recover that here so the color lookup has a species.
     const colorSpecies =
         category !== "all" ? category : breedItems.find((b) => b.value === breed)?.species ?? null;
-    const { colors, loading: colorsLoading } = usePetColors(colorSpecies, breed);
-    const colorOptions = useMemo(() => colors.map((c) => ({ value: c, label: c })), [colors]);
+    const { colors: colorOptions, loading: colorsLoading } = usePetColors(colorSpecies, breed);
 
     const { provinces, loading: provincesLoading } = useThaiProvinces();
     const locationOptions = useMemo(
@@ -311,7 +311,7 @@ export default function Adopt() {
                                 petAge={p.petAgeGroup || "Unknown age"}
                                 petBreed={p.petBreed || "Mixed breed"}
                                 petGender={formatGender(p.petGender)}
-                                petLocation={p.petAddress || "Location unavailable"}
+                                petLocation={districtState(p.petAddress) || p.petAddress || "Location unavailable"}
                                 onClick={() => navigate(`/pet-profile/${p.pid}`)}
                             />
                         ))}

@@ -1,3 +1,4 @@
+import { geocodeAddressAPI } from "../../services/apis/address.api";
 import type { RehomeLocation } from "./rehome.type";
 
 export interface ResolvedLocation {
@@ -7,20 +8,12 @@ export interface ResolvedLocation {
 }
 
 /**
- * Last-resort stand-in, Bangkok centroid.
- *
- * The "Pet's Location" section now exists (petLocationSection.component.tsx)
- * and missingFields() refuses to submit without it, so this should never be
- * reached in practice. It stays because the backend marks
+ * Last-resort stand-in, Bangkok centroid. Only used when the Location section
+ * was never filled in at all (state === "") — missingFields() is supposed to
+ * refuse submission before that happens, so this should never be reached in
+ * practice. It stays because the backend marks
  * petAddress/petAddressLat/petAddressLong as `required` and go-validator
  * rejects both "" and 0 — sending nothing fails the request outright.
- *
- * If it ever does fire, the pet lands on Bangkok's coordinates and sorts wrong
- * on the Adopt page's distance ordering.
- *
- * TODO: drop this once the sub-districts with null coordinates (~4% of the
- * dataset) are covered by geocodeAddressAPI at submit time, the way
- * userInformation.page.tsx's handleFinish does it.
  */
 const PLACEHOLDER: ResolvedLocation = {
     address: "Bangkok, Thailand",
@@ -36,15 +29,34 @@ export function hasLocation(location: RehomeLocation): boolean {
 /**
  * The single place that knows a placeholder exists. Callers building the
  * register payload only ever see the resolved address/lat/long.
+ *
+ * ~4% of sub-districts (notably many in Bangkok) ship with no lat/long in the
+ * dataset — picking one of those leaves location.lat/long null even though
+ * state/district/subDistrict are genuinely filled in. That case geocodes the
+ * real address instead of discarding it for the Bangkok placeholder (same
+ * fallback userInformation.page.tsx's handleFinish uses).
  */
-export function resolveLocation(location: RehomeLocation): ResolvedLocation {
-    if (!hasLocation(location)) return PLACEHOLDER;
+export async function resolveLocation(location: RehomeLocation): Promise<ResolvedLocation> {
+    if (location.state === "") return PLACEHOLDER;
+
+    const address = [location.street, location.subDistrict, location.district, location.state]
+        .filter(Boolean)
+        .join(", ");
+
+    if (location.lat !== null && location.long !== null) {
+        return { address, lat: location.lat, long: location.long };
+    }
+
+    // Geocoded on sub-district/district/state only — street is free text the
+    // user typed and just makes Nominatim return no match.
+    const geocodeQuery = [location.subDistrict, location.district, location.state]
+        .filter(Boolean)
+        .join(", ");
+    const geocoded = await geocodeAddressAPI(geocodeQuery).catch(() => null);
 
     return {
-        address: [location.street, location.subDistrict, location.district, location.state]
-            .filter(Boolean)
-            .join(", "),
-        lat: location.lat as number,
-        long: location.long as number,
+        address,
+        lat: geocoded?.lat ?? PLACEHOLDER.lat,
+        long: geocoded?.long ?? PLACEHOLDER.long,
     };
 }

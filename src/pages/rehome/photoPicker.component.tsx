@@ -2,9 +2,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Flex, Icon, Image, Text, VStack } from "@chakra-ui/react";
 import { IoBulbOutline, IoClose } from "react-icons/io5";
 import { RiImageAiLine } from "react-icons/ri";
+import heic2any from "heic2any";
 
 import { S2SButton } from "../../components/S2S.components";
 import { MAX_PHOTOS, type PetPhoto } from "./rehome.type";
+
+// Most OSes report an empty `type` for .heic/.heif files picked from a photo
+// library (only Safari/iOS fills it in), so the extension is the only
+// reliable signal — and even when the type IS set, no browser but Safari can
+// render HEIC/HEIF via <img>/object URLs, so these need converting either way.
+const isHeic = (file: File) =>
+    /^image\/hei[cf]$/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
+
+async function toJpegIfHeic(file: File): Promise<File> {
+    if (!isHeic(file)) return file;
+
+    const converted = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
+    const blob = Array.isArray(converted) ? converted[0] : converted;
+    return new File([blob], file.name.replace(/\.hei[cf]$/i, ".jpg"), { type: "image/jpeg" });
+}
 
 /**
  * The dashed dropzone plus its thumbnail strip, shared by the wizard's Upload
@@ -52,9 +68,9 @@ export default function PhotoPicker({
             });
     }, [previews]);
 
-    const addFiles = (incoming: FileList | File[]) => {
+    const addFiles = async (incoming: FileList | File[]) => {
         const all = Array.from(incoming);
-        const images = all.filter((file) => file.type.startsWith("image/"));
+        const images = all.filter((file) => file.type.startsWith("image/") || isHeic(file));
         const room = MAX_PHOTOS - photos.length;
         const toAdd = images.slice(0, Math.max(room, 0));
 
@@ -66,7 +82,21 @@ export default function PhotoPicker({
             setError("");
         }
 
-        if (toAdd.length > 0) onChange([...photos, ...toAdd]);
+        if (toAdd.length === 0) return;
+
+        // HEIC/HEIF can't be previewed (or reliably processed downstream) as-is,
+        // so convert those to JPEG before they ever reach state. A file that
+        // fails to convert is dropped rather than added broken.
+        const settled = await Promise.allSettled(toAdd.map(toJpegIfHeic));
+        const converted = settled
+            .filter((result): result is PromiseFulfilledResult<File> => result.status === "fulfilled")
+            .map((result) => result.value);
+
+        if (converted.length < toAdd.length) {
+            setError("One or more HEIC photos couldn't be converted and were skipped.");
+        }
+
+        if (converted.length > 0) onChange([...photos, ...converted]);
     };
 
     const removeAt = (index: number) => {

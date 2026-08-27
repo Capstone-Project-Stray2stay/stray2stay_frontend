@@ -31,3 +31,9 @@ export function splitAddress(address: string): AddressParts {
         .map((part) => part.trim());
     return { street, subDistrict, district, state };
 }
+
+/** District + state only — the compact form shown on pet cards. */
+export function districtState(address: string): string {
+    const { district, state } = splitAddress(address);
+    return [district, state].filter(Boolean).join(", ");
+}

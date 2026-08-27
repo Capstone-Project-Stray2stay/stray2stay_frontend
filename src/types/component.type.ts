@@ -40,6 +40,8 @@ export interface S2SChipType {
 export interface S2SDropDownOption {
     value: string
     label: string
+    /** Optional thumbnail (e.g. a breed-color swatch photo) shown before the label. */
+    image?: string
 }
 
 export interface S2SDropDownType {
