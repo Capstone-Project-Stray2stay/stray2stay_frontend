@@ -9,8 +9,9 @@ import { detailDropDownStyle, detailInputStyle } from "./detailField.style";
 import PetLocationSection from "./petLocationSection.component";
 import { PERSONALITY_OPTIONS } from "./personalityOptions";
 import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "./rehome.type";
+import type { S2SDropDownOption } from "../../types/component.type";
 
-/** Options for the breed/color dropdowns come back as plain strings. */
+/** Breed options come back as plain strings; color options already come pre-built (with swatch images) from usePetColors. */
 const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
 /**
@@ -26,7 +27,7 @@ export default function Step3Details({
 }: {
     draft: PetDetailsDraft;
     breeds: string[];
-    colors: string[];
+    colors: S2SDropDownOption[];
     onChange: (patch: Partial<PetDetailsDraft>) => void;
 }) {
     const [customPersonality, setCustomPersonality] = useState("");
@@ -39,7 +40,7 @@ export default function Step3Details({
     // collection, and doing so clears the combobox's filter text — so building
     // these inline would wipe the filter on every keystroke elsewhere in the form.
     const breedItems = useMemo(() => toOptions(breeds), [breeds]);
-    const colorItems = useMemo(() => toOptions(colors), [colors]);
+    const colorItems = colors;
 
     // Custom entries the user typed sit alongside the fixed list so they keep
     // rendering as chips after being added.

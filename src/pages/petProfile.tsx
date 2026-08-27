@@ -1,14 +1,17 @@
 import {
   Badge,
   Box,
+  Dialog,
   Flex,
   Icon,
   Image,
+  Portal,
   Text,
   VStack,
+  IconButton
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   LuCheck,
   LuChevronLeft,
@@ -17,18 +20,17 @@ import {
   LuPawPrint,
   LuStethoscope,
   LuSyringe,
+  LuTrash2,
   LuX,
 } from "react-icons/lu";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
-import { S2SPageTitle, S2SAccordion } from "../components/S2S.components";
-import { usePetInfo } from "../hooks/query/pet.query";
+import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
+import { useDeletePet, usePetInfo } from "../hooks/query/pet.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
+import { VACCINE_OPTIONS } from "./rehome/rehome.type";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
-
-/** Vaccine names the backend accepts (see PetRegisterRequest.PetVaccination validation). */
-const KNOWN_VACCINES = ["DHPPi", "Rabies", "FVRCP"];
 
 function formatAgeGroup(ageGroup: string): string {
   const match = ageGroupOptions.find((o) => o.value === ageGroup);
@@ -37,8 +39,18 @@ function formatAgeGroup(ageGroup: string): string {
 
 export default function PetProfile() {
   const { pid } = useParams();
-  const { pet, isLoading, isError } = usePetInfo(pid);
+  const navigate = useNavigate();
+  const { pet, isOwner, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deletePetMutation = useDeletePet();
+
+  const handleDelete = () => {
+    if (!pid) return;
+    deletePetMutation.mutate(pid, {
+      onSuccess: () => navigate("/adopt"),
+    });
+  };
 
   if (isLoading) {
     return (
@@ -59,6 +71,12 @@ export default function PetProfile() {
   }
 
   const images = pet.petImageAddress.length > 0 ? pet.petImageAddress : [FALLBACK_IMAGE];
+  const knownVaccines = VACCINE_OPTIONS[pet.petType?.toLowerCase() as "dog" | "cat"] ?? ["Rabies"];
+  // Stored as a single comma-joined string (see registerPetAPI), so split it back apart for display.
+  const specialCareItems = (pet.petSpecialCare ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   const activeImage = images[Math.min(activeImageIndex, images.length - 1)];
 
   const prevImage = () => {
@@ -87,37 +105,39 @@ export default function PetProfile() {
           <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap">
             <Box flex="1 1 320px" maxW="320px">
               <Box position="relative" borderRadius="13px" overflow="hidden">
-                <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="auto" display="block" />
+                <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="300px" objectFit="contain" />
 
                 {images.length > 1 && (
                   <>
-                    <Box
-                      as="button"
+                    <IconButton
                       onClick={prevImage}
                       position="absolute"
                       left={2}
                       top="50%"
                       transform="translateY(-50%)"
                       color="white"
-                      bg="transparent"
-                      _hover={{ opacity: 0.75 }}
+                      bg="Grey"
+                      opacity={0.75}
+                      rounded="full"
+                      _hover={{ opacity: 1 }}
                     >
                       <LuChevronLeft size={20} />
-                    </Box>
+                    </IconButton>
 
-                    <Box
-                      as="button"
+                    <IconButton
                       onClick={nextImage}
                       position="absolute"
                       right={2}
                       top="50%"
                       transform="translateY(-50%)"
                       color="white"
-                      bg="transparent"
-                      _hover={{ opacity: 0.75 }}
+                      bg="Grey"
+                      opacity={0.75}
+                      rounded="full"
+                      _hover={{ opacity: 1 }}
                     >
                       <LuChevronRight size={20} />
-                    </Box>
+                    </IconButton>
 
                     <Flex position="absolute" bottom={3} left="50%" transform="translateX(-50%)" gap={2}>
                       {images.map((_, index) => (
@@ -249,7 +269,7 @@ export default function PetProfile() {
                   Vaccinations
                 </Text>
                 <VStack align="flex-start" gap={1}>
-                  {KNOWN_VACCINES.map((vaccine) => {
+                  {knownVaccines.map((vaccine) => {
                     const received = pet.petVaccination.includes(vaccine);
                     return (
                       <Flex key={vaccine} align="center" gap={1.5}>
@@ -289,9 +309,19 @@ export default function PetProfile() {
                 <Text color="Grey" fontSize="18px" fontWeight="600" mb={1}>
                   Special Care
                 </Text>
-                <Text color="#969696" fontSize="18px" fontWeight="400">
-                  {pet.petSpecialCare || "None"}
-                </Text>
+                {specialCareItems.length > 0 ? (
+                  <VStack align="flex-start" gap={0.5}>
+                    {specialCareItems.map((item, i) => (
+                      <Text key={i} color="#969696" fontSize="18px" fontWeight="400">
+                        • {item}
+                      </Text>
+                    ))}
+                  </VStack>
+                ) : (
+                  <Text color="#969696" fontSize="18px" fontWeight="400">
+                    None
+                  </Text>
+                )}
               </Box>
             </Flex>
           </Flex>
@@ -321,7 +351,59 @@ export default function PetProfile() {
             contentColor="#969696"
           />
         </Box>
+
+        {isOwner && (
+          <Flex justify="center" mt="48px">
+            <S2SButton
+              text="Delete Pet"
+              icon={<LuTrash2 size={18} />}
+              bgColor="red.500"
+              width="200px"
+              height="48px"
+              fontSize="18px"
+              onClick={() => setShowDeleteConfirm(true)}
+            />
+          </Flex>
+        )}
       </Box>
+
+      <Dialog.Root
+        open={showDeleteConfirm}
+        onOpenChange={(e) => setShowDeleteConfirm(e.open)}
+        placement="center"
+      >
+        <Portal>
+          <Dialog.Backdrop bg="blackAlpha.400" />
+          <Dialog.Positioner>
+            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
+              <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                  Delete this pet?
+                </Text>
+                <Text fontSize="14px" color="GreyText" textAlign="center">
+                  This removes {pet.petName || "this pet"}'s listing and all of its photos permanently. This can't be undone.
+                </Text>
+                <Flex gap="12px" mt="8px">
+                  <S2SButton
+                    text="Cancel"
+                    variant="outline"
+                    width="120px"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deletePetMutation.isPending}
+                  />
+                  <S2SButton
+                    text="Delete"
+                    bgColor="red.500"
+                    width="120px"
+                    loading={deletePetMutation.isPending}
+                    onClick={handleDelete}
+                  />
+                </Flex>
+              </VStack>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
     </Box>
   );
 }

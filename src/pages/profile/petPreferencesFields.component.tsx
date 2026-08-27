@@ -27,10 +27,9 @@ function SpeciesColumn({
     const isDog = species === "dog";
 
     const { breeds } = useBreeds(species);
-    const { colors } = usePetColors(species, value.breed);
+    const { colors: colorItems } = usePetColors(species, value.breed);
 
     const breedItems = useMemo(() => toOptions(breeds), [breeds]);
-    const colorItems = useMemo(() => toOptions(colors), [colors]);
 
     return (
         <VStack align="stretch" gap="12px" flex="1 1 265px" minW="240px" maxW="320px">

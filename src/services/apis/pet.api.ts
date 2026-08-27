@@ -57,7 +57,7 @@ export async function registerPetAPI(draft: RehomeDraft) {
         throw new Error("Pet type is required");
     }
 
-    const location = resolveLocation(draft.location);
+    const location = await resolveLocation(draft.location);
     const formData = new FormData();
 
     // The name field is optional in the UI because many strays have never been
@@ -158,13 +158,27 @@ export interface PetInfoResponse {
   note: string;
 }
 
+export interface PetInfoResult {
+  pet: PetInfoResponse;
+  /** True only when the logged-in caller is this pet's owner (computed server-side, see PetInfo handler). */
+  isOwner: boolean;
+}
+
 /** Backed by GetPetInfo in the MySQL adapter. */
-export async function getPetInfoAPI(pid: string | number): Promise<PetInfoResponse> {
+export async function getPetInfoAPI(pid: string | number): Promise<PetInfoResult> {
   const res = await axiosInstance.get(`/pets/${pid}`);
   if (res.status === 200) {
-    return res.data.petsInfo;
+    return { pet: res.data.petsInfo, isOwner: res.data.isOwner ?? false };
   }
   throw new Error("Failed to fetch pet info");
+}
+
+/** Backed by DeletePet — owner-only, also cleans up the pet's Cloudinary images server-side. */
+export async function deletePetAPI(pid: string | number): Promise<void> {
+  const res = await axiosInstance.delete(`/pets/${pid}`);
+  if (res.status !== 200) {
+    throw new Error("Failed to delete pet");
+  }
 }
 
 /** Backed by GetPetsInfo in the MySQL adapter — filters map to its pet_* enum columns. */

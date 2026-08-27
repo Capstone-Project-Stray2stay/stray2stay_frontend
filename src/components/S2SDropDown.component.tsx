@@ -1,6 +1,8 @@
 import { useEffect } from "react"
 import {
     Combobox,
+    HStack,
+    Image,
     Portal,
     useFilter,
     useListCollection,
@@ -68,7 +70,12 @@ export default function S2SDropDown({
                         <Combobox.Empty>No items found</Combobox.Empty>
                         {collection.items.map((item) => (
                             <Combobox.Item item={item} key={item.value}>
-                                {item.label}
+                                <HStack gap={2}>
+                                    {item.image && (
+                                        <Image src={item.image} alt="" boxSize="36px" borderRadius="full" objectFit="cover" flexShrink={0} />
+                                    )}
+                                    <span>{item.label}</span>
+                                </HStack>
                                 <Combobox.ItemIndicator />
                             </Combobox.Item>
                         ))}

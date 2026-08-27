@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.components";
 import { useRandomPets } from "../hooks/query/pet.query";
 import { formatGender } from "../utils/petOptions.util";
+import { districtState } from "./profile/address.util";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -202,7 +203,7 @@ export default function Home() {
                 petAge={pet.petAgeGroup || "Unknown age"}
                 petBreed={pet.petBreed || "Mixed breed"}
                 petGender={formatGender(pet.petGender)}
-                petLocation={pet.petAddress || "Location unavailable"}
+                petLocation={districtState(pet.petAddress) || pet.petAddress || "Location unavailable"}
               />
             ))}
           </SimpleGrid>
