@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Flex, Icon, Image, Text, VStack } from "@chakra-ui/react";
-import { IoBulbOutline, IoClose, IoCloudUploadOutline } from "react-icons/io5";
+import { IoBulbOutline, IoClose } from "react-icons/io5";
+import { RiImageAiLine } from "react-icons/ri";
 
 import { S2SButton } from "../../components/S2S.components";
 import { MAX_PHOTOS, type PetPhoto } from "./rehome.type";
@@ -75,6 +76,27 @@ export default function PhotoPicker({
 
     const isFull = photos.length >= MAX_PHOTOS;
 
+    // The design puts this inside the dashed zone on desktop but below it on
+    // mobile, so it is rendered in both places and revealed by breakpoint.
+    const tip = (
+        <Flex align={{ base: "flex-start", md: "center" }} gap={{ base: "6px", md: "3.51px" }}>
+            <Icon
+                as={IoBulbOutline}
+                boxSize={{ base: "21px", md: "19.32px" }}
+                flexShrink={0}
+                color="GreyMuted"
+            />
+            <Text
+                fontSize={{ base: "12px", md: "16px" }}
+                fontWeight={{ base: "500", md: "600" }}
+                color="GreyMuted"
+                textAlign={{ base: "left", md: "center" }}
+            >
+                Tip: Upload clear face and full-body shots for best results.
+            </Text>
+        </Flex>
+    );
+
     return (
         <Flex direction="column" align="stretch" gap="8px" w="100%">
             {/* Decorative speech bubble — no behaviour attached. The tail points
@@ -83,34 +105,42 @@ export default function PhotoPicker({
                 <Flex
                     position="relative"
                     w="100%"
-                    h="66.75px"
+                    h={{ base: "35px", md: "66.75px" }}
                     align="center"
                     justify="center"
-                    px="32px"
+                    px={{ base: "16px", md: "32px" }}
                     bg="rgba(255,255,255,0.70)"
-                    borderRadius="74.66px"
+                    borderRadius={{ base: "35.77px", md: "74.66px" }}
                     _after={{
                         content: '""',
                         position: "absolute",
                         top: "100%",
-                        right: "56px",
-                        borderLeft: "14px solid transparent",
-                        borderRight: "14px solid transparent",
-                        borderTop: "18px solid rgba(255,255,255,0.70)",
+                        right: { base: "36px", md: "56px" },
+                        borderLeft: { base: "9px solid transparent", md: "14px solid transparent" },
+                        borderRight: { base: "9px solid transparent", md: "14px solid transparent" },
+                        borderTop: {
+                            base: "12px solid rgba(255,255,255,0.70)",
+                            md: "18px solid rgba(255,255,255,0.70)",
+                        },
                     }}
                 >
-                    <Text fontSize="18px" fontWeight="600" color="GreyText" textAlign="center">
+                    <Text
+                        fontSize={{ base: "10px", md: "18px" }}
+                        fontWeight={{ base: "500", md: "600" }}
+                        color="GreyText"
+                        textAlign="center"
+                    >
                         Let’s use AI Camera to help you identify the breed.
                     </Text>
                 </Flex>
             )}
 
             <Box
-                mt={showAiHint ? "24px" : "0"}
-                minH="339px"
+                mt={showAiHint ? { base: "16px", md: "24px" } : "0"}
+                minH={{ base: "212px", md: "339px" }}
                 bg="rgba(255,255,255,0.60)"
-                borderRadius="21.96px"
-                borderWidth="1.76px"
+                borderRadius={{ base: "16.27px", md: "21.96px" }}
+                borderWidth={{ base: "1.30px", md: "1.76px" }}
                 borderStyle="dashed"
                 borderColor={isDragging ? "BlueText" : "Blue"}
                 transition="border-color 0.15s ease"
@@ -140,16 +170,33 @@ export default function PhotoPicker({
                     }}
                 />
 
-                <VStack gap="20.20px" py="60px" px="24px">
-                    <VStack gap="23.72px">
-                        <Icon as={IoCloudUploadOutline} w="82.57px" h="75.54px" color="SkyBlue" />
+                <VStack
+                    gap={{ base: "14.97px", md: "20.20px" }}
+                    py={{ base: "32px", md: "60px" }}
+                    px={{ base: "16px", md: "24px" }}
+                >
+                    <VStack gap={{ base: "7px", md: "23.72px" }}>
+                        <Icon
+                            as={RiImageAiLine}
+                            w={{ base: "61.19px", md: "82.57px" }}
+                            h={{ base: "55.98px", md: "75.54px" }}
+                            color="SkyBlue"
+                        />
 
-                        <VStack gap="17.57px">
+                        <VStack gap={{ base: "13.02px", md: "17.57px" }}>
                             <Box textAlign="center">
-                                <Text fontSize="20px" fontWeight="600" color="Blue">
+                                <Text
+                                    fontSize={{ base: "14px", md: "20px" }}
+                                    fontWeight={{ base: "500", md: "600" }}
+                                    color="Blue"
+                                >
                                     Drag and Drop Photos here
                                 </Text>
-                                <Text fontSize="16px" fontWeight="500" color="Blue">
+                                <Text
+                                    fontSize={{ base: "12px", md: "16px" }}
+                                    fontWeight="500"
+                                    color="Blue"
+                                >
                                     ( Max {MAX_PHOTOS} Photos )
                                 </Text>
                             </Box>
@@ -160,9 +207,9 @@ export default function PhotoPicker({
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width="216.95px"
-                                    height="37.77px"
-                                    fontSize="18px"
+                                    width={{ base: "160.78px", md: "216.95px" }}
+                                    height={{ base: "27.99px", md: "37.77px" }}
+                                    fontSize={{ base: "14px", md: "18px" }}
                                     disabled={isFull}
                                     onClick={() => inputRef.current?.click()}
                                 />
@@ -170,33 +217,27 @@ export default function PhotoPicker({
                         </VStack>
                     </VStack>
 
-                    {showAiHint && (
-                        <Flex align="center" gap="3.51px">
-                            <Icon as={IoBulbOutline} boxSize="19.32px" color="GreyMuted" />
-                            <Text
-                                fontSize="16px"
-                                fontWeight="600"
-                                color="GreyMuted"
-                                textAlign="center"
-                            >
-                                Tip: Upload clear face and full-body shots for best results.
-                            </Text>
-                        </Flex>
-                    )}
+                    {showAiHint && <Box display={{ base: "none", md: "block" }}>{tip}</Box>}
                 </VStack>
             </Box>
 
+            {showAiHint && (
+                <Box display={{ base: "block", md: "none" }} mt="12px">
+                    {tip}
+                </Box>
+            )}
+
             {photos.length > 0 && (
-                <Flex gap="18px" wrap="wrap" mt="24px">
+                <Flex gap={{ base: "15.47px", md: "18px" }} wrap="wrap" mt={{ base: "16px", md: "24px" }}>
                     {previews.map((preview, i) => (
                         <Box key={preview.src} position="relative">
                             <Image
                                 src={preview.src}
                                 alt={preview.alt}
-                                boxSize="86.01px"
+                                boxSize={{ base: "73.90px", md: "86.01px" }}
                                 objectFit="cover"
                                 bg="#E9E9E9"
-                                borderRadius="14.49px"
+                                borderRadius={{ base: "12.45px", md: "14.49px" }}
                             />
                             <Flex
                                 as="button"
@@ -204,14 +245,14 @@ export default function PhotoPicker({
                                 position="absolute"
                                 top="4px"
                                 right="4px"
-                                boxSize="15px"
+                                boxSize={{ base: "12.89px", md: "15px" }}
                                 align="center"
                                 justify="center"
                                 bg="rgba(255,255,255,0.85)"
                                 borderRadius="full"
                                 onClick={() => removeAt(i)}
                             >
-                                <Icon as={IoClose} boxSize="7px" color="GreyMuted" />
+                                <Icon as={IoClose} boxSize={{ base: "8px", md: "9px" }} color="GreyText" />
                             </Flex>
                         </Box>
                     ))}

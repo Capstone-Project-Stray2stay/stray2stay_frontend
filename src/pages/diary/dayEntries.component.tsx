@@ -9,13 +9,13 @@ import type { DiaryEntry } from "./diary.type";
 
 const CAPTION_INPUT_PROPS = {
     bg: "white",
-    borderRadius: "21.42px",
+    borderRadius: { base: "28px", md: "21.42px" },
     borderWidth: "0.86px",
     borderColor: "BlueText",
-    px: "24px",
+    px: { base: "16px", md: "24px" },
     py: "8px",
-    h: "38px",
-    fontSize: "16px",
+    h: { base: "41px", md: "38px" },
+    fontSize: { base: "14px", md: "16px" },
     fontWeight: "500",
     color: "Grey",
     _placeholder: { color: "GreyMuted" },
@@ -23,39 +23,28 @@ const CAPTION_INPUT_PROPS = {
 
 const PHOTO_PROPS = {
     w: "100%",
-    maxW: "425.72px",
-    h: "252.80px",
+    maxW: { base: "100%", md: "425.72px" },
+    h: { base: "183.25px", md: "252.80px" },
     bg: "rgba(255,255,255,0.60)",
-    borderRadius: "21.42px",
-    alignSelf: "flex-end",
+    borderRadius: { base: "11.62px", md: "21.42px" },
+    alignSelf: { base: "stretch", md: "flex-end" },
 } as const;
 
-/** The day's saved entry, with a pencil that hands it back to the editor. */
-function EntryView({ entry, onEdit }: { entry: DiaryEntry; onEdit: () => void }) {
+/** The day's saved entry. The pencil that reopens it lives in DayEntries. */
+function EntryView({ entry }: { entry: DiaryEntry }) {
     return (
-        <VStack align="stretch" gap="24px" w="100%">
-            <Flex justify="flex-end">
-                <Icon
-                    as={LuPencil}
-                    aria-label="Edit entry"
-                    boxSize="15.43px"
-                    color="Blue"
-                    cursor="pointer"
-                    onClick={onEdit}
-                />
-            </Flex>
-
+        <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
             <Image {...PHOTO_PROPS} src={entry.imageURL} alt={entry.caption || "Diary photo"} objectFit="cover" />
 
             <Box
                 bg="white"
-                borderRadius="21.42px"
+                borderRadius={{ base: "28px", md: "21.42px" }}
                 borderWidth="0.86px"
                 borderColor="BlueText"
-                px="24px"
+                px={{ base: "16px", md: "24px" }}
                 py="8px"
             >
-                <Text fontSize="16px" fontWeight="500" color="GreyMuted">
+                <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyMuted">
                     {entry.caption}
                 </Text>
             </Box>
@@ -111,7 +100,7 @@ function EntryEditor({
     const canSave = photo !== null || Boolean(entry?.imageURL);
 
     return (
-        <VStack align="stretch" gap="24px" w="100%">
+        <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
             <input
                 ref={inputRef}
                 type="file"
@@ -139,7 +128,7 @@ function EntryEditor({
             ) : (
                 <Box
                     {...PHOTO_PROPS}
-                    borderRadius="16px"
+                    borderRadius={{ base: "11.62px", md: "16px" }}
                     borderWidth="1.51px"
                     borderStyle="dashed"
                     borderColor={isDragging ? "BlueText" : "Blue"}
@@ -157,10 +146,20 @@ function EntryEditor({
                         acceptFile(e.dataTransfer.files);
                     }}
                 >
-                    <VStack justify="center" h="100%" gap="16.85px">
-                        <Icon as={LuImage} w="62.56px" h="57.42px" color="SkyBlue" />
-                        <VStack gap="12.48px">
-                            <Text fontSize="18px" fontWeight="600" color="Blue" textAlign="center">
+                    <VStack justify="center" h="100%" gap={{ base: "9.14px", md: "16.85px" }} px="16px">
+                        <Icon
+                            as={LuImage}
+                            w={{ base: "50px", md: "62.56px" }}
+                            h={{ base: "46px", md: "57.42px" }}
+                            color="SkyBlue"
+                        />
+                        <VStack gap="12px">
+                            <Text
+                                fontSize={{ base: "14px", md: "18px" }}
+                                fontWeight="600"
+                                color="Blue"
+                                textAlign="center"
+                            >
                                 Drag and Drop Photos here
                             </Text>
                             {/* Stops the click reaching the zone's own handler,
@@ -169,9 +168,9 @@ function EntryEditor({
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width="154.11px"
-                                    height="26.83px"
-                                    fontSize="14px"
+                                    width={{ base: "160px", md: "154.11px" }}
+                                    height={{ base: "28px", md: "26.83px" }}
+                                    fontSize={{ base: "12px", md: "14px" }}
                                     onClick={() => inputRef.current?.click()}
                                 />
                             </Box>
@@ -243,24 +242,73 @@ export default function DayEntries({
     // way to add the photo short of finding the pencil.
     const isComplete = Boolean(entry?.imageURL);
 
+    // Only rendered when it actually does something. The Figma draws it in the
+    // empty state too, but there it would be a dead control.
+    const editPencil = isComplete && !isEditing && (
+        <Icon
+            as={LuPencil}
+            aria-label="Edit entry"
+            boxSize={{ base: "14.36px", md: "15.43px" }}
+            color="Blue"
+            cursor="pointer"
+            flexShrink={0}
+            onClick={() => setIsEditing(true)}
+        />
+    );
+
     return (
-        <S2SCardShell railColor="SkyBlue" w="100%" px="32px" pl="46px" py="24px" gap="32px" align="stretch">
-            <VStack gap="0.86px" minW="46.28px">
-                <Text fontSize="32px" fontWeight="600" color="Grey">
-                    {date.getDate()}
-                </Text>
-                <Text fontSize="18px" fontWeight="600" color="Grey">
-                    {WEEKDAYS[date.getDay()]}
-                </Text>
-            </VStack>
+        // Mobile turns the left date rail into a header row above the content,
+        // so the photo gets the card's full width.
+        <S2SCardShell
+            railColor="SkyBlue"
+            w="100%"
+            direction={{ base: "column", md: "row" }}
+            px={{ base: "20px", md: "32px" }}
+            pl={{ base: "26px", md: "46px" }}
+            py={{ base: "20px", md: "24px" }}
+            gap={{ base: "16px", md: "32px" }}
+            align="stretch"
+        >
+            <Flex
+                direction={{ base: "row", md: "column" }}
+                align="center"
+                justify={{ base: "space-between", md: "flex-start" }}
+                gap={{ base: "12px", md: "0.86px" }}
+                minW={{ md: "46.28px" }}
+            >
+                <Flex
+                    direction={{ base: "row", md: "column" }}
+                    align={{ base: "baseline", md: "center" }}
+                    gap={{ base: "8px", md: "0.86px" }}
+                >
+                    <Text fontSize={{ base: "20px", md: "32px" }} fontWeight="600" color="Grey">
+                        {date.getDate()}
+                    </Text>
+                    <Text fontSize={{ base: "14px", md: "18px" }} fontWeight="600" color="Grey">
+                        {WEEKDAYS[date.getDay()]}
+                    </Text>
+                </Flex>
+
+                <Box display={{ base: "block", md: "none" }}>{editPencil}</Box>
+            </Flex>
 
             {/* A real flex child rather than the Figma export's rotated box,
-                which would not stretch with the card. */}
-            <Box w="1.71px" alignSelf="stretch" bg="SkyBlue" flexShrink={0} />
+                which would not stretch with the card. Mobile drops it entirely. */}
+            <Box
+                display={{ base: "none", md: "block" }}
+                w="1.71px"
+                alignSelf="stretch"
+                bg="SkyBlue"
+                flexShrink={0}
+            />
 
-            <VStack flex="1" align="stretch" gap="24px" minW="0">
+            <VStack flex="1" align="stretch" gap={{ base: "18.60px", md: "24px" }} minW="0">
+                <Flex display={{ base: "none", md: "flex" }} justify="flex-end">
+                    {editPencil}
+                </Flex>
+
                 {entry && isComplete && !isEditing ? (
-                    <EntryView entry={entry} onEdit={() => setIsEditing(true)} />
+                    <EntryView entry={entry} />
                 ) : (
                     <EntryEditor
                         entry={entry}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Box, Dialog, Flex, HStack, Icon, IconButton, Image, Portal, Text, VStack } from "@chakra-ui/react";
+import { Box, Circle, Dialog, Flex, HStack, Icon, IconButton, Image, Portal, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { IoClose } from "react-icons/io5";
 
 import { S2SButton } from "../../components/S2S.components";
@@ -7,7 +7,7 @@ import { MAX_AI_PHOTOS } from "./rehome.type";
 
 // Purely decorative, order-based hints — not an enforced categorization of
 // what's actually in the photo.
-const TAG_LABELS = ["Clear face", "Full Body"];
+const TAG_LABELS = ["Clear Face", "Full body"];
 
 export default function SelectAiPhotosModal({
     isOpen,
@@ -52,8 +52,8 @@ export default function SelectAiPhotosModal({
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
                     <Dialog.Content
-                        maxW="661px"
-                        borderRadius="50px"
+                        maxW={{ base: "335px", md: "661px" }}
+                        borderRadius={{ base: "25.34px", md: "50px" }}
                         p="0"
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
@@ -62,8 +62,8 @@ export default function SelectAiPhotosModal({
                             aria-label="Close"
                             onClick={onClose}
                             position="absolute"
-                            top="24px"
-                            right="24px"
+                            top={{ base: "23px", md: "24px" }}
+                            right={{ base: "20px", md: "24px" }}
                             boxSize="23.58px"
                             minW="unset"
                             p="0"
@@ -74,32 +74,42 @@ export default function SelectAiPhotosModal({
                             <Icon as={IoClose} boxSize="12px" color="GreyText" />
                         </IconButton>
 
-                        <VStack pt="64px" pb="40px" px="48px" gap="28px">
-                            <Text fontSize="20px" fontWeight="500" color="Grey" textAlign="center">
-                                Select {MAX_AI_PHOTOS} best photos for AI
-                            </Text>
-
-                            <HStack gap="24.14px" wrap="wrap" justify="center">
+                        <VStack
+                            pt={{ base: "53px", md: "64px" }}
+                            pb={{ base: "35px", md: "40px" }}
+                            px={{ base: "52px", md: "48px" }}
+                            gap={{ base: "20px", md: "28px" }}
+                        >
+                            {/* Photos come first, then the instruction — the order
+                                both the mobile and desktop designs use. */}
+                            {/* Column count is set outright rather than left to
+                                wrapping against a max-width — the tile and gap
+                                widths sum to a fraction over any round cap, so
+                                that approach silently collapsed to one per row. */}
+                            <SimpleGrid
+                                columns={{ base: 2, md: 4 }}
+                                gap={{ base: "21.44px", md: "24.14px" }}
+                                justifyItems="center"
+                            >
                                 {photos.map((file, i) => {
                                     const isSelected = selected.includes(file);
                                     return (
                                         // The selection ring is an outline, not a border —
                                         // outline is drawn outside the box without adding to
                                         // its layout width, so toggling it on/off never
-                                        // resizes the tile or reflows the row (which is what
-                                        // pushed the 4th photo onto its own line before).
+                                        // resizes the tile or reflows the row.
                                         <Image
                                             key={previews[i]}
                                             src={previews[i]}
                                             alt={`Photo ${i + 1}`}
-                                            boxSize="115.36px"
+                                            boxSize={{ base: "102.43px", md: "115.36px" }}
                                             objectFit="cover"
                                             bg="#E9E9E9"
-                                            borderRadius="19.44px"
+                                            borderRadius={{ base: "17.26px", md: "19.44px" }}
                                             cursor="pointer"
-                                            outlineWidth="3px"
+                                            outlineWidth={{ base: "4.44px", md: "3px" }}
                                             outlineStyle="solid"
-                                            outlineOffset="3px"
+                                            outlineOffset={{ base: "-4.44px", md: "3px" }}
                                             outlineColor={isSelected ? "Blue" : "transparent"}
                                             transition="outline-color 0.15s ease, transform 0.15s ease"
                                             _hover={{ transform: "scale(1.05)" }}
@@ -107,51 +117,89 @@ export default function SelectAiPhotosModal({
                                         />
                                     );
                                 })}
-                            </HStack>
+                            </SimpleGrid>
 
-                            {/* Fixed legend explaining what each pick will be called —
-                                stays up the whole time the modal is open, independent of
-                                how many photos are actually selected right now. */}
-                            <HStack gap="30.31px" wrap="wrap" justify="center">
-                                {TAG_LABELS.map((_, i) => (
-                                    // Two separate rounded pills, not one joined shape — the
-                                    // cream "Photo N" badge sits in front of and overlaps the
-                                    // blue hint pill behind it.
-                                    <Flex key={i} align="center">
-                                        <Box
-                                            px="16px"
-                                            py="8.42px"
-                                            bg="Cream"
-                                            borderRadius="30.31px"
-                                            position="relative"
-                                            zIndex={1}
-                                        >
-                                            <Text fontSize="18px" fontWeight="500" color="GreyText" whiteSpace="nowrap">
-                                                Photo {i + 1}
-                                            </Text>
-                                        </Box>
-                                        <Box
-                                            px="20px"
-                                            py="8.42px"
-                                            pl="36px"
-                                            ml="-24px"
-                                            bg="#E3F4FF"
-                                            borderRadius="37.05px"
-                                        >
-                                            <Text fontSize="18px" fontWeight="500" color="BlueText" whiteSpace="nowrap">
-                                                {TAG_LABELS[i]}
-                                            </Text>
-                                        </Box>
-                                    </Flex>
-                                ))}
-                            </HStack>
+                            <VStack w="100%" gap="16px">
+                                <Text
+                                    fontSize={{ base: "16px", md: "20px" }}
+                                    fontWeight="500"
+                                    color="Grey"
+                                    textAlign="center"
+                                >
+                                    Select {MAX_AI_PHOTOS} best photos for AI
+                                </Text>
 
-                            <Flex w="100%" justify="flex-end">
+                                {/* Fixed legend naming each pick — stays up the whole
+                                    time the modal is open, independent of how many
+                                    photos are selected right now. Mobile uses a
+                                    numbered dot; desktop uses overlapping pills. */}
+                                <Flex
+                                    display={{ base: "flex", md: "none" }}
+                                    w="100%"
+                                    justify="space-between"
+                                    align="center"
+                                >
+                                    {TAG_LABELS.map((label, i) => (
+                                        <Flex key={label} align="center" gap="5px">
+                                            <Circle size="25px" bg="Cream">
+                                                <Text fontSize="12px" fontWeight="500" color="Grey">
+                                                    {i + 1}
+                                                </Text>
+                                            </Circle>
+                                            <Text fontSize="14px" fontWeight="500" color="BlueText">
+                                                {label}
+                                            </Text>
+                                        </Flex>
+                                    ))}
+                                </Flex>
+
+                                <HStack
+                                    display={{ base: "none", md: "flex" }}
+                                    gap="30.31px"
+                                    wrap="wrap"
+                                    justify="center"
+                                >
+                                    {TAG_LABELS.map((label, i) => (
+                                        // Two separate rounded pills, not one joined shape —
+                                        // the cream "Photo N" badge sits in front of and
+                                        // overlaps the blue hint pill behind it.
+                                        <Flex key={label} align="center">
+                                            <Box
+                                                px="16px"
+                                                py="8.42px"
+                                                bg="Cream"
+                                                borderRadius="30.31px"
+                                                position="relative"
+                                                zIndex={1}
+                                            >
+                                                <Text fontSize="18px" fontWeight="500" color="GreyText" whiteSpace="nowrap">
+                                                    Photo {i + 1}
+                                                </Text>
+                                            </Box>
+                                            <Box
+                                                px="20px"
+                                                py="8.42px"
+                                                pl="36px"
+                                                ml="-24px"
+                                                bg="#E3F4FF"
+                                                borderRadius="37.05px"
+                                            >
+                                                <Text fontSize="18px" fontWeight="500" color="BlueText" whiteSpace="nowrap">
+                                                    {label}
+                                                </Text>
+                                            </Box>
+                                        </Flex>
+                                    ))}
+                                </HStack>
+                            </VStack>
+
+                            {/* Full width on mobile, right-aligned on desktop. */}
+                            <Flex w="100%" justify={{ base: "center", md: "flex-end" }}>
                                 <S2SButton
                                     text="Next"
-                                    width="134.39px"
-                                    height="44.80px"
-                                    fontSize="20px"
+                                    width={{ base: "230px", md: "134.39px" }}
+                                    height={{ base: "40px", md: "44.80px" }}
+                                    fontSize={{ base: "14px", md: "20px" }}
                                     disabled={selected.length !== MAX_AI_PHOTOS}
                                     loading={isSubmitting}
                                     onClick={() => onConfirm(selected)}

@@ -128,9 +128,9 @@ export default function Diary() {
         <Flex justify="flex-end" w={isDesktop ? "auto" : "100%"}>
             <S2SButton
                 text="Finish"
-                width="115px"
-                height="45px"
-                fontSize="20px"
+                width={{ base: "133px", md: "115px" }}
+                height={{ base: "42px", md: "45px" }}
+                fontSize={{ base: "16px", md: "20px" }}
                 onClick={() => navigate("/")}
             />
         </Flex>
