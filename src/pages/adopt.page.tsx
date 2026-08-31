@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Box, Drawer, Flex, Grid, Image, Portal, Text, VStack } from "@chakra-ui/react";
 import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
 import { LuFilter } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
     S2SPageTitle,
@@ -20,20 +20,35 @@ import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.
 import { useThaiProvinces } from "../hooks/query/address.query";
 import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOptions.util";
 import { districtState } from "./profile/address.util";
+import PhotoSearchModal from "./home/photoSearchModal.component";
+import type { PhotoSearchResult } from "./home/photoSearchModal.component";
 
 const PAGE_SIZE = 16;
 
 export default function Adopt() {
     const navigate = useNavigate();
-    const [category, setCategory] = useState<"dog" | "cat" | "all">("all");
+
+    /**
+     * Seeded filters from the home page's photo search, which classifies a
+     * photo and sends the species plus the detected breed here (see
+     * home/photoSearchModal.component.tsx). Read once as the initial state, so
+     * the user can change or clear the filters afterwards like any other.
+     * `breed` is blank when the classifier's label matched no known breed.
+     */
+    const photoSearch = useLocation().state as
+        | { species?: "dog" | "cat"; breed?: string }
+        | null;
+
+    const [category, setCategory] = useState<"dog" | "cat" | "all">(photoSearch?.species ?? "all");
     const [keyword, setKeyword] = useState("");
-    const [breed, setBreed] = useState("");
+    const [breed, setBreed] = useState(photoSearch?.breed ?? "");
     const [color, setColor] = useState("");
     const [gender, setGender] = useState("");
     const [ageGroup, setAgeGroup] = useState("");
     const [location, setLocation] = useState("");
     const [page, setPage] = useState(1);
     const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+    const [photoSearchOpen, setPhotoSearchOpen] = useState(false);
 
     const changeCategory = (next: "dog" | "cat" | "all") => {
         setCategory(next);
@@ -53,6 +68,22 @@ export default function Adopt() {
         setCategory("all");
         setKeyword("");
         setBreed("");
+        setColor("");
+        setGender("");
+        setAgeGroup("");
+        setLocation("");
+        setPage(1);
+    };
+
+    /**
+     * A photo search run from this page applies its result in place — the same
+     * filters the seeded navigation from the home page would have produced,
+     * set directly because re-navigating to /adopt would not remount this.
+     * The other filters are cleared for the reason changeCategory clears them.
+     */
+    const applyPhotoSearch = ({ species, breed: detectedBreed }: PhotoSearchResult) => {
+        setCategory(species);
+        setBreed(detectedBreed);
         setColor("");
         setGender("");
         setAgeGroup("");
@@ -137,7 +168,21 @@ export default function Adopt() {
                     <S2SInput
                         placeholder="Search by keyword ( e.g. black, orange )"
                         startIcon={<IoSearchOutline color="gray" size={20}/>}
-                        endIcon={<IoCameraOutline color="gray" size={20}/>}
+                        // InputGroup's end element is inert by default, so the
+                        // icon needs pointer events turned back on to be a
+                        // usable button rather than decoration.
+                        endIcon={
+                            <Box
+                                as="button"
+                                aria-label="Search by photo"
+                                pointerEvents="auto"
+                                cursor="pointer"
+                                display="flex"
+                                onClick={() => setPhotoSearchOpen(true)}
+                            >
+                                <IoCameraOutline color="gray" size={20} />
+                            </Box>
+                        }
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
                     />
@@ -156,7 +201,7 @@ export default function Adopt() {
                         onChange={(e) => setKeyword(e.target.value)}
                     />
                 </Box>
-                <S2SIconButton icon={<IoCameraOutline color="Grey" />} ariaLabel="Search by photo" bgColor="White" onClick={() => console.log("search by photo - not implemented yet")} />
+                <S2SIconButton icon={<IoCameraOutline color="Grey" />} ariaLabel="Search by photo" bgColor="White" onClick={() => setPhotoSearchOpen(true)} />
             </Flex>
             {/* Desktop: filters stay inline. On mobile these live in the filter
                 drawer instead (triggered by the funnel button above). */}
@@ -322,6 +367,12 @@ export default function Adopt() {
             <Flex justify="center" mt="32px">
                 <S2SPagination page={page} totalPages={totalPages} onPageChange={setPage} />
             </Flex>
+
+            <PhotoSearchModal
+                isOpen={photoSearchOpen}
+                onClose={() => setPhotoSearchOpen(false)}
+                onResult={applyPhotoSearch}
+            />
         </Box>
     );
 }

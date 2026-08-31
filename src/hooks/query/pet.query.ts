@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+    adoptPetAPI,
     classifyPetAPI,
     petBreedsAPI,
     petColorsAPI,
@@ -8,6 +9,7 @@ import {
   getPetInfoAPI,
   deletePetAPI,
   searchPetsAPI,
+  type AdoptRequestPayload,
   type PetSearchParams,
   type RandomPetResponseItem
 } from "../../services/apis/pet.api"
@@ -134,6 +136,16 @@ export function useDeletePet() {
     mutationFn: (pid: string | number) => deletePetAPI(pid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pets"] })
+    },
+  })
+}
+
+/** Returns the new request's `rid`, which the rehomer later accepts or denies. */
+export function useAdoptPet(pid: string | undefined) {
+  return useMutation({
+    mutationFn: async (answers: AdoptRequestPayload) => {
+      const res = await adoptPetAPI(pid as string, answers)
+      return res.data.rid as number
     },
   })
 }

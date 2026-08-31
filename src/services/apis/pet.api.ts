@@ -164,6 +164,52 @@ export interface PetInfoResult {
   isOwner: boolean;
 }
 
+/**
+ * The adoption request body, keyed exactly as domain.PetAdoptRequest declares
+ * its json tags (lowercase `q1_1` …, unlike the CAPITALISED keys the read-side
+ * ScreeningAnswer comes back with — that struct has no tags at all).
+ *
+ * Choice answers are 0-based indexes into the option lists in screeningForm.ts,
+ * matching how screeningAnswersModal reads them back. The one exception is
+ * `q2_1`, which stores the residence label itself.
+ */
+export interface AdoptRequestPayload {
+  q1_1: boolean;
+  q1_2: boolean;
+  q1_3: string;
+  q2_1: string;
+  q2_2: boolean;
+  q2_3: boolean;
+  /** Hours per day the pet would be left alone. */
+  q3_1: number;
+  q3_2: boolean;
+  q3_3: string;
+  q4_1: number;
+  q5_1: number;
+  q6_1: number;
+  q6_2: number;
+  note: string;
+}
+
+/**
+ * Submit an adoption screening form for one pet. Requires a session — the
+ * handler takes the adopter from the auth cookie, not the payload.
+ *
+ * `pid` goes in the body as well as the path: the route carries `:pid`, but
+ * Adopt reads it from domain.PetAdoptRequest.
+ */
+export async function adoptPetAPI(pid: string | number, answers: AdoptRequestPayload) {
+  const res = await axiosInstance.post(`/pets/${pid}/adopt`, {
+    pid: Number(pid),
+    ...answers,
+  });
+
+  if (res.status === 200 || res.status === 201) {
+    return res;
+  }
+  throw new Error("Failed to submit the adoption request");
+}
+
 /** Backed by GetPetInfo in the MySQL adapter. */
 export async function getPetInfoAPI(pid: string | number): Promise<PetInfoResult> {
   const res = await axiosInstance.get(`/pets/${pid}`);
