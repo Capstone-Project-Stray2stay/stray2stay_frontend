@@ -19,7 +19,7 @@ import {
 import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.query";
 import { useThaiProvinces } from "../hooks/query/address.query";
 import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOptions.util";
-import { districtState } from "./profile/address.util";
+import { districtState } from "../utils/address.util";
 
 const PAGE_SIZE = 16;
 
@@ -119,7 +119,7 @@ export default function Adopt() {
     };
 
     return (
-        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%" }}>
+        <Box width="100%" pb="64px" px={{ base: "24px", md: "9%" }}>
             <S2SPageTitle title="Adopt a Pet" />
 
             <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: "64px" }}>
@@ -161,7 +161,7 @@ export default function Adopt() {
             {/* Desktop: filters stay inline. On mobile these live in the filter
                 drawer instead (triggered by the funnel button above). */}
             <Flex display={{ base: "none", md: "flex" }} justify="center">
-                <Flex justify="space-around" mt="32px" wrap="wrap" gap={4}>
+                <Flex justify="space-between" mt="32px" wrap="wrap" gap={4}>
                     <S2SDropDown
                         key={`breed-${category}-${breedsLoading ? "loading" : "loaded"}`}
                         placeholder="Breed"
@@ -271,7 +271,7 @@ export default function Adopt() {
                     </Drawer.Positioner>
                 </Portal>
             </Drawer.Root>
-            <Box maxW="100%" px={{ base: "30px", md: "9%" }}>
+            <Box maxW="100%" px={{ base: "24px", md: "9%" }}>
                 {isError ? (
                     <Flex minH="300px" align="center" justify="center">
                         <Text color="Grey" fontSize="md">Unable to load pets right now.</Text>
@@ -285,7 +285,7 @@ export default function Adopt() {
                         mt="64px"
                     >
                         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-                            <S2SPetCardSkeleton key={i} width="240px" height="300px" />
+                            <S2SPetCardSkeleton key={i} width={{base: "169px", md: "240px"}} height={{ base: "230px", md: "309px" }} />
                         ))}
                     </Grid>
                 ) : pets.length === 0 ? (
@@ -304,8 +304,8 @@ export default function Adopt() {
                             <S2SPetCard
                                 key={p.pid}
                                 rank={page === 1 ? i + 1 : undefined}
-                                width="240px"
-                                height="300px"
+                                width={{base: "169px", md: "240px"}}
+                                height={{base: "231px", md: "309px" }}
                                 petName={p.petName}
                                 petImageURL={p.petImageAddress?.[0] ?? "/assets/images/house.png"}
                                 petAge={p.petAgeGroup || "Unknown age"}

@@ -1,17 +1,16 @@
 import {
   Badge,
   Box,
-  Dialog,
   Flex,
   Icon,
   Image,
-  Portal,
   Text,
   VStack,
   IconButton
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { isAxiosError } from "axios";
 import {
   LuCheck,
   LuChevronLeft,
@@ -20,15 +19,17 @@ import {
   LuPawPrint,
   LuStethoscope,
   LuSyringe,
-  LuTrash2,
   LuX,
 } from "react-icons/lu";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
-import { useDeletePet, usePetInfo } from "../hooks/query/pet.query";
+import { useAdoptPet, usePetInfo } from "../hooks/query/pet.query";
+import { useAuth } from "../hooks/query/auth.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
-import { VACCINE_OPTIONS } from "./rehome/rehome.type";
+import { VACCINE_OPTIONS } from "../types/rehome.type";
+import AdoptScreeningForm from "../components/profile/adoptScreeningForm.component";
+import type { AdoptSubmission } from "../services/apis/pet.api";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
 
@@ -37,19 +38,44 @@ function formatAgeGroup(ageGroup: string): string {
   return match?.label ?? ageGroup;
 }
 
+/** Pulls the server's own message out of a failed request — see rehome.page.tsx's serverMessage. */
+function serverMessage(error: unknown): string {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { error?: string; message?: string } | undefined;
+    return data?.error ?? data?.message ?? error.message;
+  }
+  return error instanceof Error ? error.message : "Unknown error";
+}
+
 export default function PetProfile() {
   const { pid } = useParams();
   const navigate = useNavigate();
-  const { pet, isOwner, isLoading, isError } = usePetInfo(pid);
+  const location = useLocation();
+  const { user } = useAuth();
+  const { pet, isOwner, adoptionStatus, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const deletePetMutation = useDeletePet();
+  const [showAdoptForm, setShowAdoptForm] = useState(false);
+  const [adoptError, setAdoptError] = useState("");
+  const adoptPetMutation = useAdoptPet();
 
-  const handleDelete = () => {
+  const handleAdoptClick = () => {
+    if (!user) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    setAdoptError("");
+    setShowAdoptForm(true);
+  };
+
+  const handleAdoptSubmit = (answers: AdoptSubmission) => {
     if (!pid) return;
-    deletePetMutation.mutate(pid, {
-      onSuccess: () => navigate("/adopt"),
-    });
+    adoptPetMutation.mutate(
+      { pid, answers },
+      {
+        onSuccess: () => setShowAdoptForm(false),
+        onError: (err) => setAdoptError(serverMessage(err)),
+      }
+    );
   };
 
   if (isLoading) {
@@ -88,7 +114,7 @@ export default function PetProfile() {
   };
 
   return (
-    <Box width={{ base: "100%", md: "80vw" }}>
+    <Box width="100%" px={{ base: "30px", md: "9%"}}>
       <S2SPageTitle title="Pet Profile" />
 
       <Box maxW="900px" mx="auto" mt="48px">
@@ -352,58 +378,42 @@ export default function PetProfile() {
           />
         </Box>
 
-        {isOwner && (
+        {!isOwner && (
           <Flex justify="center" mt="48px">
-            <S2SButton
-              text="Delete Pet"
-              icon={<LuTrash2 size={18} />}
-              bgColor="red.500"
-              width="200px"
-              height="48px"
-              fontSize="18px"
-              onClick={() => setShowDeleteConfirm(true)}
-            />
+            {pet.status === "ADOPTED" ? (
+              <Text fontSize="18px" fontWeight="600" color="GreyText">
+                This pet has already been adopted.
+              </Text>
+            ) : adoptionStatus === "PENDING" ? (
+              <S2SButton
+                text="Request Pending"
+                bgColor="Yellow"
+                width="200px"
+                height="48px"
+                fontSize="18px"
+                disabled
+              />
+            ) : (
+              <S2SButton
+                text="Adopt the Pet"
+                width="200px"
+                height="48px"
+                fontSize="18px"
+                onClick={handleAdoptClick}
+              />
+            )}
           </Flex>
         )}
       </Box>
 
-      <Dialog.Root
-        open={showDeleteConfirm}
-        onOpenChange={(e) => setShowDeleteConfirm(e.open)}
-        placement="center"
-      >
-        <Portal>
-          <Dialog.Backdrop bg="blackAlpha.400" />
-          <Dialog.Positioner>
-            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-              <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
-                  Delete this pet?
-                </Text>
-                <Text fontSize="14px" color="GreyText" textAlign="center">
-                  This removes {pet.petName || "this pet"}'s listing and all of its photos permanently. This can't be undone.
-                </Text>
-                <Flex gap="12px" mt="8px">
-                  <S2SButton
-                    text="Cancel"
-                    variant="outline"
-                    width="120px"
-                    onClick={() => setShowDeleteConfirm(false)}
-                    disabled={deletePetMutation.isPending}
-                  />
-                  <S2SButton
-                    text="Delete"
-                    bgColor="red.500"
-                    width="120px"
-                    loading={deletePetMutation.isPending}
-                    onClick={handleDelete}
-                  />
-                </Flex>
-              </VStack>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
+      <AdoptScreeningForm
+        isOpen={showAdoptForm}
+        petName={pet.petName || "this pet"}
+        isSubmitting={adoptPetMutation.isPending}
+        serverError={adoptError}
+        onClose={() => setShowAdoptForm(false)}
+        onSubmit={handleAdoptSubmit}
+      />
     </Box>
   );
 }

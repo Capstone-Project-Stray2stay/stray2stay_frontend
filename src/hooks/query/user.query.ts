@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { getUserInfoAPI, updateUserAPI, updateUserImageAPI } from "../../services/apis/user.api"
 import type { UpdateUserPayload } from "../../services/apis/user.api"
-import { splitAddress } from "../../pages/profile/address.util"
-import type { PersonalInfoDraft, PetPreferenceDraft } from "../../pages/profile/profile.type"
+import { splitAddress } from "../../utils/address.util"
+import type { PersonalInfoDraft, PetPreferenceDraft } from "../../types/profile.type"
 
 export function useUpdateUser() {
     return useMutation({

@@ -8,12 +8,12 @@ import { useUpdateNewUserStatus } from "../hooks/query/auth.query";
 import { useUpdateUser, useUserInfo } from "../hooks/query/user.query";
 import { geocodeAddressAPI } from "../services/apis/address.api";
 
-import { joinAddress, joinAddressForGeocode } from "./profile/address.util";
-import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "./profile/profile.type";
-import type { PersonalInfoDraft, PetPreferenceDraft } from "./profile/profile.type";
+import { joinAddress, joinAddressForGeocode } from "../utils/address.util";
+import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "../types/profile.type";
+import type { PersonalInfoDraft, PetPreferenceDraft } from "../types/profile.type";
 
-import PersonalInfoFields from "./profile/personalInfoFields.component";
-import PetPreferencesFields from "./profile/petPreferencesFields.component";
+import PersonalInfoFields from "../components/profile/personalInfoFields.component";
+import PetPreferencesFields from "../components/profile/petPreferencesFields.component";
 
 const isPersonalInfoComplete = (info: PersonalInfoDraft) =>
     info.firstName.trim() !== "" &&

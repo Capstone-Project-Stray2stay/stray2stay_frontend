@@ -3,13 +3,45 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box, Flex, Text } from "@chakra-ui/react";
 
 import { S2SButton, S2SPageTitle } from "../components/S2S.components";
-import { useBreeds, usePetColors } from "../hooks/query/pet.query";
+import { useBreeds, usePetColors, usePetInfo, useUpdatePet } from "../hooks/query/pet.query";
 
-import PhotoPicker from "./rehome/photoPicker.component";
-import Step3Details from "./rehome/step3Details.component";
-import { getMockEditPet } from "./rehome/mockEditPet";
-import { missingFields } from "./rehome/validation";
-import type { EditPetDraft } from "./rehome/rehome.type";
+import PhotoPicker from "../components/rehome/photoPicker.component";
+import Step3Details from "../components/rehome/step3Details.component";
+import { splitAddress } from "../utils/address.util";
+import { missingFields } from "../utils/validation";
+import type { EditPetDraft, PetType } from "../types/rehome.type";
+import type { PetInfoResponse } from "../services/apis/pet.api";
+
+function toEditPetDraft(pet: PetInfoResponse): EditPetDraft {
+    const petType = pet.petType.toLowerCase() as PetType;
+    const { street, subDistrict, district, state } = splitAddress(pet.petAddress);
+
+    return {
+        petType: petType === "dog" || petType === "cat" ? petType : null,
+        name: pet.petName,
+        breed: pet.petBreed,
+        color: pet.petColor,
+        ageGroup: pet.petAgeGroup,
+        gender: pet.petGender,
+        personality: pet.petPersonality,
+        vaccinations: pet.petVaccination,
+        sterilized: pet.petSterilized,
+        specialCare: (pet.petSpecialCare ?? "")
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        note: pet.note,
+        location: {
+            street,
+            subDistrict,
+            district,
+            state,
+            lat: pet.petAddressLat || null,
+            long: pet.petAddressLong || null,
+        },
+        photos: pet.petImageAddress,
+    };
+}
 
 /**
  * Edit Pet's Profile — reached from the pencil button on the Profile page's
@@ -24,24 +56,24 @@ import type { EditPetDraft } from "./rehome/rehome.type";
  */
 export default function EditPet() {
     const { petId } = useParams();
+    const { pet, isLoading, isError } = usePetInfo(petId);
 
-    // TODO: swap for GET /pets/:pid once that route exists. While the lookup is
-    // synchronous there is no loading state to render.
-    const pet = getMockEditPet(petId);
+    if (isLoading) return <Box></Box>;
 
     // A hand-typed or stale URL shouldn't strand the user on an empty form.
-    if (!pet) return <Navigate to="/profile" replace />;
+    if (isError || !pet) return <Navigate to="/profile" replace />;
 
     // Keyed so navigating straight from one pet's edit page to another's
     // rebuilds the draft rather than keeping the first pet's values.
-    return <EditPetForm key={petId} initialDraft={pet} />;
+    return <EditPetForm key={petId} pid={pet.pid} initialDraft={toEditPetDraft(pet)} />;
 }
 
-function EditPetForm({ initialDraft }: { initialDraft: EditPetDraft }) {
+function EditPetForm({ pid, initialDraft }: { pid: number; initialDraft: EditPetDraft }) {
     const navigate = useNavigate();
 
     const [draft, setDraft] = useState<EditPetDraft>(initialDraft);
     const [formError, setFormError] = useState("");
+    const updatePetMutation = useUpdatePet();
 
     // The breed/color vocabularies are real even though the pet itself is not —
     // /pets/breeds and /pets/breed/color both exist.
@@ -59,10 +91,13 @@ function EditPetForm({ initialDraft }: { initialDraft: EditPetDraft }) {
         }
 
         setFormError("");
-        // TODO: PUT /pets/:pid once the route exists. Photos will need splitting
-        // first — the `string` entries are already on the server and only the
-        // `File` ones get re-uploaded. Until then the edits are simply dropped.
-        navigate("/profile");
+        updatePetMutation.mutate(
+            { pid, draft },
+            {
+                onSuccess: () => navigate("/profile"),
+                onError: () => setFormError("Failed to save changes. Please try again."),
+            }
+        );
     };
 
     return (
@@ -106,6 +141,7 @@ function EditPetForm({ initialDraft }: { initialDraft: EditPetDraft }) {
                         width={{ base: "116.42px", md: "134.39px" }}
                         height={{ base: "38.81px", md: "44.80px" }}
                         fontSize={{ base: "17.33px", md: "20px" }}
+                        loading={updatePetMutation.isPending}
                         onClick={handleSave}
                     />
                 </Flex>

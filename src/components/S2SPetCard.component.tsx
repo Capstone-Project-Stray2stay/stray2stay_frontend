@@ -1,8 +1,6 @@
-import { Box, Image, Text, HStack, Flex } from "@chakra-ui/react";
+import { Box, Image, Text, Flex } from "@chakra-ui/react";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 import { FaLocationDot } from "react-icons/fa6";
-
-import { S2SChip } from "./S2S.components";
 
 import type { S2SPetCardType } from "../types/component.type"
 
@@ -11,7 +9,7 @@ export default function S2SPetCard({ rank, width, height, petImageURL, petAge, p
         <Box
             w={width}
             h={height}
-            rounded="30px"
+            rounded={{base: "12px",md: "24px"}}
             overflow="hidden"
             bgColor="White"
             boxShadow="md"
@@ -23,7 +21,7 @@ export default function S2SPetCard({ rank, width, height, petImageURL, petAge, p
             }}
         >
             <Box position="relative">
-                <Image src={petImageURL} alt={petBreed} w="full" h="203px" objectFit="cover" />
+                <Image src={petImageURL} alt={petBreed} w="full" h={{ base: "150px", md: "203px" }} objectFit="cover" />
                 {rank && rank <= 3 && (
                     <Box
                         position="absolute"
@@ -43,36 +41,39 @@ export default function S2SPetCard({ rank, width, height, petImageURL, petAge, p
                     </Box>
                 )}
             </Box>
-            <Flex justify="space-between" align="center" pt={4} px={4} pb={2}>
-                <Text
-                    fontSize="md"
-                    color="Grey"
-                    justifyContent="left"
-                    alignItems="center"
-                    display="flex"
-                    gap={1}
-                    fontWeight="bold"
-                >
-                    <FaLocationDot /> {petLocation}
-                </Text>
-                {petGender === "Male" ? (
-                    <IoMaleOutline size={24} color="#87CFF0" />
-                ) : (
-                    <IoFemaleOutline size={24} color="#FF69B4" />
-                )}
-            </Flex>
-            <HStack px={4} pb={4} align="start" flexWrap="wrap">
-                <S2SChip
-                    key={petBreed}
-                    text={petBreed}
-                    readOnly
-                />
-                <S2SChip
-                    key={petAge}
-                    text={petAge}
-                    readOnly
-                />
-            </HStack>
+            <Box px={{base: "8px", md: "16px"}} py={{base: "12px", md: "auto"}} gap={"8px"}>
+                <Flex justify="space-between" align="center" gap={2}>
+                    <Flex
+                        color="Grey"
+                        align="center"
+                        gap={1}
+                        fontSize={{ base: "14px", md: "18px" }}
+                        fontWeight="medium"
+                        flex="1"
+                        minW={0}
+                    >
+                        <Box flexShrink={0}>
+                            <FaLocationDot />
+                        </Box>
+                        <Text truncate>
+                            {petLocation}
+                        </Text>
+                    </Flex>
+                    {petGender === "Male" ? (
+                        <IoMaleOutline size={21} color="#87CFF0" />
+                    ) : (
+                        <IoFemaleOutline size={21} color="#FF69B4" />
+                    )}
+                </Flex>
+                <Box>
+                    <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="medium" color="BlueText">
+                        {petBreed}
+                    </Text>
+                    <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="medium" color="LightGrey">
+                        {petAge}
+                    </Text>
+                </Box>
+            </Box>
         </Box>
     );
 }
