@@ -40,6 +40,10 @@ export const router = createBrowserRouter([
                         element: <Adopt />,
                     },
                     {
+                        path: "/pet-profile/:pid",
+                        element: <PetProfile />,
+                    },
+                    {
                         element: <ProtectedRoute />,
                         children: [
                             {
@@ -68,10 +72,6 @@ export const router = createBrowserRouter([
                             {
                                 path: "/adopt",
                                 element: <Adopt />,
-                            },
-                            {
-                                path: "/pet-profile/:pid",
-                                element: <PetProfile />,
                             },
                         ]
                     }

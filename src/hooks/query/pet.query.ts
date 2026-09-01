@@ -4,14 +4,23 @@ import {
     petBreedsAPI,
     petColorsAPI,
     registerPetAPI,
+    updatePetAPI,
+    adoptPetAPI,
   getRandomPetsAPI,
+  getMyPetsAPI,
   getPetInfoAPI,
   deletePetAPI,
   searchPetsAPI,
+  getPetAdoptorsAPI,
+  getScreeningAnswerAPI,
+  selectAdopterAPI,
+  getMyAdoptionRequestsAPI,
+  cancelAdoptionRequestAPI,
   type PetSearchParams,
-  type RandomPetResponseItem
+  type RandomPetResponseItem,
+  type AdoptSubmission
 } from "../../services/apis/pet.api"
-import type { PetType, RehomeDraft } from "../../pages/rehome/rehome.type"
+import type { EditPetDraft, PetType, RehomeDraft } from "../../types/rehome.type"
 
 export function useClassifyPet() {
     return useMutation({
@@ -99,6 +108,18 @@ export function useRegisterPet() {
         },
     })
 }
+
+export function useUpdatePet() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ pid, draft }: { pid: string | number; draft: EditPetDraft }) =>
+            updatePetAPI(pid, draft),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["pets"] })
+        },
+    })
+}
   
 export function useRandomPets() {
   const { data, isLoading, isError, error } = useQuery<RandomPetResponseItem[]>({
@@ -124,7 +145,40 @@ export function usePetInfo(pid: string | undefined) {
     retry: false,
   })
 
-  return { pet: data?.pet, isOwner: data?.isOwner ?? false, isLoading, isError }
+  return {
+    pet: data?.pet,
+    isOwner: data?.isOwner ?? false,
+    adoptionStatus: data?.adoptionStatus ?? "",
+    isLoading,
+    isError,
+  }
+}
+
+export function useAdoptPet() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ pid, answers }: { pid: string | number; answers: AdoptSubmission }) =>
+      adoptPetAPI(pid, answers),
+    onSuccess: (_data, { pid }) => {
+      queryClient.invalidateQueries({ queryKey: ["pets", "info", String(pid)] })
+    },
+  })
+}
+
+export function useMyPets() {
+  const { data, isLoading, isError, error } = useQuery<RandomPetResponseItem[]>({
+    queryKey: ["pets", "mine"],
+    queryFn: getMyPetsAPI,
+    retry: 1,
+  });
+
+  return {
+    myPets: data ?? [],
+    isLoading,
+    isError,
+    error,
+  };
 }
 
 export function useDeletePet() {
@@ -156,4 +210,76 @@ export function useSearchPets(params: PetSearchParams) {
     isError,
     error,
   }
+}
+
+/**
+ * Every applicant across every pet the caller owns, in one shared cache
+ * entry — see getPetAdoptorsAPI for why this isn't fetched per-pet.
+ * `enabled` lets callers defer the request until a row is actually expanded.
+ */
+export function useMyPetAdoptors(enabled: boolean) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["pets", "adoptors", "mine"],
+    queryFn: getPetAdoptorsAPI,
+    enabled,
+    retry: 1,
+  })
+
+  return {
+    adoptorsByPet: data ?? [],
+    isLoading,
+    isError,
+  }
+}
+
+export function useScreeningAnswer(pid: string | number, rid: number | undefined, enabled: boolean) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["pets", pid, "screening-answer", rid],
+    queryFn: () => getScreeningAnswerAPI(pid, rid as number),
+    enabled: enabled && rid !== undefined,
+    retry: false,
+  })
+
+  return {
+    answers: data,
+    isLoading,
+    isError,
+  }
+}
+
+export function useSelectAdopter() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ pid, rid }: { pid: string | number; rid: number }) => selectAdopterAPI(pid, rid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pets", "adoptors", "mine"] })
+    },
+  })
+}
+
+export function useMyAdoptionRequests() {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["pets", "adoptions", "mine"],
+    queryFn: getMyAdoptionRequestsAPI,
+    retry: 1,
+  })
+
+  return {
+    adoptionRequests: data ?? [],
+    isLoading,
+    isError,
+    error,
+  }
+}
+
+export function useCancelAdoptionRequest() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (rid: number) => cancelAdoptionRequestAPI(rid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pets", "adoptions", "mine"] })
+    },
+  })
 }

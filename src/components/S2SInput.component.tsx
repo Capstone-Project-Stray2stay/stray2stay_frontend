@@ -37,6 +37,7 @@ export default function S2SInput({
                 bg={bg}
                 borderRadius={borderRadius}
                 borderColor={borderColor}
+                focusRingColor="BlueText"
                 _focus={{ borderColor: "Blue" }}
                 // Chakra's default disabled state dims the whole input to 50%
                 // opacity, which washes the text out — keep it fully readable

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import type { Location } from "react-router-dom";
 import {
     Box,
     Flex,
@@ -21,6 +22,8 @@ import { loginSchema } from "../validators/auth.validator";
 export default function Login() {
     const { mutateAsync: login, isPending } = useLogin();
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = (location.state as { from?: Location } | null)?.from;
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
@@ -36,7 +39,7 @@ export default function Login() {
         }
         try {
             await login(parsed.data);
-            navigate("/");
+            navigate(from ? `${from.pathname}${from.search}` : "/", { replace: true });
         } catch (err: unknown) {
             setError("Invalid email or password");
         }
@@ -52,7 +55,7 @@ export default function Login() {
                 <Heading mb={6} size="lg" color="Grey">
                     Log in
                 </Heading>
-                <form onSubmit={handleSubmit}>
+                <Box as="form" onSubmit={(e) => handleSubmit(e as unknown as FormEvent<HTMLFormElement>)}>
                     <VStack gap={4} mb={6}>
                         <S2SInput
                             placeholder="Email"
@@ -71,7 +74,7 @@ export default function Login() {
                         </Text>}
                         <S2SButton type="submit" text="Log in" bgColor="Blue" width="full" loading={isPending} />
                     </VStack>
-                </form>
+                </Box>
 
                 <Flex justify="center" align="center" mb={6} gap={1}>
                     <Text fontSize="sm" color="LightGrey">
