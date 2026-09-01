@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Flex, Icon, IconButton, Image, Text, VStack } from "@chakra-ui/react";
-import { IoBulbOutline, IoClose } from "react-icons/io5";
+import { IoBulbOutline, IoCameraOutline, IoClose } from "react-icons/io5";
 import { RiImageAiLine } from "react-icons/ri";
 import heic2any from "heic2any";
 
 import { S2SButton } from "../S2S.components";
+import CameraCaptureModal from "./cameraCaptureModal.component";
 import { MAX_PHOTOS, type PetPhoto } from "../../types/rehome.type";
 
 // Most OSes report an empty `type` for .heic/.heif files picked from a photo
@@ -43,6 +44,7 @@ export default function PhotoPicker({
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState("");
+    const [isCameraOpen, setIsCameraOpen] = useState(false);
 
     // Photos already on the server are usable as-is; only the freshly picked
     // Files need an object URL minting for them.
@@ -241,7 +243,12 @@ export default function PhotoPicker({
 
                             {/* Stops the click reaching the zone's own handler,
                                 which would open the file dialog a second time. */}
-                            <Box onClick={(e) => e.stopPropagation()}>
+                            <Flex
+                                direction={{ base: "column", md: "row" }}
+                                align="center"
+                                gap={{ base: "10px", md: "16px" }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
@@ -251,7 +258,17 @@ export default function PhotoPicker({
                                     disabled={isFull}
                                     onClick={() => inputRef.current?.click()}
                                 />
-                            </Box>
+                                <S2SButton
+                                    icon={<Icon as={IoCameraOutline} boxSize={{ base: "16px", md: "20px" }} />}
+                                    text="Take Photo"
+                                    variant="outline"
+                                    width={{ base: "160.78px", md: "216.95px" }}
+                                    height={{ base: "27.99px", md: "37.77px" }}
+                                    fontSize={{ base: "14px", md: "18px" }}
+                                    disabled={isFull}
+                                    onClick={() => setIsCameraOpen(true)}
+                                />
+                            </Flex>
                         </VStack>
                     </VStack>
 
@@ -302,6 +319,14 @@ export default function PhotoPicker({
                     {error}
                 </Text>
             )}
+
+            <CameraCaptureModal
+                isOpen={isCameraOpen}
+                onClose={() => setIsCameraOpen(false)}
+                // Goes through addFiles like a picked file does, so the
+                // MAX_PHOTOS cap and its message apply to shots too.
+                onCapture={(photo) => addFiles([photo])}
+            />
         </Flex>
     );
 }

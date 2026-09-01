@@ -1,9 +1,11 @@
 import {
   Badge,
   Box,
+  Dialog,
   Flex,
   Icon,
   Image,
+  Portal,
   Text,
   VStack,
   IconButton
@@ -19,12 +21,13 @@ import {
   LuPawPrint,
   LuStethoscope,
   LuSyringe,
+  LuTrash2,
   LuX,
 } from "react-icons/lu";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
-import { useAdoptPet, usePetInfo } from "../hooks/query/pet.query";
+import { useAdoptPet, useDeletePet, usePetInfo } from "../hooks/query/pet.query";
 import { useAuth } from "../hooks/query/auth.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
 import { VACCINE_OPTIONS } from "../types/rehome.type";
@@ -54,6 +57,16 @@ export default function PetProfile() {
   const { user } = useAuth();
   const { pet, isOwner, adoptionStatus, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deletePetMutation = useDeletePet();
+
+  const handleDelete = () => {
+    if (!pid) return;
+    deletePetMutation.mutate(pid, {
+      onSuccess: () => navigate("/adopt"),
+    });
+  };
+
   const [showAdoptForm, setShowAdoptForm] = useState(false);
   const [adoptError, setAdoptError] = useState("");
   const adoptPetMutation = useAdoptPet();
@@ -378,7 +391,21 @@ export default function PetProfile() {
           />
         </Box>
 
-        {!isOwner && (
+        {/* The two roles get different actions on the same page: the finder
+            manages their own listing, everyone else can ask to adopt it. */}
+        {isOwner ? (
+          <Flex justify="center" mt="48px">
+            <S2SButton
+              text="Delete Pet"
+              icon={<LuTrash2 size={18} />}
+              bgColor="red.500"
+              width="200px"
+              height="48px"
+              fontSize="18px"
+              onClick={() => setShowDeleteConfirm(true)}
+            />
+          </Flex>
+        ) : (
           <Flex justify="center" mt="48px">
             {pet.status === "ADOPTED" ? (
               <Text fontSize="18px" fontWeight="600" color="GreyText">
@@ -405,6 +432,44 @@ export default function PetProfile() {
           </Flex>
         )}
       </Box>
+
+      <Dialog.Root
+        open={showDeleteConfirm}
+        onOpenChange={(e) => setShowDeleteConfirm(e.open)}
+        placement="center"
+      >
+        <Portal>
+          <Dialog.Backdrop bg="blackAlpha.400" />
+          <Dialog.Positioner>
+            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
+              <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                  Delete this pet?
+                </Text>
+                <Text fontSize="14px" color="GreyText" textAlign="center">
+                  This removes {pet.petName || "this pet"}'s listing and all of its photos permanently. This can't be undone.
+                </Text>
+                <Flex gap="12px" mt="8px">
+                  <S2SButton
+                    text="Cancel"
+                    variant="outline"
+                    width="120px"
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deletePetMutation.isPending}
+                  />
+                  <S2SButton
+                    text="Delete"
+                    bgColor="red.500"
+                    width="120px"
+                    loading={deletePetMutation.isPending}
+                    onClick={handleDelete}
+                  />
+                </Flex>
+              </VStack>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
 
       <AdoptScreeningForm
         isOpen={showAdoptForm}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Flex, Grid, GridItem, Image, SimpleGrid, Text } from "@chakra-ui/react";
 import { FaCamera, FaHouse, FaPaw } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -5,11 +6,13 @@ import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.com
 import { useRandomPets } from "../hooks/query/pet.query";
 import { formatGender } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
+import PhotoSearchModal from "./home/photoSearchModal.component";
 
 export default function Home() {
   const navigate = useNavigate();
   const { recommendedPets, isLoading, isError } = useRandomPets();
   const displayPets = recommendedPets.slice(0, 4);
+  const [isPhotoSearchOpen, setIsPhotoSearchOpen] = useState(false);
 
   return (
     <Box width="100%">
@@ -155,6 +158,7 @@ export default function Home() {
                 bgColor="Blue"
                 icon={<FaCamera />}
                 width="full"
+                onClick={() => setIsPhotoSearchOpen(true)}
               />
             </Box>
           </Box>
@@ -252,6 +256,11 @@ export default function Home() {
           Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
         </Text>
       </Box>
+
+      <PhotoSearchModal
+        isOpen={isPhotoSearchOpen}
+        onClose={() => setIsPhotoSearchOpen(false)}
+      />
     </Box>
   );
 }
