@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Installed agent skills (regenerate via `npx skills add`/`install`; skills-lock.json is tracked)
+.agents
+.claude
+
 .env
 
 # Editor directories and files

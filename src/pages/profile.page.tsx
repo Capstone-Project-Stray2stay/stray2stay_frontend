@@ -3,24 +3,27 @@ import { Box, Flex, VStack } from "@chakra-ui/react";
 
 import { S2SPageTitle } from "../components/S2S.components";
 import { useUpdateUser, useUpdateUserImage, useUserInfo } from "../hooks/query/user.query";
+import { useMyAdoptionRequests, useMyPets } from "../hooks/query/pet.query";
 import { geocodeAddressAPI } from "../services/apis/address.api";
 
-import { joinAddress, joinAddressForGeocode } from "./profile/address.util";
-import { mockAdoptedPets, mockRehomingPets } from "./profile/mockProfile";
-import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "./profile/profile.type";
+import { joinAddress, joinAddressForGeocode } from "../utils/address.util";
+import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "../types/profile.type";
 import type {
+    AdoptedPet,
+    AdoptionStatus,
     InfoTab,
     ListTab,
     PersonalInfoDraft,
     PetPreferenceDraft,
-} from "./profile/profile.type";
+    RehomingPet,
+} from "../types/profile.type";
 
-import ProfileSummaryCard from "./profile/profileSummaryCard.component";
-import PersonalInfoForm from "./profile/personalInfoForm.component";
-import PetPreferencesForm from "./profile/petPreferencesForm.component";
-import ListTabs from "./profile/listTabs.component";
-import MyRehomingList from "./profile/myRehomingList.component";
-import MyAdoptionsList from "./profile/myAdoptionsList.component";
+import ProfileSummaryCard from "../components/profile/profileSummaryCard.component";
+import PersonalInfoForm from "../components/profile/personalInfoForm.component";
+import PetPreferencesForm from "../components/profile/petPreferencesForm.component";
+import ListTabs from "../components/profile/listTabs.component";
+import MyRehomingList from "../components/profile/myRehomingList.component";
+import MyAdoptionsList from "../components/profile/myAdoptionsList.component";
 
 /**
  * Waits on GET /user/info before mounting the page proper so its local draft
@@ -57,6 +60,28 @@ function ProfileContent({
     // not reset which form the left card is showing, or vice versa.
     const [infoTab, setInfoTab] = useState<InfoTab>("personal");
     const [listTab, setListTab] = useState<ListTab>("rehoming");
+
+    const { myPets } = useMyPets();
+    const rehomingPets: RehomingPet[] = myPets.map((pet) => ({
+        id: String(pet.pid),
+        name: pet.petName || "Unnamed",
+        imageURL: pet.petImageAddress?.[0] ?? "",
+    }));
+
+    const REHOME_STATUS_MAP: Record<string, AdoptionStatus> = {
+        PENDING: "pending",
+        ACCEPT: "success",
+        DENIED: "denied",
+    };
+    const { adoptionRequests } = useMyAdoptionRequests();
+    const adoptedPets: AdoptedPet[] = adoptionRequests.map((request) => ({
+        id: String(request.pid),
+        rid: request.rid,
+        name: request.petName || "Unnamed",
+        phone: request.ownerPhone,
+        imageURL: request.petImageAddress?.[0] ?? "",
+        status: REHOME_STATUS_MAP[request.rehomeStatus] ?? "pending",
+    }));
 
     const [personalInfo, setPersonalInfo] = useState<PersonalInfoDraft>(initialPersonalInfo);
     const [dogPreference, setDogPreference] = useState<PetPreferenceDraft>(initialDogPreference);
@@ -181,9 +206,9 @@ function ProfileContent({
                     <ListTabs value={listTab} onChange={setListTab} />
 
                     {listTab === "rehoming" ? (
-                        <MyRehomingList pets={mockRehomingPets} />
+                        <MyRehomingList pets={rehomingPets} />
                     ) : (
-                        <MyAdoptionsList pets={mockAdoptedPets} />
+                        <MyAdoptionsList pets={adoptedPets} />
                     )}
                 </VStack>
             </VStack>

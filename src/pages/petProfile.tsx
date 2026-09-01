@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Dialog,
   Flex,
   Icon,
@@ -12,7 +11,7 @@ import {
   IconButton
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isAxiosError } from "axios";
 import {
   LuCheck,
@@ -29,9 +28,11 @@ import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
 import { useAdoptPet, useDeletePet, usePetInfo } from "../hooks/query/pet.query";
-import AdoptionFormModal from "./profile/adoptionFormModal.component";
+import { useAuth } from "../hooks/query/auth.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
-import { VACCINE_OPTIONS } from "./rehome/rehome.type";
+import { VACCINE_OPTIONS } from "../types/rehome.type";
+import AdoptScreeningForm from "../components/profile/adoptScreeningForm.component";
+import type { AdoptSubmission } from "../services/apis/pet.api";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
 
@@ -40,10 +41,7 @@ function formatAgeGroup(ageGroup: string): string {
   return match?.label ?? ageGroup;
 }
 
-/**
- * The server's own reason for a rejected request — "pet not available for
- * adoption" is one the user can act on, and a generic message would hide it.
- */
+/** Pulls the server's own message out of a failed request — see rehome.page.tsx's serverMessage. */
 function serverMessage(error: unknown): string {
   if (isAxiosError(error)) {
     const data = error.response?.data as { error?: string; message?: string } | undefined;
@@ -55,7 +53,9 @@ function serverMessage(error: unknown): string {
 export default function PetProfile() {
   const { pid } = useParams();
   const navigate = useNavigate();
-  const { pet, isOwner, isLoading, isError } = usePetInfo(pid);
+  const location = useLocation();
+  const { user } = useAuth();
+  const { pet, isOwner, adoptionStatus, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deletePetMutation = useDeletePet();
@@ -67,18 +67,29 @@ export default function PetProfile() {
     });
   };
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [showAdoptForm, setShowAdoptForm] = useState(false);
   const [adoptError, setAdoptError] = useState("");
-  /**
-   * Flipped once this visit's request goes through, which is as far as the
-   * button can currently tell. There is no endpoint for "does the signed-in
-   * user already have a request on this pet", so a reload drops back to
-   * "Adopt the pet" — a second submit is then rejected by PostPetAdopt only
-   * after the pet is taken.
-   * TODO: read the real state once the backend exposes the user's own requests.
-   */
-  const [requestSent, setRequestSent] = useState(false);
-  const adopt = useAdoptPet(pid);
+  const adoptPetMutation = useAdoptPet();
+
+  const handleAdoptClick = () => {
+    if (!user) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    setAdoptError("");
+    setShowAdoptForm(true);
+  };
+
+  const handleAdoptSubmit = (answers: AdoptSubmission) => {
+    if (!pid) return;
+    adoptPetMutation.mutate(
+      { pid, answers },
+      {
+        onSuccess: () => setShowAdoptForm(false),
+        onError: (err) => setAdoptError(serverMessage(err)),
+      }
+    );
+  };
 
   if (isLoading) {
     return (
@@ -115,13 +126,8 @@ export default function PetProfile() {
     setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  // Anything other than an outright ADOPTED is treated as open, so an
-  // unexpected status value leaves the request path available rather than
-  // silently removing the only action on the page.
-  const isAdopted = pet.status?.toUpperCase() === "ADOPTED";
-
   return (
-    <Box width={{ base: "100%", md: "80vw" }}>
+    <Box width="100%" px={{ base: "30px", md: "9%"}}>
       <S2SPageTitle title="Pet Profile" />
 
       <Box maxW="900px" mx="auto" mt="48px">
@@ -400,56 +406,30 @@ export default function PetProfile() {
             />
           </Flex>
         ) : (
-          <VStack mt="64px" gap="16px">
-            {requestSent ? (
-              // Not a disabled button: the design shows this filled in, as a
-              // status the adopter reads rather than a control they can press.
-              <Button
-                bg="YellowBorder"
-                color="White"
-                borderRadius="full"
-                px={10}
-                py={6}
-                fontSize="20px"
-                fontWeight="600"
-                cursor="default"
-                _hover={{ bg: "YellowBorder" }}
-              >
-                Pending Approval
-              </Button>
-            ) : isAdopted ? (
-              <Button
-                bg="BabyGray"
-                color="White"
-                borderRadius="full"
-                px={10}
-                py={6}
-                fontSize="20px"
-                fontWeight="600"
-                cursor="default"
-                _hover={{ bg: "BabyGray" }}
-              >
-                Already Adopted
-              </Button>
+          <Flex justify="center" mt="48px">
+            {pet.status === "ADOPTED" ? (
+              <Text fontSize="18px" fontWeight="600" color="GreyText">
+                This pet has already been adopted.
+              </Text>
+            ) : adoptionStatus === "PENDING" ? (
+              <S2SButton
+                text="Request Pending"
+                bgColor="Yellow"
+                width="200px"
+                height="48px"
+                fontSize="18px"
+                disabled
+              />
             ) : (
               <S2SButton
-                text="Adopt the pet"
-                width={{ base: "230px", md: "260px" }}
-                height={{ base: "44px", md: "52px" }}
-                fontSize="20px"
-                onClick={() => {
-                  setAdoptError("");
-                  setIsFormOpen(true);
-                }}
+                text="Adopt the Pet"
+                width="200px"
+                height="48px"
+                fontSize="18px"
+                onClick={handleAdoptClick}
               />
             )}
-
-            {adoptError && (
-              <Text fontSize="14px" color="red.500" textAlign="center">
-                {adoptError}
-              </Text>
-            )}
-          </VStack>
+          </Flex>
         )}
       </Box>
 
@@ -491,26 +471,13 @@ export default function PetProfile() {
         </Portal>
       </Dialog.Root>
 
-      <AdoptionFormModal
-        isOpen={isFormOpen}
+      <AdoptScreeningForm
+        isOpen={showAdoptForm}
         petName={pet.petName || "this pet"}
-        isSubmitting={adopt.isPending}
-        submitError={adoptError}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={(payload) => {
-          setAdoptError("");
-          adopt.mutate(payload, {
-            onSuccess: () => {
-              setIsFormOpen(false);
-              setRequestSent(true);
-            },
-            // Keep the form open on failure so the filled-in answers survive
-            // and can be resubmitted.
-            onError: (error) => {
-              setAdoptError(`Couldn't send the request: ${serverMessage(error)}`);
-            },
-          });
-        }}
+        isSubmitting={adoptPetMutation.isPending}
+        serverError={adoptError}
+        onClose={() => setShowAdoptForm(false)}
+        onSubmit={handleAdoptSubmit}
       />
     </Box>
   );

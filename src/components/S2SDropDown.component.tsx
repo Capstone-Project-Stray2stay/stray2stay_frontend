@@ -4,6 +4,7 @@ import {
     HStack,
     Image,
     Portal,
+    Span,
     useFilter,
     useListCollection,
 } from "@chakra-ui/react"
@@ -56,6 +57,11 @@ export default function S2SDropDown({
                     fontSize={fontSize}
                     borderColor={borderColor}
                     bg={bg}
+                    // Chakra's default focus ring uses the "gray" colorPalette
+                    // since none is set here, so it renders grey — match
+                    // S2SInput's blue focus border instead.
+                    focusRingColor="BlueText"
+                    _focus={{ borderColor: "Blue" }}
                     // Same fix as S2SInput: don't let Chakra's default disabled
                     // 50% opacity wash the selected value's text out.
                     _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed" }}
@@ -74,7 +80,7 @@ export default function S2SDropDown({
                                     {item.image && (
                                         <Image src={item.image} alt="" boxSize="36px" borderRadius="full" objectFit="cover" flexShrink={0} />
                                     )}
-                                    <span>{item.label}</span>
+                                    <Span>{item.label}</Span>
                                 </HStack>
                                 <Combobox.ItemIndicator />
                             </Combobox.Item>

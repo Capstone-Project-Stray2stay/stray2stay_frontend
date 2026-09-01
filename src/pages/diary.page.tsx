@@ -4,16 +4,16 @@ import { Box, Flex, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
 
 import { S2SPageTitle, S2SButton } from "../components/S2S.components";
 
-import { addMonths, toDateKey } from "./diary/dateUtils";
-import { mockAdoptedPets, mockEntries, mockFinder } from "./diary/mockDiary";
-import type { DiaryEntry } from "./diary/diary.type";
+import { addMonths, toDateKey } from "../utils/dateUtils";
+import { mockAdoptedPets, mockEntries, mockFinder } from "../utils/mockDiary";
+import type { DiaryEntry } from "../types/diary.type";
 
-import PetSummaryCard from "./diary/petSummaryCard.component";
-import FinderCard from "./diary/finderCard.component";
-import WeekStrip from "./diary/weekStrip.component";
-import MonthCalendar from "./diary/monthCalendar.component";
-import DayEntries from "./diary/dayEntries.component";
-import MyAdoptionsModal from "./diary/myAdoptionsModal.component";
+import PetSummaryCard from "../components/diary/petSummaryCard.component";
+import FinderCard from "../components/diary/finderCard.component";
+import WeekStrip from "../components/diary/weekStrip.component";
+import MonthCalendar from "../components/diary/monthCalendar.component";
+import DayEntries from "../components/diary/dayEntries.component";
+import MyAdoptionsModal from "../components/diary/myAdoptionsModal.component";
 
 export default function Diary() {
     const navigate = useNavigate();
@@ -154,7 +154,7 @@ export default function Diary() {
     );
 
     return (
-        <Box width="100%" px={{ base: "30px", md: "9%" }}>
+        <Box width="100%" px={{ base: "24px", md: "9%" }}>
             <S2SPageTitle title="Pet Diary" />
 
             {isDesktop ? (

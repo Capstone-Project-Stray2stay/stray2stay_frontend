@@ -11,6 +11,8 @@ const config = defineConfig({
         LightGrey: { value: "#888888" },
         Green: { value: "#84B895" },
         LightGreen: { value: "#D6F5D8" },
+        Red: { value: "#D97D7D" },
+        LightRed: { value: "#FBE1E1" },
         Yellow: { value: "#F8C56D" },
         LightYellow: { value: "#FFF6D4" },
         White: { value: "#FFFFFF" },
@@ -41,6 +43,15 @@ const config = defineConfig({
   globalCss: {
     "html, body": {
       fontFamily: "'Montserrat', sans-serif",
+      // Guards against page-level horizontal scroll from any element that's
+      // a hair wider than the viewport (e.g. 100vw, which includes the
+      // scrollbar's reserved space). Doesn't affect nested scroll containers.
+      overflowX: "hidden",
+    },
+    // Mobile WebKit/Chrome draw a default gray/black flash behind whatever
+    // was tapped (labels, buttons, radio/tab items) unless this is disabled.
+    "*": {
+      WebkitTapHighlightColor: "transparent",
     },
   },
 });

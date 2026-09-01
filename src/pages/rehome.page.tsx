@@ -6,12 +6,12 @@ import { isAxiosError } from "axios";
 import { S2SPageTitle, S2SStepper, S2SButton } from "../components/S2S.components";
 import { useBreeds, useClassifyPet, usePetColors, useRegisterPet } from "../hooks/query/pet.query";
 
-import Step1Species from "./rehome/step1Species.component";
-import Step2Photos from "./rehome/step2Photos.component";
-import Step3Details from "./rehome/step3Details.component";
-import SelectAiPhotosModal from "./rehome/selectAiPhotosModal.component";
-import { emptyRehomeDraft, MAX_AI_PHOTOS, type RehomeDraft } from "./rehome/rehome.type";
-import { missingFields } from "./rehome/validation";
+import Step1Species from "../components/rehome/step1Species.component";
+import Step2Photos from "../components/rehome/step2Photos.component";
+import Step3Details from "../components/rehome/step3Details.component";
+import SelectAiPhotosModal from "../components/rehome/selectAiPhotosModal.component";
+import { emptyRehomeDraft, MAX_AI_PHOTOS, type RehomeDraft } from "../types/rehome.type";
+import { missingFields } from "../utils/validation";
 
 const STEPS = ["Select Species", "Upload Photos", "Fill in Details"];
 
@@ -146,7 +146,7 @@ export default function Rehome() {
     };
 
     return (
-        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%" }}>
+        <Box width="100%" pb="64px" px={{ base: "24px", md: "9%" }}>
             <S2SPageTitle title="Register a Pet" />
 
             <Flex justify="center" mt={{ base: "32px", md: "64px" }} overflowX="auto">

@@ -17,8 +17,8 @@ import { RiImageAiLine } from "react-icons/ri";
 
 import { S2SButton } from "../../components/S2S.components";
 import { useBreeds, useClassifyPet } from "../../hooks/query/pet.query";
-import CameraCaptureModal from "../rehome/cameraCaptureModal.component";
-import { MAX_AI_PHOTOS, type PetType } from "../rehome/rehome.type";
+import CameraCaptureModal from "../../components/rehome/cameraCaptureModal.component";
+import { MAX_AI_PHOTOS, type PetType } from "../../types/rehome.type";
 
 /**
  * "Find your match By Photo" — the photo search behind the home page's Upload

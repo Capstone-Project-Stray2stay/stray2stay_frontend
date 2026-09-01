@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.components";
 import { useRandomPets } from "../hooks/query/pet.query";
 import { formatGender } from "../utils/petOptions.util";
-import { districtState } from "./profile/address.util";
+import { districtState } from "../utils/address.util";
 import PhotoSearchModal from "./home/photoSearchModal.component";
 
 export default function Home() {
@@ -149,7 +149,7 @@ export default function Home() {
             </Text>
             <Text mt={4} color="LightGrey" fontSize={{ base: "14px", md: "xl" }}>
               Share a photo of the pet you're looking for.
-              <br />
+              <Box as="br" />
               We'll find them for you!
             </Text>
             <Box mt={6}>
@@ -171,7 +171,7 @@ export default function Home() {
         borderTopRightRadius={{ base: "32px", md: "52px" }}
         borderBottomLeftRadius="0"
         borderBottomRightRadius="0"
-        px={{ base: "30px", md: "9%" }}
+        px={{ base: "24px", md: "9%" }}
         pb={{ base: "30px", md: "56px" }}
       >
         <Text color="Grey" fontSize={{ base: "22px", md: "32px" }} fontWeight="600" pb={6} pt={12}>
@@ -200,20 +200,21 @@ export default function Home() {
             {displayPets.map((pet) => (
               <S2SPetCard
                 key={pet.pid}
-                width="100%"
-                height="300px"
+                width={{base: "169px", md: "240px"}}
+                height={{base: "231px", md: "309px" }}
                 petName={pet.petName}
                 petImageURL={pet.petImageAddress?.[0] ?? "/assets/images/house.png"}
                 petAge={pet.petAgeGroup || "Unknown age"}
                 petBreed={pet.petBreed || "Mixed breed"}
                 petGender={formatGender(pet.petGender)}
                 petLocation={districtState(pet.petAddress) || pet.petAddress || "Location unavailable"}
+                onClick={() => navigate(`/pet-profile/${pet.pid}`)}
               />
             ))}
           </SimpleGrid>
         )}
       </Box>
-      <Box bg="LightBlue" px={{ base: "30px", md: "9%" }} py={{ base: "30px", md: "56px" }}>
+      <Box bg="LightBlue" px={{ base: "24px", md: "9%" }} py={{ base: "30px", md: "56px" }}>
         <Text color="Grey" fontSize={{ base: "22px", md: "36px" }} fontWeight="600">
           What We Do ?
         </Text>
@@ -239,11 +240,11 @@ export default function Home() {
           </Box>
           <Text color="LightGrey" fontSize={{ base: "14px", md: "lg" }} lineHeight="1.35" fontWeight="500">
             We are a centralized pet adoption platform designed to make finding and adopting pets in Thailand easier, faster, and more reliable.
-            <br />
-            <br />
+            <Box as="br" />
+            <Box as="br" />
             Our platform helps solve common problems in pet adoption, including scattered information across social media, difficulty finding suitable pets, and lack of organized pet data. By bringing everything into one place, users can search, post, and connect with confidence.
-            <br />
-            <br />
+            <Box as="br" />
+            <Box as="br" />
             We also integrate AI-powered pet breed classification to help users identify pet breeds from uploaded images, improving pet discovery and supporting more accurate pet information.
           </Text>
         </Flex>

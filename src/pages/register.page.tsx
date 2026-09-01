@@ -63,7 +63,7 @@ export default function Register() {
                     Sign up
                 </Heading>
 
-                <form onSubmit={handleSubmit}>
+                <Box as="form" onSubmit={(e) => handleSubmit(e as unknown as FormEvent<HTMLFormElement>)}>
                     <VStack gap={4} mb={6}>
                         <S2SInput
                             placeholder="First name"
@@ -100,7 +100,7 @@ export default function Register() {
                         )}
                         <S2SButton type="submit" text="Sign up" bgColor="Blue" width="full" loading={isPending} />
                     </VStack>
-                </form>
+                </Box>
 
                 <Flex justify="center" align="center" gap={1}>
                     <Text fontSize="sm" color="LightGrey">

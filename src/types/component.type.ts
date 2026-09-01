@@ -86,8 +86,8 @@ export interface S2SPageTitleType {
 
 export interface S2SPetCardType {
     rank?: number
-    width: string | number
-    height: string | number
+    width: ResponsiveSpace
+    height: ResponsiveSpace
     petName?: string
     petImageURL: string
     petAge: string
@@ -114,8 +114,17 @@ export interface S2SPaginationType {
     totalPages: number
     onPageChange: (page: number) => void
 }
-
+    
 export interface S2SPetCardSkeletonType {
-    width: string | number
-    height: string | number
+    width: ResponsiveSpace
+    height: ResponsiveSpace
+}
+
+export interface S2SDialogCloseButtonType {
+    onClick: () => void
+    top?: ResponsiveSpace
+    right?: ResponsiveSpace
+    boxSize?: ResponsiveSpace
+    iconBoxSize?: ResponsiveSpace
+    zIndex?: number
 }
