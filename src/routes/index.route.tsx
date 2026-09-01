@@ -59,13 +59,10 @@ export const router = createBrowserRouter([
                                 element: <Rehome />,
                             },
                             {
-                                // Nested under /rehome so the sidebar keeps
-                                // highlighting Rehome — see getActiveNavKey.
                                 path: "/rehome/:petId/edit",
                                 element: <EditPet />,
                             },
                             {
-                                // One-time setup for a newly registered account.
                                 path: "/user-information",
                                 element: <UserInformation />,
                             },

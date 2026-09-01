@@ -6,16 +6,10 @@ import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type { AdoptSubmission } from "../../services/apis/pet.api";
 
-/**
- * Same shape as ScreeningAnswers, but every question starts unanswered —
- * nullable booleans/indexes distinguish "hasn't answered yet" from a real
- * "No" or a real first option, neither of which should count as blank.
- */
 interface ScreeningDraft {
     Q1_1: boolean | null;
     Q1_2: boolean | null;
     Q1_3: string;
-    /** Stores the option label itself, not an index — matches ScreeningAnswers.Q2_1. */
     Q2_1: string;
     Q2_2: boolean | null;
     Q2_3: boolean | null;
@@ -46,13 +40,12 @@ const EMPTY_DRAFT: ScreeningDraft = {
     Note: "",
 };
 
-/** Every required question ("Other Notes" aside) still left blank, by number — e.g. ["1.1", "2.2"]. */
 function missingQuestions(draft: ScreeningDraft): string[] {
     const missing: string[] = [];
 
     for (const section of SCREENING_SECTIONS) {
         for (const question of section.questions) {
-            if (question.id === "Note") continue; // optional
+            if (question.id === "Note") continue;
 
             const value = draft[question.id];
             const isBlank =
@@ -90,13 +83,6 @@ function toSubmission(draft: ScreeningDraft): AdoptSubmission {
     };
 }
 
-/**
- * One radio-group's worth of options, styled to match the design's 20px
- * outlined circle + 12.73px filled dot. Built on Chakra's RadioGroup (real
- * <input type="radio"> + arrow-key navigation + ARIA), unlike the old
- * hand-rolled Flex-as-button + Circle pair it replaces — the input equivalent
- * of ScreeningAnswersModal's read-only AnswerRadio.
- */
 function RadioOptionGroup({
     name,
     value,
@@ -134,11 +120,6 @@ function RadioOptionGroup({
             {options.map((option) => (
                 <RadioGroup.Item key={option.value} value={option.value} gap="15px" cursor="pointer">
                     <RadioGroup.ItemHiddenInput />
-                    {/* ItemIndicator draws both the ring and the checked-state
-                        dot itself (the dot is `bg: currentColor`, so setting
-                        `color` here is what makes it BlueText). Chakra's
-                        default recipe otherwise fills the whole ring on
-                        checked — overridden below so only the dot shows it. */}
                     <RadioGroup.ItemIndicator
                         boxSize="20px"
                         borderWidth="1px"
@@ -196,7 +177,6 @@ function QuestionInput({
         );
     }
 
-    // "choice": Q2_1 stores the label itself, every other choice question stores a 0-based index.
     const isLabelStored = question.id === "Q2_1";
     const value = draft[question.id] as string | number | null;
 
@@ -228,7 +208,6 @@ export default function AdoptScreeningForm({
     isOpen: boolean;
     petName: string;
     isSubmitting: boolean;
-    /** Set by the caller when a submit attempt fails server-side (e.g. already-pending, no longer available). */
     serverError?: string;
     onClose: () => void;
     onSubmit: (answers: AdoptSubmission) => void;

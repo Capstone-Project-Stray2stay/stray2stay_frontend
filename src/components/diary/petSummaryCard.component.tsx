@@ -32,7 +32,6 @@ export default function PetSummaryCard({
     onChangeClick: () => void;
 }) {
     return (
-        // Mobile drops the details under the avatar row instead of beside it.
         <S2SCardShell
             railColor="Cream"
             w="100%"

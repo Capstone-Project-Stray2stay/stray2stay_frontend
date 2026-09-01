@@ -4,7 +4,6 @@ import EditSaveButton from "./editSaveButton.component";
 import PetPreferencesFields from "./petPreferencesFields.component";
 import type { PetPreferenceDraft } from "../../types/profile.type";
 
-/** The Profile page's railed card around the shared Pet Preferences fields. */
 export default function PetPreferencesForm({
     dog,
     cat,

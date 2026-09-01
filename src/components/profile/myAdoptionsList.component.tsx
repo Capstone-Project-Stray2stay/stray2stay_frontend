@@ -101,6 +101,14 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
 }
 
 export default function MyAdoptionsList({ pets }: { pets: AdoptedPet[] }) {
+    if (pets.length === 0) {
+        return (
+            <Flex minH="200px" align="center" justify="center">
+                <Text color="Grey" fontSize="md">You haven't requested to adopt any pets yet.</Text>
+            </Flex>
+        );
+    }
+
     return (
         <VStack align="stretch" gap="32px" w="100%">
             {pets.map((pet) => (

@@ -4,8 +4,6 @@ import { Box, Circle, Dialog, Flex, HStack, Image, Portal, SimpleGrid, Text, VSt
 import { S2SButton, S2SDialogCloseButton } from "../S2S.components";
 import { MAX_AI_PHOTOS } from "../../types/rehome.type";
 
-// Purely decorative, order-based hints — not an enforced categorization of
-// what's actually in the photo.
 const TAG_LABELS = ["Clear Face", "Full body"];
 
 export default function SelectAiPhotosModal({
@@ -23,9 +21,6 @@ export default function SelectAiPhotosModal({
 }) {
     const [selected, setSelected] = useState<File[]>([]);
 
-    // Clear the pick every time the modal opens — nothing is selected until the
-    // user actively taps a photo. Doing this during render rather than in an
-    // effect avoids a redundant extra render.
     const [wasOpen, setWasOpen] = useState(isOpen);
     if (isOpen !== wasOpen) {
         setWasOpen(isOpen);
@@ -40,7 +35,7 @@ export default function SelectAiPhotosModal({
     const toggle = (file: File) => {
         setSelected((current) => {
             if (current.includes(file)) return current.filter((f) => f !== file);
-            if (current.length >= MAX_AI_PHOTOS) return current; // ignore extra picks
+            if (current.length >= MAX_AI_PHOTOS) return current;
             return [...current, file];
         });
     };
@@ -71,12 +66,6 @@ export default function SelectAiPhotosModal({
                             px={{ base: "52px", md: "48px" }}
                             gap={{ base: "20px", md: "28px" }}
                         >
-                            {/* Photos come first, then the instruction — the order
-                                both the mobile and desktop designs use. */}
-                            {/* Column count is set outright rather than left to
-                                wrapping against a max-width — the tile and gap
-                                widths sum to a fraction over any round cap, so
-                                that approach silently collapsed to one per row. */}
                             <SimpleGrid
                                 columns={{ base: 2, md: 4 }}
                                 gap={{ base: "21.44px", md: "24.14px" }}
@@ -85,10 +74,6 @@ export default function SelectAiPhotosModal({
                                 {photos.map((file, i) => {
                                     const isSelected = selected.includes(file);
                                     return (
-                                        // The selection ring is an outline, not a border —
-                                        // outline is drawn outside the box without adding to
-                                        // its layout width, so toggling it on/off never
-                                        // resizes the tile or reflows the row.
                                         <Image
                                             key={previews[i]}
                                             src={previews[i]}

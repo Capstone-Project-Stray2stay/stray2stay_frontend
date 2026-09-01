@@ -24,15 +24,6 @@ const isPersonalInfoComplete = (info: PersonalInfoDraft) =>
     info.subDistrict.trim() !== "" &&
     info.street.trim() !== "";
 
-/**
- * The one-time setup a new user walks through. Same two forms as the Profile
- * page, but bare in a centred column instead of inside railed cards, and
- * closed off with Finish rather than living under tabs.
- *
- * Waits on GET /user/info before mounting the form so its local draft state
- * can initialize straight from the real values — a brand-new account has a
- * name from registration but nothing else, so most of it still starts blank.
- */
 export default function UserInformation() {
     const { personalInfo, loading } = useUserInfo();
 
@@ -61,11 +52,6 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
 
         const address = joinAddress(personalInfo);
 
-        // The picked sub-district usually comes with coordinates already (see
-        // PersonalInfoFields); this only hits the network for the ones that
-        // don't (all of Bangkok, notably). Geocoded on the sub-district/
-        // district/state only — the street is free text the user typed, and
-        // including it just makes Nominatim return no match.
         let { lat, long } = personalInfo;
         if (lat === null || long === null) {
             setResolvingLocation(true);

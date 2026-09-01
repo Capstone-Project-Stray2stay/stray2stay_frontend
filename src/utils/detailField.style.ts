@@ -1,12 +1,3 @@
-/**
- * Shared styling for the "detail field" input/select look — a distinct 38px /
- * BlueText variant, unlike S2SInput (rounded-full, ~48px, LightGrey) which
- * login/register/adopt use. Used by both the rehome flow and the profile
- * edit forms, so it lives in utils rather than a single page's folder.
- *
- * Kept in its own module so component files only export components, which
- * is what react-refresh needs to hot-reload them.
- */
 const FIELD_HEIGHT = { base: "34px", md: "38px" };
 const FIELD_FONT_SIZE = { base: "14px", md: "16px" };
 const FIELD_BG = "rgba(255,255,255,0.70)";
@@ -24,11 +15,6 @@ export const detailInputStyle = {
     _placeholder: { color: "GreyText" },
 } as const;
 
-/**
- * The same field look expressed as S2SDropDown props. Kept next to
- * detailInputStyle and shared by every select so a dropdown can't silently
- * end up with a different background from the text inputs.
- */
 export const detailDropDownStyle = {
     width: "100%",
     height: FIELD_HEIGHT,

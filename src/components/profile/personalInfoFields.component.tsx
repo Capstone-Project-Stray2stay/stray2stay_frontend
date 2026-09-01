@@ -13,7 +13,6 @@ import type { S2SDropDownOption } from "../../types/component.type";
 const toOptions = (values: { name_en: string }[]): S2SDropDownOption[] =>
     values.map((v) => ({ value: v.name_en, label: v.name_en }));
 
-/** One of the address selects: ~134px wide, but allowed to wrap. */
 function AddressSelect({
     label,
     data,
@@ -31,11 +30,6 @@ function AddressSelect({
         <Box flex="1 1 134px" minW="120px" maxW={{md: "180px"}}>
             <ProfileField label={label} labelColor="GreyMuted" labelSize="14px">
                 <S2SDropDown
-                    // Remount once options finish loading: the underlying combobox
-                    // doesn't resync its displayed text if `data` arrives async
-                    // (e.g. from useThaiAddressData) after `value` is already set —
-                    // it looks empty even though a value is selected (same fix as
-                    // the reset-key trick in adopt.page.tsx).
                     key={data.length === 0 ? "loading" : "loaded"}
                     {...detailDropDownStyle}
                     placeholder=""
@@ -49,11 +43,6 @@ function AddressSelect({
     );
 }
 
-/**
- * The Personal Information heading and its fields, with no card around them.
- * Shared by the Profile page (wrapped in a railed card) and the new-user
- * User Information page (rendered bare in a centred column).
- */
 export default function PersonalInfoFields({
     value,
     onChange,
@@ -62,17 +51,11 @@ export default function PersonalInfoFields({
 }: {
     value: PersonalInfoDraft;
     onChange: (patch: Partial<PersonalInfoDraft>) => void;
-    /** Read-only mode — the Profile page uses this while not in edit mode; the
-     * User Information page never passes it, so it stays always-editable there. */
     disabled?: boolean;
-    /** Slot next to the heading — the Profile page's edit/save toggle lives here. */
     headerAction?: React.ReactNode;
 }) {
     const { provinces, districts, subDistricts } = useThaiAddressData();
 
-    // Cascading: each level's options are the previous level's children, so
-    // picking a province clears whatever district/sub-district no longer
-    // belongs to it (same idea as breed clearing color in step3Details).
     const selectedProvince = useMemo(
         () => provinces.find((p) => p.name_en === value.state),
         [provinces, value.state],
@@ -158,9 +141,6 @@ export default function PersonalInfoFields({
                             value={value.subDistrict}
                             disabled={disabled || value.district === ""}
                             onValueChange={(subDistrict) => {
-                                // Comes with real coordinates for ~96% of sub-districts; the
-                                // rest fall back to geocoding the address on submit (see
-                                // address.api.ts's geocodeAddressAPI).
                                 const picked = subDistrictOptions.find((sd) => sd.name_en === subDistrict);
                                 onChange({
                                     subDistrict,

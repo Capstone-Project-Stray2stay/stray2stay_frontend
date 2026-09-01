@@ -15,11 +15,6 @@ import { missingFields } from "../utils/validation";
 
 const STEPS = ["Select Species", "Upload Photos", "Fill in Details"];
 
-/**
- * Pull the server's own message out of a failed request. The pet handlers
- * answer with { error } or { message }, and showing that beats a generic
- * "try again" — without it a rejected payload is undiagnosable from the UI.
- */
 function serverMessage(error: unknown): string {
     if (isAxiosError(error)) {
         const data = error.response?.data as { error?: string; message?: string } | undefined;
@@ -53,18 +48,11 @@ export default function Rehome() {
 
     const goNext = () => setStep((s) => Math.min(s + 1, STEPS.length));
 
-    /**
-     * Match the AI's label (Title Case, e.g. "Golden Retriever") against the
-     * breed list from Mongo. Falls back to unselected when there is no
-     * counterpart rather than sending a breed the backend won't recognise.
-     */
     const prefillBreed = (detectedBreed: string | null) => {
         if (!detectedBreed) return "";
         return breeds.find((b) => b.toLowerCase() === detectedBreed.toLowerCase()) ?? "";
     };
 
-    // Shared by both the direct (<=2 photos) and modal-confirmed (>2 photos)
-    // paths, so the "advance even on failure" rule only has to be written once.
     const runClassifyAndAdvance = (images: File[]) => {
         if (draft.petType === null) {
             goNext();
@@ -84,10 +72,6 @@ export default function Rehome() {
                     setIsPhotoModalOpen(false);
                     goNext();
                 },
-                // A failed detection must not trap the user on this step — the
-                // breed can still be picked by hand in step 3. Note that dog
-                // classification fails every time until the AI service's
-                // dog_router.py is finished.
                 onError: () => {
                     setClassifyError(
                         "Couldn't detect the breed — you can pick it manually in the next step.",
@@ -135,8 +119,6 @@ export default function Rehome() {
             return;
         }
 
-        // With more candidates than the AI accepts, let the user pick which
-        // ones to send instead of silently taking the first two.
         if (draft.photos.length > MAX_AI_PHOTOS) {
             setIsPhotoModalOpen(true);
             return;
@@ -186,8 +168,6 @@ export default function Rehome() {
                     </Text>
                 )}
 
-                {/* Back and Next share one space-between row; Back is absent on the
-                    first step, matching the design's hidden Back button there. */}
                 <Flex justify="space-between" gap={4} mt={{ base: "48px", md: "80px" }}>
                     {step > 1 ? (
                         <S2SButton
@@ -202,8 +182,6 @@ export default function Rehome() {
                         <Box />
                     )}
                     <S2SButton
-                        // Step 3 submits rather than advancing, which is what
-                        // the mobile design's label reflects.
                         text={step === STEPS.length ? "Finish" : "Next"}
                         width={{ base: "106.94px", md: "134.39px" }}
                         height={{ base: "35.65px", md: "44.80px" }}

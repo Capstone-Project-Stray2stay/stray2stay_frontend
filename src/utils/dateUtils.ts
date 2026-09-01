@@ -10,11 +10,6 @@ export const MONTHS_LONG = [
     "July", "August", "September", "October", "November", "December",
 ];
 
-/**
- * Stable per-day key. Built from the local getters rather than toISOString,
- * which converts to UTC first — at UTC+7 that lands the early hours of a day on
- * the previous date and files entries under the wrong day.
- */
 export function toDateKey(date: Date): string {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");

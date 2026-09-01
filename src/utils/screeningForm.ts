@@ -1,25 +1,11 @@
-/**
- * The adoption screening questionnaire, as one catalogue.
- *
- * Ids match the columns the backend actually stores (`rehome_Q1_1` … and
- * `rehome_note`, see GetScreeningAnswer in mysql_pet_adapter.go). Kept apart
- * from the modal that renders it so the adopt-side form — which has to *ask*
- * these same questions and doesn't exist yet — can share the wording instead
- * of retyping it and drifting.
- */
 import type { ScreeningAnswers } from "../types/profile.type";
 
 export type ScreeningQuestion = {
     id: keyof ScreeningAnswers;
-    /** "1.1", or "" for the unnumbered Other Notes field. */
     number: string;
     text: string;
 } & (
     | { kind: "boolean" }
-    /**
-     * `inline` lays the options out in one row (short labels); `stacked` puts
-     * one per line, which the long commitment answers need.
-     */
     | { kind: "choice"; options: string[]; layout: "inline" | "stacked" }
     | { kind: "text" }
 );
@@ -85,8 +71,6 @@ export const SCREENING_SECTIONS: ScreeningSection[] = [
                 id: "Q3_1",
                 number: "3.1",
                 text: "On average, how many hours per day will the pet be left alone?",
-                // Stored as a number of hours, but shown as plain text like the
-                // other free-form answers.
                 kind: "text",
             },
             {

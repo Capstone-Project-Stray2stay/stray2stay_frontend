@@ -6,7 +6,7 @@ import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.com
 import { useRandomPets } from "../hooks/query/pet.query";
 import { formatGender } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
-import PhotoSearchModal from "./home/photoSearchModal.component";
+import PhotoSearchModal from "../components/home/photoSearchModal.component";
 
 export default function Home() {
   const navigate = useNavigate();

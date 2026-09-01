@@ -11,12 +11,7 @@ export default function Step1Species({
     onChange: (petType: PetType) => void;
 }) {
     return (
-        // Centred as a pair at both sizes — space-around pushed them out to the
-        // edges on a phone and they stopped reading as one choice.
         <Flex w="100%" justify="center" gap={{ base: "72px", md: "144px" }}>
-            {/* The two icons are drawn at different sizes in the design (dog is
-                wider than tall, cat is square), so each gets explicit
-                dimensions rather than a shared boxSize. */}
             <S2SPetIconButton
                 icon={
                     <Image

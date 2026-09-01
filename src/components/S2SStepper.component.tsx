@@ -13,20 +13,12 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
         <Flex align="flex-start" justify="center" wrap="nowrap" w="100%">
             {steps.map((label, i) => {
                 const step = i + 1;
-                // Steps already passed stay filled alongside the current one;
-                // only steps still ahead are white.
                 const isDone = step <= current;
                 const isCurrent = step === current;
 
                 return (
                     <Fragment key={label}>
                         {i > 0 && (
-                            // Sits on the circles' vertical centre, not on the
-                            // centre of this taller circle+label column.
-                            // Grows to fill whatever is left between the labels,
-                            // so the row spreads across the width on a phone
-                            // instead of bunching up in the middle. Capped on
-                            // desktop at the width the design specifies.
                             <Box
                                 flex="1"
                                 minW={{ base: "12px", md: "0" }}
@@ -44,8 +36,6 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
                             flexShrink={0}
                         >
                             <Circle
-                                // Mobile keeps every circle the same size —
-                                // there isn't room to enlarge the current one.
                                 size={{ base: "33.85px", md: isCurrent ? "51.92px" : "48px" }}
                                 borderWidth={{ base: "1.01px", md: "1.55px" }}
                                 borderColor="YellowBorder"

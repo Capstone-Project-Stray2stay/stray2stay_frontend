@@ -4,7 +4,6 @@ import EditSaveButton from "./editSaveButton.component";
 import PersonalInfoFields from "./personalInfoFields.component";
 import type { PersonalInfoDraft } from "../../types/profile.type";
 
-/** The Profile page's railed card around the shared Personal Information fields. */
 export default function PersonalInfoForm({
     value,
     onChange,

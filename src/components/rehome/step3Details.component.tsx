@@ -11,14 +11,8 @@ import { PERSONALITY_OPTIONS } from "../../utils/personalityOptions";
 import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "../../types/rehome.type";
 import type { S2SDropDownOption } from "../../types/component.type";
 
-/** Breed options come back as plain strings; color options already come pre-built (with swatch images) from usePetColors. */
 const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
-/**
- * The whole pet-details form. Typed on PetDetailsDraft rather than RehomeDraft
- * so both the wizard's step 3 and the Edit Pet's Profile page can drive it —
- * the two differ only in how they store photos, which this form never touches.
- */
 export default function Step3Details({
     draft,
     breeds,
@@ -36,14 +30,9 @@ export default function Step3Details({
 
     const petType: PetType = draft.petType ?? "dog";
 
-    // Must be stable references: S2SDropDown pushes a changed `data` into its
-    // collection, and doing so clears the combobox's filter text — so building
-    // these inline would wipe the filter on every keystroke elsewhere in the form.
     const breedItems = useMemo(() => toOptions(breeds), [breeds]);
     const colorItems = colors;
 
-    // Custom entries the user typed sit alongside the fixed list so they keep
-    // rendering as chips after being added.
     const personalityChips = [
         ...PERSONALITY_OPTIONS,
         ...draft.personality.filter((p) => !PERSONALITY_OPTIONS.includes(p)),
@@ -86,7 +75,6 @@ export default function Step3Details({
 
     return (
         <Flex direction="column" align="stretch" gap={{ base: "30px", md: "51px" }} w="100%">
-            {/* ---------------- Pet's Profile ---------------- */}
             <DetailSection title="Pet's Profile">
                 <Flex direction="column" align="stretch" gap={{ base: "18.38px", md: "21px" }}>
                     <DetailField label="Name (optional)">
@@ -100,18 +88,11 @@ export default function Step3Details({
 
                     <DetailField label="Breed">
                         <S2SDropDown
-                            // Remount once options finish loading: the underlying
-                            // combobox doesn't resync its displayed text if `data`
-                            // arrives async (useBreeds) after `value` is already
-                            // set — it looks empty even though a value is selected
-                            // (same fix as petLocationSection/petPreferencesFields).
                             key={breedItems.length === 0 ? "loading" : "loaded"}
                             placeholder=""
                             {...detailDropDownStyle}
                             data={breedItems}
                             value={draft.breed}
-                            // Colors are breed-specific, so a breed change
-                            // invalidates any colour already picked.
                             onValueChange={(breed) => onChange({ breed, color: "" })}
                         />
                     </DetailField>
@@ -123,8 +104,6 @@ export default function Step3Details({
                             {...detailDropDownStyle}
                             data={colorItems}
                             value={draft.color}
-                            // The endpoint needs a breed, so there is nothing
-                            // to offer until one is chosen.
                             disabled={draft.breed === ""}
                             onValueChange={(color) => onChange({ color })}
                         />
@@ -152,7 +131,6 @@ export default function Step3Details({
                 </Flex>
             </DetailSection>
 
-            {/* ---------------- Pet's Personality ---------------- */}
             <DetailSection title="Pet's Personality">
                 <Flex wrap="wrap" gap={{ base: "6.97px", md: "12px" }} align="center">
                     {personalityChips.map((text) => (
@@ -202,17 +180,13 @@ export default function Step3Details({
                 </Flex>
             </DetailSection>
 
-            {/* ---------------- Pet's Location ---------------- */}
             <PetLocationSection
                 value={draft.location}
                 onChange={(patch) => onChange({ location: { ...draft.location, ...patch } })}
             />
 
-            {/* ---------------- Health & Conditions ---------------- */}
             <DetailSection title="Health & Conditions">
                 <Flex direction="column" align="stretch" gap={{ base: "16px", md: "24px" }}>
-                    {/* Mobile keeps the label on the left but stacks the boxes
-                        down the right-hand side; there isn't room for a row. */}
                     <Flex align="flex-start" justify="space-between" gap="12px">
                         <Flex
                             w={{ base: "auto", md: "180px" }}
@@ -259,8 +233,6 @@ export default function Step3Details({
                         >
                             Sterilized
                         </Text>
-                        {/* Drawn as two checkboxes but mutually exclusive, so
-                            they act as a radio pair over one boolean. */}
                         <Flex
                             direction={{ base: "column", md: "row" }}
                             w={{ base: "94px", md: "180px" }}
@@ -284,8 +256,6 @@ export default function Step3Details({
 
                     {divider}
 
-                    {/* Mobile puts the label on its own line and drops the add
-                        button below the input, aligned right. */}
                     <Flex
                         direction={{ base: "column", md: "row" }}
                         align={{ base: "stretch", md: "flex-start" }}
@@ -357,7 +327,6 @@ export default function Step3Details({
                 </Flex>
             </DetailSection>
 
-            {/* ---------------- Note ---------------- */}
             <DetailSection title="Note">
                 <Textarea
                     h="114px"

@@ -1,15 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 
-/**
- * The card with a coloured rail down its left edge, shared by the diary's pet
- * summary / finder / day cards and the profile forms. The rail is absolutely
- * positioned and stretched top-to-bottom rather than given a fixed height, so
- * the shell works for the 127px cards and the tall day card alike.
- *
- * `bg` defaults to the diary's translucent white; the profile cards pass a
- * solid `white` over it.
- */
 export default function S2SCardShell({
     railColor,
     children,

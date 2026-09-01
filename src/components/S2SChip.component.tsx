@@ -19,8 +19,6 @@ export default function S2SChip({
         bg={isActive ? "Blue" : "white"}
         color={isActive ? "white" : "Grey"}
         rounded="full"
-        // Tighter on a phone: the personality picker fits ~3 chips per row at
-        // these paddings instead of spilling one per line.
         px={{ base: "12px", md: 4 }}
         py={{ base: "6px", md: 2 }}
         borderWidth="1px"
@@ -44,40 +42,3 @@ export default function S2SChip({
     </HStack>
   )
 }
-
-// import { useState } from "react"
-// import { HStack } from "@chakra-ui/react"
-// import S2SChip from "../components/S2SChip.component"
-
-// const OPTIONS = ["Tag A", "Tag B", "Tag C", "Tag D"]
-
-// export default function Home() {
-//   // this is the "list" the selected chips get stored into
-//   const [selectedItems, setSelectedItems] = useState<string[]>([])
-
-//   const toggle = (text: string) => {
-//     setSelectedItems((prev) =>
-//       prev.includes(text)
-//         ? prev.filter((item) => item !== text) // unselect: remove from list
-//         : [...prev, text]                       // select: add to list
-//     )
-//   }
-
-//   return (
-//     <>
-//       <HStack wrap="wrap">
-//         {OPTIONS.map((text) => (
-//           <S2SChip
-//             key={text}
-//             text={text}
-//             selected={selectedItems.includes(text)}
-//             onToggle={() => toggle(text)}
-//           />
-//         ))}
-//       </HStack>
-
-//       {/* just to show what's stored */}
-//       <pre>{JSON.stringify(selectedItems, null, 2)}</pre>
-//     </>
-//   )
-// }

@@ -75,8 +75,6 @@ export default function MonthCalendar({
                 const holdsSelection = row.some((day) => day && isSameDay(day, selectedDate));
 
                 return (
-                    // The highlight band spans the whole week rather than the one
-                    // selected cell, so it is drawn as the row's own background.
                     <Flex
                         key={rowIndex}
                         justify="space-between"

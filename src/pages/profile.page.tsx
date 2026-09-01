@@ -25,11 +25,6 @@ import ListTabs from "../components/profile/listTabs.component";
 import MyRehomingList from "../components/profile/myRehomingList.component";
 import MyAdoptionsList from "../components/profile/myAdoptionsList.component";
 
-/**
- * Waits on GET /user/info before mounting the page proper so its local draft
- * state can initialize straight from the real values, instead of syncing them
- * in after the fact via an effect.
- */
 export default function Profile() {
     const { personalInfo, dogPreference, catPreference, imageURL, loading } = useUserInfo();
 
@@ -56,8 +51,6 @@ function ProfileContent({
     initialCatPreference: PetPreferenceDraft;
     initialImageURL: string;
 }) {
-    // The two tab rows are independent: switching the list at the bottom must
-    // not reset which form the left card is showing, or vice versa.
     const [infoTab, setInfoTab] = useState<InfoTab>("personal");
     const [listTab, setListTab] = useState<ListTab>("rehoming");
 
@@ -91,13 +84,6 @@ function ProfileContent({
     const patchPersonal = (patch: Partial<PersonalInfoDraft>) =>
         setPersonalInfo((current) => ({ ...current, ...patch }));
 
-    // Both tabs start read-only; each header's pencil button switches its own
-    // tab into edit mode and turns into a checkmark. PUT /user/update always
-    // takes the whole profile at once (not a partial patch), so both
-    // checkmarks submit via the same helper — the current draft of
-    // everything, personal info and both species' preferences together —
-    // and only differ in which tab's edit state they drop back out of on
-    // success.
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingPreferences, setIsEditingPreferences] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
@@ -106,10 +92,6 @@ function ProfileContent({
     const handleSaveProfile = async (onSuccess: () => void) => {
         const address = joinAddress(personalInfo);
 
-        // Same fallback as the User Information page's Finish: most picked
-        // sub-districts already carry coordinates, only the rest need a
-        // geocode call. Needed even when only Pet Preferences changed, since
-        // the backend requires non-zero lat/long on every update.
         let { lat, long } = personalInfo;
         if (lat === null || long === null) {
             setResolvingLocation(true);
@@ -142,8 +124,6 @@ function ProfileContent({
 
     const updateUserImage = useUpdateUserImage();
     const handleImageChange = async (file: File) => {
-        // Optimistic preview while the upload is in flight; replaced by the
-        // Cloudinary URL that GET /user/info returns once the mutation settles.
         const previewURL = URL.createObjectURL(file);
         setImageURL(previewURL);
 

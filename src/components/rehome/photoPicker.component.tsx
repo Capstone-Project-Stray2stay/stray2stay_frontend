@@ -8,10 +8,6 @@ import { S2SButton } from "../S2S.components";
 import CameraCaptureModal from "./cameraCaptureModal.component";
 import { MAX_PHOTOS, type PetPhoto } from "../../types/rehome.type";
 
-// Most OSes report an empty `type` for .heic/.heif files picked from a photo
-// library (only Safari/iOS fills it in), so the extension is the only
-// reliable signal — and even when the type IS set, no browser but Safari can
-// render HEIC/HEIF via <img>/object URLs, so these need converting either way.
 const isHeic = (file: File) =>
     /^image\/hei[cf]$/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
 
@@ -23,15 +19,6 @@ async function toJpegIfHeic(file: File): Promise<File> {
     return new File([blob], file.name.replace(/\.hei[cf]$/i, ".jpg"), { type: "image/jpeg" });
 }
 
-/**
- * The dashed dropzone plus its thumbnail strip, shared by the wizard's Upload
- * Photos step and the Edit Pet's Profile page.
- *
- * `showAiHint` covers the only difference between the two designs: the wizard
- * frames this as the AI-camera step, so it gets the speech bubble and the
- * shot-quality tip. The edit page has neither — by then the breed is already
- * decided and nothing is sent to the classifier.
- */
 export default function PhotoPicker({
     photos,
     onChange,
@@ -46,17 +33,6 @@ export default function PhotoPicker({
     const [error, setError] = useState("");
     const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-    // Photos already on the server are usable as-is; only the freshly picked
-    // Files need an object URL minting for them.
-    //
-    // Creation and cleanup live in the same effect (not useMemo) so they can
-    // never go out of sync: under StrictMode, React deliberately mounts every
-    // effect, cleans it up, then mounts it again to surface bugs like this
-    // one. If the URLs were minted in useMemo instead, that simulated cleanup
-    // would revoke them without anything ever recreating them, permanently
-    // breaking the previews on the very first render — exactly what happened
-    // going back to this step after leaving it. Recreating them here means
-    // that extra mount just mints (and shows) a fresh, valid batch instead.
     const [previews, setPreviews] = useState<{ src: string; isObjectURL: boolean; alt: string }[]>([]);
 
     useEffect(() => {
@@ -65,13 +41,9 @@ export default function PhotoPicker({
                 ? { src: photo, isObjectURL: false, alt: "Pet photo" }
                 : { src: URL.createObjectURL(photo), isObjectURL: true, alt: photo.name },
         );
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional, see comment above.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPreviews(next);
 
-        // Object URLs have to be handed back explicitly, otherwise every
-        // re-pick leaks a blob that lives as long as the document does —
-        // but only for the ones minted here, since revoking a plain server
-        // URL would break the image for good.
         return () =>
             next.forEach((preview) => {
                 if (preview.isObjectURL) URL.revokeObjectURL(preview.src);

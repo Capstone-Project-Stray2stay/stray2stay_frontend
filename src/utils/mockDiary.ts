@@ -1,6 +1,3 @@
-// TODO: replace with a real diary API/hook once one exists. The Go backend has
-// no diary routes at all yet (see internal/adapter/handler/router/), so every
-// value below is throwaway client-side data just to make the UI testable.
 import { toDateKey } from "./dateUtils";
 import type { DiaryEntry, DiaryFinder, DiaryPet } from "../types/diary.type";
 
@@ -32,8 +29,6 @@ export const mockFinder: DiaryFinder = {
     imageURL: "",
 };
 
-// Seeded on today so the page opens on the "filled" state from the mockups
-// rather than an empty day.
 export const mockEntries: DiaryEntry[] = [
     {
         id: "entry-seed-1",

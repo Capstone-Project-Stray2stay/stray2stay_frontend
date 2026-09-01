@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 
-/** One labelled field: the label sits above its control. */
 export default function DetailField({
     label,
     children,
@@ -19,11 +18,6 @@ export default function DetailField({
     );
 }
 
-/**
- * A section of the form. Desktop puts the heading in a fixed 200px column to
- * the left of the fields; mobile stacks it above them, where there is no room
- * for a side column.
- */
 export function DetailSection({
     title,
     children,

@@ -7,7 +7,6 @@ export default function S2SPetIconButton({ icon, label, selected = false, onClic
         <VStack gap={2} cursor="pointer" onClick={onClick} userSelect="none">
             <Circle
                 size={{ base: "51px", md: "73px" }}
-                // Selecting fills the whole circle rather than just ringing it.
                 bg={selected ? "Yellow" : "Cream"}
                 transition="background 0.15s ease"
             >

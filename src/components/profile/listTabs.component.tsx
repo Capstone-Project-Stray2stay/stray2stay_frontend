@@ -18,10 +18,6 @@ export default function ListTabs({
         <Tabs.Root
             value={value}
             onValueChange={(e) => onChange(e.value as ListTab)}
-            // "plain" — the default "line" variant draws its own selected-tab
-            // underline (in the gray colorPalette, since none is set), which
-            // would show as a second, unwanted black line under the custom
-            // SkyBlue bar rendered below.
             variant="plain"
             display="flex"
             flexDirection="column"
@@ -39,11 +35,6 @@ export default function ListTabs({
                             flexDirection="column"
                             alignItems="center"
                             gap="14px"
-                            // The recipe forces a fixed height/min-width (the
-                            // --tabs-height token) regardless of variant, which
-                            // left empty space below our bar before the
-                            // full-width divider — clearing both lets the bar
-                            // sit flush against it instead of floating above.
                             height="auto"
                             minW="unset"
                             p="0"
@@ -61,8 +52,6 @@ export default function ListTabs({
                             >
                                 {tab.label}
                             </Text>
-                            {/* Always rendered so switching tabs doesn't shift
-                                the row's height by 6px. */}
                             <Box
                                 w="100%"
                                 h={{ base: "2px", md: "4px" }}

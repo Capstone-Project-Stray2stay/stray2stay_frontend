@@ -4,7 +4,6 @@ import { IoCameraOutline, IoClose } from "react-icons/io5";
 
 import { S2SButton } from "../../components/S2S.components";
 
-/** Filenames the backend and the classifier see, so they need to stay unique. */
 const shotName = () => `camera-${Date.now()}.jpg`;
 
 /**

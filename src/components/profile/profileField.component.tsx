@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
 import { Flex, Text } from "@chakra-ui/react";
 
-/**
- * A labelled control. Rehome's DetailField pins its label to 16px/GreyText,
- * but this page needs two variants — BlueText/16px above the personal fields
- * and GreyText/13.05px above the preference selects — so the colour and size
- * are props here.
- */
 export default function ProfileField({
     label,
     labelColor = "BlueText",

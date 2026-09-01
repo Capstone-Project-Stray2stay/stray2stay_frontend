@@ -1,12 +1,5 @@
 import axios from "axios";
 
-/**
- * Thailand's provinces/districts/sub-districts, fetched live from a public
- * dataset rather than mirrored into our own DB — see kongvut/thai-province-data
- * on GitHub, which documents these exact URLs as its "API". Called through
- * plain axios (not axiosInstance): this is a third-party host, so no baseURL
- * and no cookies should go with the request.
- */
 const THAI_ADDRESS_BASE =
     "https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest";
 

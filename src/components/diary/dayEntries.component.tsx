@@ -30,7 +30,6 @@ const PHOTO_PROPS = {
     alignSelf: { base: "stretch", md: "flex-end" },
 } as const;
 
-/** The day's saved entry. The pencil that reopens it lives in DayEntries. */
 function EntryView({ entry }: { entry: DiaryEntry }) {
     return (
         <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
@@ -52,16 +51,11 @@ function EntryView({ entry }: { entry: DiaryEntry }) {
     );
 }
 
-/**
- * Dropzone + caption. With nothing filled in this is exactly the "empty day"
- * mockup; it doubles as the editor when the pencil reopens an existing entry.
- */
 function EntryEditor({
     entry,
     onSave,
     onCancel,
 }: {
-    /** undefined when composing the day's first entry. */
     entry?: DiaryEntry;
     onSave: (photo: File | null, caption: string) => void;
     onCancel?: () => void;
@@ -74,15 +68,12 @@ function EntryEditor({
 
     const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : ""), [photo]);
 
-    // Object URLs have to be handed back explicitly, otherwise every re-pick
-    // leaks a blob that lives as long as the document does.
     useEffect(() => {
         return () => {
             if (preview) URL.revokeObjectURL(preview);
         };
     }, [preview]);
 
-    // A newly picked photo wins; otherwise fall back to the one already saved.
     const shownImage = preview || entry?.imageURL || "";
 
     const acceptFile = (incoming: FileList | File[]) => {
@@ -95,8 +86,6 @@ function EntryEditor({
         setPhoto(image);
     };
 
-    // Nothing to save until the day has a photo, whether just picked or already
-    // stored on the entry being edited.
     const canSave = photo !== null || Boolean(entry?.imageURL);
 
     return (
@@ -108,14 +97,11 @@ function EntryEditor({
                 hidden
                 onChange={(e) => {
                     if (e.target.files) acceptFile(e.target.files);
-                    // Reset so picking the same file twice still fires onChange.
                     e.target.value = "";
                 }}
             />
 
             {shownImage ? (
-                // Clicking the photo re-opens the picker, which is the only way
-                // to swap it out once one is chosen.
                 <Image
                     {...PHOTO_PROPS}
                     src={shownImage}
@@ -162,8 +148,6 @@ function EntryEditor({
                             >
                                 Drag and Drop Photos here
                             </Text>
-                            {/* Stops the click reaching the zone's own handler,
-                                which would open the file dialog a second time. */}
                             <Box onClick={(e) => e.stopPropagation()}>
                                 <S2SButton
                                     text="Upload Photo"
@@ -187,8 +171,6 @@ function EntryEditor({
                 onKeyDown={(e) => e.key === "Enter" && canSave && onSave(photo, caption.trim())}
             />
 
-            {/* Absent until there is a photo, so the untouched empty day matches
-                the mockup exactly. */}
             {canSave && (
                 <Flex justify="flex-end" gap="12px">
                     {onCancel && (
@@ -226,7 +208,6 @@ export default function DayEntries({
     onSaveEntry,
 }: {
     date: Date;
-    /** A day holds at most one entry. */
     entry?: DiaryEntry;
     onSaveEntry: (photo: File | null, caption: string) => void;
 }) {
@@ -237,13 +218,8 @@ export default function DayEntries({
         setIsEditing(false);
     };
 
-    // An entry without a photo isn't finished, so it opens straight into the
-    // editor — otherwise the read-only view would show an empty frame with no
-    // way to add the photo short of finding the pencil.
     const isComplete = Boolean(entry?.imageURL);
 
-    // Only rendered when it actually does something. The Figma draws it in the
-    // empty state too, but there it would be a dead control.
     const editPencil = isComplete && !isEditing && (
         <IconButton
             aria-label="Edit entry"
@@ -260,8 +236,6 @@ export default function DayEntries({
     );
 
     return (
-        // Mobile turns the left date rail into a header row above the content,
-        // so the photo gets the card's full width.
         <S2SCardShell
             railColor="SkyBlue"
             w="100%"
@@ -295,8 +269,6 @@ export default function DayEntries({
                 <Box display={{ base: "block", md: "none" }}>{editPencil}</Box>
             </Flex>
 
-            {/* A real flex child rather than the Figma export's rotated box,
-                which would not stretch with the card. Mobile drops it entirely. */}
             <Box
                 display={{ base: "none", md: "block" }}
                 w="1.71px"

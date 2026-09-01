@@ -5,12 +5,6 @@ import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type { ScreeningAnswers } from "../../types/profile.type";
 
-/**
- * Read-only radio group. The whole modal shows someone else's already
- * submitted answers, so this is a display rather than an input — Chakra's
- * RadioGroup in `readOnly` mode keeps real radio semantics (so screen readers
- * correctly announce it as non-interactive) without allowing changes.
- */
 function AnswerRadioGroup({
     value,
     options,
@@ -60,7 +54,6 @@ function AnswerRadioGroup({
     );
 }
 
-/** The rounded pill that free-text answers sit in. */
 function TextAnswer({ value, full }: { value: string; full?: boolean }) {
     return (
         <Input
@@ -112,8 +105,6 @@ function Answer({
         return <TextAnswer value={String(value ?? "")} full={question.number === ""} />;
     }
 
-    // Two storage shapes share this branch: the residence question saves the
-    // label itself, every other choice saves a 0-based index.
     const isIndexStored = typeof value === "number";
 
     return (
@@ -178,9 +169,6 @@ export default function ScreeningAnswersModal({
                                     No screening answers were submitted with this request.
                                 </Text>
                             ) : (
-                                // The questionnaire is far taller than any viewport,
-                                // so the body scrolls while the heading and the close
-                                // button stay put.
                                 <VStack
                                     align="stretch"
                                     gap="30px"

@@ -24,10 +24,6 @@ export async function updateUserAPI(payload: UpdateUserPayload) {
     throw new Error("Failed to update user");
 }
 
-/**
- * domain.UserInfo has no json tags, so Fiber marshals the Go field names as-is
- * (capitalised) rather than the camelCase the rest of the API uses.
- */
 export interface UserInfoData {
     Firstname: string;
     Lastname: string;
@@ -57,8 +53,6 @@ export async function updateUserImageAPI(image: File) {
     formData.append("image", image);
 
     const res = await axiosInstance.put("/user/image", formData, {
-        // Content-Type is deliberately left unset so the browser adds the
-        // multipart boundary — setting it by hand produces an unparseable body.
         timeout: 30000,
     });
 

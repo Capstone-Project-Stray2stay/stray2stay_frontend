@@ -50,13 +50,6 @@ export interface BreedFilterOption {
     species: PetType
 }
 
-/**
- * Breed options for the Adopt page's filter, where the species picker also
- * allows "all". useBreeds needs one concrete species, so this fetches dog and
- * cat breeds separately (skipping whichever one isn't relevant) and merges
- * them when no species is picked, tagging each with its species so a later
- * usePetColors(species, breed) call knows which one to use.
- */
 export function useAdoptBreeds(category: PetType | "all") {
     const dogQuery = useBreeds(category !== "cat" ? "dog" : null)
     const catQuery = useBreeds(category !== "dog" ? "cat" : null)
@@ -68,10 +61,6 @@ export function useAdoptBreeds(category: PetType | "all") {
     if (category === "dog") breedItems = dogItems
     else if (category === "cat") breedItems = catItems
     else {
-        // "All": union of both species' breeds, deduped by name. If a breed
-        // name happens to exist for both dog and cat, whichever came first
-        // wins the species tag used for the color lookup — an inherent
-        // limitation of a flat breed list when no species is picked.
         const seen = new Set<string>()
         breedItems = [...dogItems, ...catItems].filter((item) => {
             if (seen.has(item.value)) return false
@@ -88,7 +77,6 @@ export function usePetColors(petType: PetType | null, petBreed: string) {
         queryKey: ["petColors", petType, petBreed],
         queryFn: async () => {
             const res = await petColorsAPI(petType as PetType, petBreed)
-            // Capitalised keys — see petColorsAPI for why.
             const colorData = (res.data.colorData ?? []) as { Color: string; Image: string }[]
             return colorData
                 .filter((entry) => entry.Color)
@@ -120,7 +108,7 @@ export function useUpdatePet() {
         },
     })
 }
-  
+
 export function useRandomPets() {
   const { data, isLoading, isError, error } = useQuery<RandomPetResponseItem[]>({
     queryKey: ["pets", "random"],
@@ -196,8 +184,6 @@ export function useSearchPets(params: PetSearchParams) {
   const { data, isLoading, isFetching, isError, error } = useQuery({
     queryKey: ["pets", "search", params],
     queryFn: () => searchPetsAPI(params),
-    // Keeps the current page's cards on screen while the next page loads,
-    // instead of flashing empty/skeleton state on every click.
     placeholderData: keepPreviousData,
     retry: 1,
   })
@@ -212,11 +198,6 @@ export function useSearchPets(params: PetSearchParams) {
   }
 }
 
-/**
- * Every applicant across every pet the caller owns, in one shared cache
- * entry — see getPetAdoptorsAPI for why this isn't fetched per-pet.
- * `enabled` lets callers defer the request until a row is actually expanded.
- */
 export function useMyPetAdoptors(enabled: boolean) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["pets", "adoptors", "mine"],

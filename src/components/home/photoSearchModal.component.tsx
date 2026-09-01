@@ -20,30 +20,11 @@ import { useBreeds, useClassifyPet } from "../../hooks/query/pet.query";
 import CameraCaptureModal from "../../components/rehome/cameraCaptureModal.component";
 import { MAX_AI_PHOTOS, type PetType } from "../../types/rehome.type";
 
-/**
- * "Find your match By Photo" — the photo search behind the home page's Upload
- * Photo button and the Adopt page's camera button.
- *
- * Species plus a photo go to the same breed classifier the Register a Pet
- * wizard uses, and the detected breed becomes the Adopt page's breed filter.
- * Capped at MAX_AI_PHOTOS because that is all the classify endpoint accepts
- * (see pet_ai.go).
- *
- * Callers that are already on the Adopt page pass `onResult` and apply the
- * filters themselves; without it the modal navigates there. Navigating cannot
- * serve both, because React Router reuses a mounted route rather than
- * remounting it, so the state a second /adopt navigation carries would never
- * reach that page's initial filters.
- */
-
 const SPECIES: { value: PetType; label: string; icon: string; iconSize: { w: string; h: string } }[] = [
-    // The two icons are drawn at different ratios in the design — the dog is
-    // wider than tall, the cat is square — so neither gets a shared boxSize.
     { value: "dog", label: "Dog", icon: "/assets/icons/dog.png", iconSize: { w: "26px", h: "22px" } },
     { value: "cat", label: "Cat", icon: "/assets/icons/cat.png", iconSize: { w: "28px", h: "28px" } },
 ];
 
-/** The horizontal species pill: cream circle, icon, label, inside a Blue outline. */
 function SpeciesPill({
     label,
     icon,
@@ -66,17 +47,15 @@ function SpeciesPill({
             h="40px"
             pl="0"
             pr="16px"
-            borderRadius="49.77px"
+            rounded="full"
             borderWidth="1px"
             borderColor="Blue"
-            // Selecting fills the circle, the same signal S2SPetIconButton uses
-            // for this choice in the Register a Pet wizard.
             bg={selected ? "LightBlue" : "transparent"}
             transition="background 0.15s ease"
             onClick={onClick}
             aria-pressed={selected}
         >
-            <Circle size="40px" bg={selected ? "Yellow" : "Cream"} flexShrink={0} transition="background 0.15s ease">
+            <Circle size="38px" bg={selected ? "Yellow" : "Cream"} flexShrink={0} transition="background 0.15s ease">
                 <Image src={icon} alt={label} w={iconSize.w} h={iconSize.h} />
             </Circle>
             <Text fontSize="16px" fontWeight="600" color="Grey">
@@ -86,7 +65,6 @@ function SpeciesPill({
     );
 }
 
-/** What the classifier settled on. `breed` is "" when the label matched none. */
 export interface PhotoSearchResult {
     species: PetType;
     breed: string;
@@ -113,8 +91,6 @@ export default function PhotoSearchModal({
     const classify = useClassifyPet();
     const { breeds } = useBreeds(species);
 
-    // Blank the form each time the dialog opens, the way SelectAiPhotosModal
-    // does — during render rather than in an effect, to save a render.
     const [wasOpen, setWasOpen] = useState(isOpen);
     if (isOpen !== wasOpen) {
         setWasOpen(isOpen);

@@ -20,21 +20,14 @@ import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.
 import { useThaiProvinces } from "../hooks/query/address.query";
 import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
-import PhotoSearchModal from "./home/photoSearchModal.component";
-import type { PhotoSearchResult } from "./home/photoSearchModal.component";
+import PhotoSearchModal from "../components/home/photoSearchModal.component";
+import type { PhotoSearchResult } from "../components/home/photoSearchModal.component";
 
 const PAGE_SIZE = 16;
 
 export default function Adopt() {
     const navigate = useNavigate();
 
-    /**
-     * Seeded filters from the home page's photo search, which classifies a
-     * photo and sends the species plus the detected breed here (see
-     * home/photoSearchModal.component.tsx). Read once as the initial state, so
-     * the user can change or clear the filters afterwards like any other.
-     * `breed` is blank when the classifier's label matched no known breed.
-     */
     const photoSearch = useLocation().state as
         | { species?: "dog" | "cat"; breed?: string }
         | null;
@@ -52,10 +45,6 @@ export default function Adopt() {
 
     const changeCategory = (next: "dog" | "cat" | "all") => {
         setCategory(next);
-        // All the structured filters are species-specific (breed/color
-        // cascade from species, and gender/ageGroup/location filter results
-        // that a new species selection invalidates), so a species change
-        // clears them rather than leaving stale filters applied.
         setBreed("");
         setColor("");
         setGender("");
@@ -75,12 +64,6 @@ export default function Adopt() {
         setPage(1);
     };
 
-    /**
-     * A photo search run from this page applies its result in place — the same
-     * filters the seeded navigation from the home page would have produced,
-     * set directly because re-navigating to /adopt would not remount this.
-     * The other filters are cleared for the reason changeCategory clears them.
-     */
     const applyPhotoSearch = ({ species, breed: detectedBreed }: PhotoSearchResult) => {
         setCategory(species);
         setBreed(detectedBreed);
@@ -97,9 +80,6 @@ export default function Adopt() {
         [breedItems]
     );
 
-    // Colors are looked up per (species, breed) in Mongo. When category is
-    // "All", the flat breed list above still tags each entry with the species
-    // it came from — recover that here so the color lookup has a species.
     const colorSpecies =
         category !== "all" ? category : breedItems.find((b) => b.value === breed)?.species ?? null;
     const { colors: colorOptions, loading: colorsLoading } = usePetColors(colorSpecies, breed);
@@ -110,12 +90,6 @@ export default function Adopt() {
         [provinces]
     );
 
-    // Blank filters aren't necessarily "unfiltered": GET /pets runs behind
-    // the same session cookie as everything else, and the backend (see
-    // PetServiceImpl.applyUserDefaults) fills any blank breed/color/gender/
-    // ageGroup/location in from the logged-in caller's saved preferences and
-    // profile address. Sending the raw picked values (not resolving that
-    // fallback here too) keeps that logic in one place.
     const { pets, totalPages, isLoading, isError } = useSearchPets({
         page,
         pageSize: PAGE_SIZE,
@@ -159,18 +133,11 @@ export default function Adopt() {
                 <S2SPetIconButton icon={<Image src="/assets/icons/paw.png" alt="All" boxSize={{base: "28px", md: "36px"}} />} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
             </Flex>
 
-            {/* Mobile: search icon leads the pill, camera icon sits inside its
-                end, and a filter button sits outside — matches the mobile mock. */}
             <Flex display={{ base: "flex", md: "none" }} gap="10px" mt="24px" align="center" justify="center" wrap="wrap">
                 <Box flex={1} maxW="100%" display="flex" gap="8px">
-                    {/* TODO: GetPetsInfo has no free-text search param — wire this
-                        up once the backend supports filtering by keyword. */}
                     <S2SInput
                         placeholder="Search by keyword ( e.g. black, orange )"
                         startIcon={<IoSearchOutline color="gray" size={20}/>}
-                        // InputGroup's end element is inert by default, so the
-                        // icon needs pointer events turned back on to be a
-                        // usable button rather than decoration.
                         endIcon={
                             <Box
                                 as="button"
@@ -190,8 +157,6 @@ export default function Adopt() {
                 <S2SIconButton icon={<LuFilter color="gray" />} ariaLabel="Filters" bgColor="White" onClick={() => setFilterDrawerOpen(true)} />
             </Flex>
 
-            {/* Desktop: original layout — search icon inside the pill's end,
-                camera as its own separate button, no filter button. */}
             <Flex display={{ base: "none", md: "flex" }} gap="18px" mt="32px" align="center" justify="center" wrap="wrap">
                 <Box flex={1} maxW="700px" display="flex" gap="8px">
                     <S2SInput
@@ -203,8 +168,6 @@ export default function Adopt() {
                 </Box>
                 <S2SIconButton icon={<IoCameraOutline color="Grey" />} ariaLabel="Search by photo" bgColor="White" onClick={() => setPhotoSearchOpen(true)} />
             </Flex>
-            {/* Desktop: filters stay inline. On mobile these live in the filter
-                drawer instead (triggered by the funnel button above). */}
             <Flex display={{ base: "none", md: "flex" }} justify="center">
                 <Flex justify="space-between" mt="32px" wrap="wrap" gap={4}>
                     <S2SDropDown

@@ -1,7 +1,6 @@
 import { Icon, IconButton } from "@chakra-ui/react";
 import { LuCheck, LuPencil } from "react-icons/lu";
 
-/** Shared filled-circle edit/save toggle used by the header of both profile edit cards. */
 export default function EditSaveButton({
     label,
     isEditing,

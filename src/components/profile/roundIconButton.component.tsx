@@ -1,11 +1,6 @@
 import { Icon, IconButton } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
 
-/**
- * The 38px outlined circle used by both lists. S2SIconButton is a *filled*
- * button (bg="Blue", white glyph), so it can't express this variant — here the
- * fill is white and one colour drives both the ring and the glyph.
- */
 export default function RoundIconButton({
     icon,
     ariaLabel,

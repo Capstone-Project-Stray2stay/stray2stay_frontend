@@ -33,13 +33,6 @@ function SpeciesColumn({
 
     return (
         <VStack align="stretch" gap="12px" flex="1 1 265px" minW="240px" maxW="320px">
-            {/* Species header: a pale blue pill with the cream icon disc sunk
-                into its left edge, per the mockup. Not a picker — unlike
-                S2SPetIconButton (rehome step 1), both species are always shown
-                and neither is selectable, so this is a plain label row.
-
-                Same artwork as step 1 at ~55% scale; the dog is wider than tall
-                and the cat is square, so each gets explicit dimensions. */}
             <Flex
                 h="40px"
                 align="center"
@@ -61,8 +54,6 @@ function SpeciesColumn({
                     fontSize="16.32px"
                     fontWeight="600"
                     color="Grey"
-                    // Pull back by half the disc so the label centres on the
-                    // pill rather than on the space beside the disc.
                     ml="-20px"
                 >
                     {isDog ? "Dog" : "Cat"}
@@ -72,19 +63,11 @@ function SpeciesColumn({
             <VStack align="stretch" gap="12px">
                 <ProfileField label="Breed" {...LABEL}>
                     <S2SDropDown
-                        // Remount once options finish loading: the underlying
-                        // combobox doesn't resync its displayed text if `data`
-                        // arrives async (useBreeds) after `value` is already
-                        // set — it looks empty even though a value is selected
-                        // (same fix as the address selects in
-                        // personalInfoFields.component.tsx).
                         key={breedItems.length === 0 ? "loading" : "loaded"}
                         {...detailDropDownStyle}
                         placeholder=""
                         data={breedItems}
                         value={value.breed}
-                        // Colors are breed-specific, so a breed change
-                        // invalidates any colour already picked.
                         onValueChange={(breed) => onChange({ breed, color: "" })}
                         disabled={disabled}
                     />
@@ -125,10 +108,6 @@ function SpeciesColumn({
     );
 }
 
-/**
- * The Pet Preferences heading and its Dog/Cat columns, with no card around
- * them. Shared by the Profile page and the new-user User Information page.
- */
 export default function PetPreferencesFields({
     dog,
     cat,
@@ -141,10 +120,7 @@ export default function PetPreferencesFields({
     cat: PetPreferenceDraft;
     onDogChange: (patch: Partial<PetPreferenceDraft>) => void;
     onCatChange: (patch: Partial<PetPreferenceDraft>) => void;
-    /** Read-only mode — the Profile page uses this while not in edit mode; the
-     * User Information page never passes it, so it stays always-editable there. */
     disabled?: boolean;
-    /** Slot next to the heading — the Profile page's edit/save toggle lives here. */
     headerAction?: React.ReactNode;
 }) {
     return (

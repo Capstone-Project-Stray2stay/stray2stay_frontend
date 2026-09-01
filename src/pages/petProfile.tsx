@@ -41,7 +41,6 @@ function formatAgeGroup(ageGroup: string): string {
   return match?.label ?? ageGroup;
 }
 
-/** Pulls the server's own message out of a failed request — see rehome.page.tsx's serverMessage. */
 function serverMessage(error: unknown): string {
   if (isAxiosError(error)) {
     const data = error.response?.data as { error?: string; message?: string } | undefined;
@@ -111,7 +110,6 @@ export default function PetProfile() {
 
   const images = pet.petImageAddress.length > 0 ? pet.petImageAddress : [FALLBACK_IMAGE];
   const knownVaccines = VACCINE_OPTIONS[pet.petType?.toLowerCase() as "dog" | "cat"] ?? ["Rabies"];
-  // Stored as a single comma-joined string (see registerPetAPI), so split it back apart for display.
   const specialCareItems = (pet.petSpecialCare ?? "")
     .split(",")
     .map((item) => item.trim())

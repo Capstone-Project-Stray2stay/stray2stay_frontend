@@ -18,18 +18,10 @@ import MyAdoptionsModal from "../components/diary/myAdoptionsModal.component";
 export default function Diary() {
     const navigate = useNavigate();
 
-    // The desktop layout is two independently-flowing columns, and the
-    // finder card moves from the right column into the middle of the mobile
-    // flow — a reorder plain CSS direction:column can't express. So the
-    // arrangement is picked once here, in JS, rather than mounting the page
-    // twice behind display:none (which would double up DayEntries' internal
-    // edit-mode state for nothing).
     const isDesktop = useBreakpointValue({ base: false, lg: true }) ?? false;
 
     const [selectedPetId, setSelectedPetId] = useState(mockAdoptedPets[0].id);
     const [selectedDate, setSelectedDate] = useState(() => new Date());
-    // Paged independently of the selection, so browsing ahead a month doesn't
-    // move which day the diary is showing.
     const [viewMonth, setViewMonth] = useState(() => new Date());
     const [entries, setEntries] = useState<DiaryEntry[]>(mockEntries);
     const [isPetModalOpen, setIsPetModalOpen] = useState(false);
@@ -53,11 +45,6 @@ export default function Diary() {
         setViewMonth(new Date(date.getFullYear(), date.getMonth(), 1));
     };
 
-    /**
-     * A day holds one entry, so this upserts rather than appends. `photo` is
-     * null when the editor was reopened and only the caption changed — the
-     * existing image is kept in that case.
-     */
     const handleSaveEntry = (photo: File | null, caption: string) => {
         setEntries((current) => {
             const existing = current.find(
@@ -65,8 +52,6 @@ export default function Diary() {
             );
 
             if (existing) {
-                // Release the old blob before dropping the reference to it,
-                // but only when it was one we minted from a File.
                 if (photo && existing.photo) URL.revokeObjectURL(existing.imageURL);
 
                 return current.map((entry) =>
@@ -96,8 +81,6 @@ export default function Diary() {
         });
     };
 
-    // Each piece is built exactly once and just gets slotted into whichever
-    // grouping matches the breakpoint below.
     const petCard = <PetSummaryCard pet={selectedPet} onChangeClick={() => setIsPetModalOpen(true)} />;
 
     const finderCard = <FinderCard finder={mockFinder} />;

@@ -39,9 +39,6 @@ export function useUserInfo(options?: { enabled?: boolean }) {
             lastName: data.Lastname ?? "",
             phone: data.Phone ?? "",
             ...splitAddress(data.Address ?? ""),
-            // GET /user/info has no stored lat/long, so this stays unset until
-            // the user picks a sub-district again — resolved on submit either
-            // way (see userInformation.page.tsx's geocode fallback).
             lat: null,
             long: null,
         }

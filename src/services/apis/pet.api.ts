@@ -4,12 +4,6 @@ import { resolveLocation } from "../../utils/location";
 import type { EditPetDraft, RehomeDraft } from "../../types/rehome.type";
 import type { ScreeningAnswers } from "../../types/profile.type";
 
-/**
- * Ask the backend to detect a pet's breed from 1-2 photos.
- *
- * The Go handler reads the files from the "images" multipart field and proxies
- * them to the AI service, returning only the top prediction as { pet_breed }.
- */
 export async function classifyPetAPI(petType: "dog" | "cat", images: File[]) {
     const formData = new FormData();
     images.forEach((image) => formData.append("images", image));

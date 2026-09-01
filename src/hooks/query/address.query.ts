@@ -6,12 +6,8 @@ import {
     getThaiSubDistrictsAPI,
 } from "../../services/apis/address.api"
 
-// Thailand's administrative divisions essentially never change, so there's no
-// need to refetch this on every mount — but it's still a live fetch against
-// the external dataset each session, never something we copy into our own DB.
 const REFERENCE_DATA_STALE_TIME = 24 * 60 * 60 * 1000;
 
-/** Just the province list — for callers (like the Adopt filter) that don't need districts/sub-districts too. */
 export function useThaiProvinces() {
     const { data, isLoading } = useQuery({
         queryKey: ["thaiProvinces"],

@@ -43,28 +43,14 @@ function toEditPetDraft(pet: PetInfoResponse): EditPetDraft {
     };
 }
 
-/**
- * Edit Pet's Profile — reached from the pencil button on the Profile page's
- * "My Rehoming" list. Everything the Register a Pet wizard spreads across three
- * steps sits on one page here, since nothing needs discovering the second time
- * around: the photos and the whole details form, with no stepper and no AI
- * classification.
- *
- * Resolves the pet before mounting the form so its draft state can initialize
- * straight from the pet's values, instead of syncing them in after the fact via
- * an effect (same split as profile.page.tsx).
- */
 export default function EditPet() {
     const { petId } = useParams();
     const { pet, isLoading, isError } = usePetInfo(petId);
 
     if (isLoading) return <Box></Box>;
 
-    // A hand-typed or stale URL shouldn't strand the user on an empty form.
     if (isError || !pet) return <Navigate to="/profile" replace />;
 
-    // Keyed so navigating straight from one pet's edit page to another's
-    // rebuilds the draft rather than keeping the first pet's values.
     return <EditPetForm key={petId} pid={pet.pid} initialDraft={toEditPetDraft(pet)} />;
 }
 
@@ -75,8 +61,6 @@ function EditPetForm({ pid, initialDraft }: { pid: number; initialDraft: EditPet
     const [formError, setFormError] = useState("");
     const updatePetMutation = useUpdatePet();
 
-    // The breed/color vocabularies are real even though the pet itself is not —
-    // /pets/breeds and /pets/breed/color both exist.
     const { breeds } = useBreeds(draft.petType);
     const { colors } = usePetColors(draft.petType, draft.breed);
 

@@ -8,22 +8,18 @@ export default function WeekStrip({
     onSelect,
 }: {
     selectedDate: Date;
-    /** Days that already hold at least one entry — marked with a dot. */
     entryDateKeys: Set<string>;
     onSelect: (date: Date) => void;
 }) {
     const days = weekOf(selectedDate);
 
     return (
-        // Mobile stacks the month label above the strip; desktop sets it beside.
         <Flex
             direction={{ base: "column", md: "row" }}
             align={{ base: "stretch", md: "flex-start" }}
             gap={{ base: "14px", md: "24px" }}
             w="100%"
         >
-            {/* The label spells the month out on mobile, where it has a whole
-                line to itself, and abbreviates beside the strip on desktop. */}
             <Text
                 display={{ base: "block", md: "none" }}
                 fontSize="16px"
@@ -62,9 +58,6 @@ export default function WeekStrip({
                             >
                                 {WEEKDAYS[day.getDay()]}
                             </Text>
-                            {/* Figma exports the circle and the number as separate
-                                absolutely-positioned nodes; they overlap in the
-                                design, so the number belongs inside the circle. */}
                             <Flex
                                 boxSize={{ base: "33.69px", md: "41.99px" }}
                                 align="center"
@@ -83,8 +76,6 @@ export default function WeekStrip({
                                     {day.getDate()}
                                 </Text>
                             </Flex>
-                            {/* Sits under the circle rather than inside it, where
-                                it would collide with the date. */}
                             <Box
                                 boxSize="6px"
                                 borderRadius="full"

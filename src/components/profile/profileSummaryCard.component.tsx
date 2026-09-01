@@ -56,7 +56,6 @@ export default function ProfileSummaryCard({
     const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) onImageChange(file);
-        // Reset so picking the same file again still fires onChange.
         e.target.value = "";
     };
 
