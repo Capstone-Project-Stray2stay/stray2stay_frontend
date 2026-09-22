@@ -4,14 +4,12 @@ import { Circle, Flex, Image, Text, VStack } from "@chakra-ui/react";
 import { S2SDropDown } from "../S2S.components";
 import { detailDropDownStyle } from "../../utils/detailField.style";
 import { ageGroupOptions, genderOptions } from "../../utils/petOptions.util";
-import { useBreeds, usePetColors } from "../../hooks/query/pet.query";
+import { useBreeds, useBreedImages, usePetColors, toBreedOptions } from "../../hooks/query/pet.query";
 
 import ProfileField from "./profileField.component";
 import type { PetPreferenceDraft, Species } from "../../types/profile.type";
 
 const LABEL = { labelColor: "GreyText", labelSize: "13.05px" } as const;
-
-const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
 function SpeciesColumn({
     species,
@@ -27,9 +25,10 @@ function SpeciesColumn({
     const isDog = species === "dog";
 
     const { breeds } = useBreeds(species);
+    const { images: breedImages } = useBreedImages(species);
     const { colors: colorItems } = usePetColors(species, value.breed);
 
-    const breedItems = useMemo(() => toOptions(breeds), [breeds]);
+    const breedItems = useMemo(() => toBreedOptions(breeds, breedImages), [breeds, breedImages]);
 
     return (
         <VStack align="stretch" gap="12px" flex="1 1 265px" minW="240px" maxW="320px">

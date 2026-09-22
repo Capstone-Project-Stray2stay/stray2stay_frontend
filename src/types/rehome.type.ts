@@ -1,3 +1,5 @@
+import type { CustomScreeningQuestionDraft } from "./profile.type";
+
 export type PetType = "dog" | "cat";
 
 export interface RehomeLocation {
@@ -30,6 +32,7 @@ export interface RehomeDraft extends PetDetailsDraft {
     photos: File[];
     aiPhotos: File[];
     detectedBreed: string | null;
+    customQuestions: CustomScreeningQuestionDraft[];
 }
 
 export interface EditPetDraft extends PetDetailsDraft {
@@ -50,6 +53,7 @@ export const emptyRehomeDraft: RehomeDraft = {
     photos: [],
     aiPhotos: [],
     detectedBreed: null,
+    customQuestions: [],
 
     name: "",
     breed: "",

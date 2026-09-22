@@ -45,6 +45,12 @@ function PillButton({
 function InterestRow({ pid, interest }: { pid: string; interest: RehomingInterest }) {
     const [showAnswers, setShowAnswers] = useState(false);
     const [showAcceptConfirm, setShowAcceptConfirm] = useState(false);
+    // Set the instant the user confirms, rather than waiting on the
+    // adoptors refetch to reflect ACCEPT: without it, the trigger button
+    // below stays clickable for the round-trip, so a second click (or the
+    // same click landing again) reopens this same confirm dialog.
+    const [justAccepted, setJustAccepted] = useState(false);
+    const isAccepted = interest.status === "accepted" || justAccepted;
     const { answers } = useScreeningAnswer(pid, interest.rid, showAnswers);
     const selectAdopterMutation = useSelectAdopter();
 
@@ -75,7 +81,7 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
                     width="276px"
                     onClick={() => setShowAnswers(true)}
                 />
-                {interest.status === "accepted" ? (
+                {isAccepted ? (
                     <StatusBadge status="success" />
                 ) : (
                     <PillButton
@@ -94,48 +100,53 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
                 onClose={() => setShowAnswers(false)}
             />
 
-            <Dialog.Root
-                open={showAcceptConfirm}
-                onOpenChange={(e) => setShowAcceptConfirm(e.open)}
-                placement="center"
-            >
-                <Portal>
-                    <Dialog.Backdrop bg="blackAlpha.400" />
-                    <Dialog.Positioner>
-                        <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-                            <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
-                                    Accept {interest.name}?
-                                </Text>
-                                <Text fontSize="14px" color="GreyText" textAlign="center">
-                                    This marks the pet as adopted and denies every other pending request.
-                                    This can't be undone.
-                                </Text>
-                                <Flex gap="12px" mt="8px">
-                                    <S2SButton
-                                        text="Cancel"
-                                        variant="outline"
-                                        width="120px"
-                                        onClick={() => setShowAcceptConfirm(false)}
-                                        disabled={selectAdopterMutation.isPending}
-                                    />
-                                    <S2SButton
-                                        text="Accept"
-                                        width="120px"
-                                        loading={selectAdopterMutation.isPending}
-                                        onClick={() =>
-                                            selectAdopterMutation.mutate(
-                                                { pid, rid: interest.rid },
-                                                { onSuccess: () => setShowAcceptConfirm(false) },
-                                            )
-                                        }
-                                    />
-                                </Flex>
-                            </VStack>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
+            {/* Only mounted while open, rather than always-mounted with `open`
+                toggled: keeps no Ark UI transition state alive across
+                open/close cycles for this row to get stuck in, since the
+                whole subtree is freshly created every time it opens. */}
+            {showAcceptConfirm && (
+                <Dialog.Root
+                    open
+                    onOpenChange={(e) => setShowAcceptConfirm(e.open)}
+                    placement="center"
+                >
+                    <Portal>
+                        <Dialog.Backdrop bg="blackAlpha.400" />
+                        <Dialog.Positioner>
+                            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
+                                <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                        Accept {interest.name}?
+                                    </Text>
+                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                        This marks the pet as adopted and denies every other pending request.
+                                        This can't be undone.
+                                    </Text>
+                                    <Flex gap="12px" mt="8px">
+                                        <S2SButton
+                                            text="Cancel"
+                                            variant="outline"
+                                            width="120px"
+                                            onClick={() => setShowAcceptConfirm(false)}
+                                            disabled={selectAdopterMutation.isPending}
+                                        />
+                                        <S2SButton
+                                            text="Accept"
+                                            width="120px"
+                                            loading={selectAdopterMutation.isPending}
+                                            onClick={() => {
+                                                setShowAcceptConfirm(false);
+                                                setJustAccepted(true);
+                                                selectAdopterMutation.mutate({ pid, rid: interest.rid });
+                                            }}
+                                        />
+                                    </Flex>
+                                </VStack>
+                            </Dialog.Content>
+                        </Dialog.Positioner>
+                    </Portal>
+                </Dialog.Root>
+            )}
         </Flex>
     );
 }
@@ -219,47 +230,48 @@ function RehomingRow({ pet, interests }: { pet: RehomingPet; interests: Rehoming
                 </VStack>
             )}
 
-            <Dialog.Root
-                open={showDeleteConfirm}
-                onOpenChange={(e) => setShowDeleteConfirm(e.open)}
-                placement="center"
-            >
-                <Portal>
-                    <Dialog.Backdrop bg="blackAlpha.400" />
-                    <Dialog.Positioner>
-                        <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-                            <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
-                                    Delete this pet?
-                                </Text>
-                                <Text fontSize="14px" color="GreyText" textAlign="center">
-                                    This removes {pet.name}'s listing and all of its photos permanently. This can't be undone.
-                                </Text>
-                                <Flex gap="12px" mt="8px">
-                                    <S2SButton
-                                        text="Cancel"
-                                        variant="outline"
-                                        width="120px"
-                                        onClick={() => setShowDeleteConfirm(false)}
-                                        disabled={deletePetMutation.isPending}
-                                    />
-                                    <S2SButton
-                                        text="Delete"
-                                        bgColor="red.500"
-                                        width="120px"
-                                        loading={deletePetMutation.isPending}
-                                        onClick={() =>
-                                            deletePetMutation.mutate(pet.id, {
-                                                onSuccess: () => setShowDeleteConfirm(false),
-                                            })
-                                        }
-                                    />
-                                </Flex>
-                            </VStack>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
+            {showDeleteConfirm && (
+                <Dialog.Root
+                    open
+                    onOpenChange={(e) => setShowDeleteConfirm(e.open)}
+                    placement="center"
+                >
+                    <Portal>
+                        <Dialog.Backdrop bg="blackAlpha.400" />
+                        <Dialog.Positioner>
+                            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
+                                <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                        Delete this pet?
+                                    </Text>
+                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                        This removes {pet.name}'s listing and all of its photos permanently. This can't be undone.
+                                    </Text>
+                                    <Flex gap="12px" mt="8px">
+                                        <S2SButton
+                                            text="Cancel"
+                                            variant="outline"
+                                            width="120px"
+                                            onClick={() => setShowDeleteConfirm(false)}
+                                            disabled={deletePetMutation.isPending}
+                                        />
+                                        <S2SButton
+                                            text="Delete"
+                                            bgColor="red.500"
+                                            width="120px"
+                                            loading={deletePetMutation.isPending}
+                                            onClick={() => {
+                                                setShowDeleteConfirm(false);
+                                                deletePetMutation.mutate(pet.id);
+                                            }}
+                                        />
+                                    </Flex>
+                                </VStack>
+                            </Dialog.Content>
+                        </Dialog.Positioner>
+                    </Portal>
+                </Dialog.Root>
+            )}
         </VStack>
     );
 }

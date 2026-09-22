@@ -10,17 +10,18 @@ import PetLocationSection from "./petLocationSection.component";
 import { PERSONALITY_OPTIONS } from "../../utils/personalityOptions";
 import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "../../types/rehome.type";
 import type { S2SDropDownOption } from "../../types/component.type";
-
-const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
+import { toBreedOptions } from "../../hooks/query/pet.query";
 
 export default function Step3Details({
     draft,
     breeds,
+    breedImages,
     colors,
     onChange,
 }: {
     draft: PetDetailsDraft;
     breeds: string[];
+    breedImages?: Record<string, string>;
     colors: S2SDropDownOption[];
     onChange: (patch: Partial<PetDetailsDraft>) => void;
 }) {
@@ -30,7 +31,10 @@ export default function Step3Details({
 
     const petType: PetType = draft.petType ?? "dog";
 
-    const breedItems = useMemo(() => toOptions(breeds), [breeds]);
+    const breedItems = useMemo(
+        () => toBreedOptions(breeds, breedImages ?? {}),
+        [breeds, breedImages]
+    );
     const colorItems = colors;
 
     const personalityChips = [

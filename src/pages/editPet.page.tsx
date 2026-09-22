@@ -3,12 +3,12 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Box, Flex, Text } from "@chakra-ui/react";
 
 import { S2SButton, S2SPageTitle } from "../components/S2S.components";
-import { useBreeds, usePetColors, usePetInfo, useUpdatePet } from "../hooks/query/pet.query";
+import { useBreeds, useBreedImages, usePetColors, usePetInfo, useUpdatePet } from "../hooks/query/pet.query";
 
 import PhotoPicker from "../components/rehome/photoPicker.component";
 import Step3Details from "../components/rehome/step3Details.component";
 import { splitAddress } from "../utils/address.util";
-import { missingFields } from "../utils/validation";
+import { petDetailsMissingLabels, petDetailsSchema } from "../validators/pet.validator";
 import type { EditPetDraft, PetType } from "../types/rehome.type";
 import type { PetInfoResponse } from "../services/apis/pet.api";
 
@@ -62,15 +62,16 @@ function EditPetForm({ pid, initialDraft }: { pid: number; initialDraft: EditPet
     const updatePetMutation = useUpdatePet();
 
     const { breeds } = useBreeds(draft.petType);
+    const { images: breedImages } = useBreedImages(draft.petType);
     const { colors } = usePetColors(draft.petType, draft.breed);
 
     const patchDraft = (patch: Partial<EditPetDraft>) =>
         setDraft((d) => ({ ...d, ...patch }));
 
     const handleSave = () => {
-        const missing = missingFields(draft);
-        if (missing.length > 0) {
-            setFormError(`Please fill in: ${missing.join(", ")}.`);
+        const parsed = petDetailsSchema.safeParse(draft);
+        if (!parsed.success) {
+            setFormError(`Please fill in: ${petDetailsMissingLabels(parsed.error).join(", ")}.`);
             return;
         }
 
@@ -100,6 +101,7 @@ function EditPetForm({ pid, initialDraft }: { pid: number; initialDraft: EditPet
                     <Step3Details
                         draft={draft}
                         breeds={breeds}
+                        breedImages={breedImages}
                         colors={colors}
                         onChange={patchDraft}
                     />

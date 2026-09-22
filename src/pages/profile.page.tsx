@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Flex, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 
 import { S2SPageTitle } from "../components/S2S.components";
 import { useUpdateUser, useUpdateUserImage, useUserInfo } from "../hooks/query/user.query";
@@ -24,6 +24,7 @@ import PetPreferencesForm from "../components/profile/petPreferencesForm.compone
 import ListTabs from "../components/profile/listTabs.component";
 import MyRehomingList from "../components/profile/myRehomingList.component";
 import MyAdoptionsList from "../components/profile/myAdoptionsList.component";
+import { personalInfoSchema } from "../validators/profile.validator";
 
 export default function Profile() {
     const { personalInfo, dogPreference, catPreference, imageURL, loading } = useUserInfo();
@@ -87,9 +88,17 @@ function ProfileContent({
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingPreferences, setIsEditingPreferences] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
+    const [personalInfoError, setPersonalInfoError] = useState("");
     const updateUserMutation = useUpdateUser();
 
     const handleSaveProfile = async (onSuccess: () => void) => {
+        const parsed = personalInfoSchema.safeParse(personalInfo);
+        if (!parsed.success) {
+            setPersonalInfoError(parsed.error.issues[0]?.message ?? "Please check your information");
+            return;
+        }
+        setPersonalInfoError("");
+
         const address = joinAddress(personalInfo);
 
         let { lat, long } = personalInfo;
@@ -174,6 +183,12 @@ function ProfileContent({
                         />
                     )}
                 </Flex>
+
+                {personalInfoError && (
+                    <Text fontSize="14px" color="red.500">
+                        {personalInfoError}
+                    </Text>
+                )}
 
                 <VStack
                     bg="white"

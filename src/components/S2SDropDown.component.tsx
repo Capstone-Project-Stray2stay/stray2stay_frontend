@@ -73,7 +73,7 @@ export default function S2SDropDown({
                             <Combobox.Item item={item} key={item.value}>
                                 <HStack gap={2}>
                                     {item.image && (
-                                        <Image src={item.image} alt="" boxSize="36px" borderRadius="full" objectFit="cover" flexShrink={0} />
+                                        <Image src={item.image} alt="" boxSize="36px" borderRadius="5px" objectFit="cover" flexShrink={0} />
                                     )}
                                     <Span>{item.label}</Span>
                                 </HStack>

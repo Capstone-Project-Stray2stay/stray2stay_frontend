@@ -3,6 +3,7 @@ import {
     adoptPetAPI,
     classifyPetAPI,
     petBreedsAPI,
+    petBreedImagesAPI,
     petColorsAPI,
     registerPetAPI,
     updatePetAPI,
@@ -16,11 +17,15 @@ import {
   selectAdopterAPI,
   getMyAdoptionRequestsAPI,
   cancelAdoptionRequestAPI,
+  getScreeningQuestionsAPI,
+  saveScreeningQuestionsAPI,
+  uploadScreeningAnswerImageAPI,
   type PetSearchParams,
   type RandomPetResponseItem,
   type AdoptSubmission
 } from "../../services/apis/pet.api"
 import type { EditPetDraft, PetType, RehomeDraft } from "../../types/rehome.type"
+import type { CustomScreeningQuestionDraft } from "../../types/profile.type"
 
 export function useClassifyPet() {
     return useMutation({
@@ -44,18 +49,55 @@ export function useBreeds(petType: PetType | null) {
     return { breeds: data ?? [], loading: isLoading }
 }
 
+/** One representative image per breed for a species, keyed by breed name. */
+export function useBreedImages(petType: PetType | null) {
+    const { data, isLoading } = useQuery({
+        queryKey: ["petBreedImages", petType],
+        queryFn: async () => {
+            const res = await petBreedImagesAPI(petType as PetType)
+            const imageData = (res.data.imageData ?? []) as { breed: string; image: string }[]
+            const images: Record<string, string> = {}
+            imageData.forEach((entry) => {
+                if (entry.breed) images[entry.breed] = entry.image
+            })
+            return images
+        },
+        enabled: petType !== null,
+        retry: false,
+    })
+    return { images: data ?? {}, loading: isLoading }
+}
+
+/** Pairs a plain breed list with its representative-image map into dropdown options. */
+export function toBreedOptions(breeds: string[], images: Record<string, string>) {
+    return breeds.map((b) => ({ value: b, label: b, image: images[b] }))
+}
+
 export interface BreedFilterOption {
     value: string
     label: string
     species: PetType
+    image?: string
 }
 
 export function useAdoptBreeds(category: PetType | "all") {
     const dogQuery = useBreeds(category !== "cat" ? "dog" : null)
     const catQuery = useBreeds(category !== "dog" ? "cat" : null)
+    const dogImages = useBreedImages(category !== "cat" ? "dog" : null)
+    const catImages = useBreedImages(category !== "dog" ? "cat" : null)
 
-    const dogItems: BreedFilterOption[] = dogQuery.breeds.map((b) => ({ value: b, label: b, species: "dog" }))
-    const catItems: BreedFilterOption[] = catQuery.breeds.map((b) => ({ value: b, label: b, species: "cat" }))
+    const dogItems: BreedFilterOption[] = dogQuery.breeds.map((b) => ({
+        value: b,
+        label: b,
+        species: "dog",
+        image: dogImages.images[b],
+    }))
+    const catItems: BreedFilterOption[] = catQuery.breeds.map((b) => ({
+        value: b,
+        label: b,
+        species: "cat",
+        image: catImages.images[b],
+    }))
 
     let breedItems: BreedFilterOption[]
     if (category === "dog") breedItems = dogItems
@@ -69,7 +111,10 @@ export function useAdoptBreeds(category: PetType | "all") {
         })
     }
 
-    return { breedItems, loading: dogQuery.loading || catQuery.loading }
+    return {
+        breedItems,
+        loading: dogQuery.loading || catQuery.loading || dogImages.loading || catImages.loading,
+    }
 }
 
 export function usePetColors(petType: PetType | null, petBreed: string) {
@@ -262,5 +307,45 @@ export function useCancelAdoptionRequest() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pets", "adoptions", "mine"] })
     },
+  })
+}
+
+export function useScreeningQuestions(pid: string | number | undefined) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["pets", "screening-questions", pid],
+    queryFn: () => getScreeningQuestionsAPI(pid as string | number),
+    enabled: pid !== undefined && pid !== "",
+    retry: false,
+  })
+
+  return {
+    questions: data?.questions ?? [],
+    locked: data?.locked ?? false,
+    isLoading,
+    isError,
+  }
+}
+
+export function useSaveScreeningQuestions() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      pid,
+      questions,
+    }: {
+      pid: string | number
+      questions: CustomScreeningQuestionDraft[]
+    }) => saveScreeningQuestionsAPI(pid, questions),
+    onSuccess: (_data, { pid }) => {
+      queryClient.invalidateQueries({ queryKey: ["pets", "screening-questions", String(pid)] })
+    },
+  })
+}
+
+export function useUploadScreeningAnswerImage() {
+  return useMutation({
+    mutationFn: ({ pid, file }: { pid: string | number; file: File }) =>
+      uploadScreeningAnswerImageAPI(pid, file),
   })
 }

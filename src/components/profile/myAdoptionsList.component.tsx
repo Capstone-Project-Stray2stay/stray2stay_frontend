@@ -54,48 +54,49 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
                 <StatusBadge status={pet.status} />
             </Flex>
 
-            <Dialog.Root
-                open={showCancelConfirm}
-                onOpenChange={(e) => setShowCancelConfirm(e.open)}
-                placement="center"
-            >
-                <Portal>
-                    <Dialog.Backdrop bg="blackAlpha.400" />
-                    <Dialog.Positioner>
-                        <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-                            <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
-                                    Withdraw this request?
-                                </Text>
-                                <Text fontSize="14px" color="GreyText" textAlign="center">
-                                    This cancels your adoption request for {pet.name}. This can't be
-                                    undone.
-                                </Text>
-                                <Flex gap="12px" mt="8px">
-                                    <S2SButton
-                                        text="Cancel"
-                                        variant="outline"
-                                        width="120px"
-                                        onClick={() => setShowCancelConfirm(false)}
-                                        disabled={cancelMutation.isPending}
-                                    />
-                                    <S2SButton
-                                        text="Withdraw"
-                                        bgColor="red.500"
-                                        width="120px"
-                                        loading={cancelMutation.isPending}
-                                        onClick={() =>
-                                            cancelMutation.mutate(pet.rid, {
-                                                onSuccess: () => setShowCancelConfirm(false),
-                                            })
-                                        }
-                                    />
-                                </Flex>
-                            </VStack>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
+            {showCancelConfirm && (
+                <Dialog.Root
+                    open
+                    onOpenChange={(e) => setShowCancelConfirm(e.open)}
+                    placement="center"
+                >
+                    <Portal>
+                        <Dialog.Backdrop bg="blackAlpha.400" />
+                        <Dialog.Positioner>
+                            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
+                                <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                        Withdraw this request?
+                                    </Text>
+                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                        This cancels your adoption request for {pet.name}. This can't be
+                                        undone.
+                                    </Text>
+                                    <Flex gap="12px" mt="8px">
+                                        <S2SButton
+                                            text="Cancel"
+                                            variant="outline"
+                                            width="120px"
+                                            onClick={() => setShowCancelConfirm(false)}
+                                            disabled={cancelMutation.isPending}
+                                        />
+                                        <S2SButton
+                                            text="Withdraw"
+                                            bgColor="red.500"
+                                            width="120px"
+                                            loading={cancelMutation.isPending}
+                                            onClick={() => {
+                                                setShowCancelConfirm(false);
+                                                cancelMutation.mutate(pet.rid);
+                                            }}
+                                        />
+                                    </Flex>
+                                </VStack>
+                            </Dialog.Content>
+                        </Dialog.Positioner>
+                    </Portal>
+                </Dialog.Root>
+            )}
         </Flex>
     );
 }
