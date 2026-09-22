@@ -4,16 +4,24 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { isAxiosError } from "axios";
 
 import { S2SPageTitle, S2SStepper, S2SButton } from "../components/S2S.components";
-import { useBreeds, useClassifyPet, usePetColors, useRegisterPet } from "../hooks/query/pet.query";
+import {
+    useBreeds,
+    useBreedImages,
+    useClassifyPet,
+    usePetColors,
+    useRegisterPet,
+    useSaveScreeningQuestions,
+} from "../hooks/query/pet.query";
 
 import Step1Species from "../components/rehome/step1Species.component";
 import Step2Photos from "../components/rehome/step2Photos.component";
 import Step3Details from "../components/rehome/step3Details.component";
+import Step4ScreeningQuestions from "../components/rehome/step4ScreeningQuestions.component";
 import SelectAiPhotosModal from "../components/rehome/selectAiPhotosModal.component";
 import { emptyRehomeDraft, MAX_AI_PHOTOS, type RehomeDraft } from "../types/rehome.type";
-import { missingFields } from "../utils/validation";
+import { petDetailsMissingLabels, petDetailsSchema } from "../validators/pet.validator";
 
-const STEPS = ["Select Species", "Upload Photos", "Fill in Details"];
+const STEPS = ["Select Species", "Upload Photos", "Fill in Details", "Screening Questions"];
 
 function serverMessage(error: unknown): string {
     if (isAxiosError(error)) {
@@ -34,8 +42,10 @@ export default function Rehome() {
 
     const classify = useClassifyPet();
     const register = useRegisterPet();
+    const saveScreeningQuestions = useSaveScreeningQuestions();
 
     const { breeds } = useBreeds(draft.petType);
+    const { images: breedImages } = useBreedImages(draft.petType);
     const { colors } = usePetColors(draft.petType, draft.breed);
 
     const patchDraft = (patch: Partial<RehomeDraft>) =>
@@ -45,6 +55,11 @@ export default function Rehome() {
         step === 1 ? draft.petType !== null
             : step === 2 ? draft.photos.length > 0
                 : true;
+
+    const finishRegistration = () => {
+        setDraft(emptyRehomeDraft);
+        navigate("/adopt");
+    };
 
     const goNext = () => setStep((s) => Math.min(s + 1, STEPS.length));
 
@@ -85,9 +100,9 @@ export default function Rehome() {
     };
 
     const handleSubmit = () => {
-        const missing = missingFields(draft);
-        if (missing.length > 0) {
-            setFormError(`Please fill in: ${missing.join(", ")}.`);
+        const parsed = petDetailsSchema.safeParse(draft);
+        if (!parsed.success) {
+            setFormError(`Please fill in: ${petDetailsMissingLabels(parsed.error).join(", ")}.`);
             return;
         }
 
@@ -96,9 +111,18 @@ export default function Rehome() {
         // user has been through the breed field.
         setClassifyError("");
         register.mutate(draft, {
-            onSuccess: () => {
-                setDraft(emptyRehomeDraft);
-                navigate("/adopt");
+            onSuccess: (newPid) => {
+                if (draft.customQuestions.length === 0) {
+                    finishRegistration();
+                    return;
+                }
+                // The pet is already created at this point — a failure here
+                // shouldn't block navigation; the owner can still add
+                // questions later from the pet's profile page.
+                saveScreeningQuestions.mutate(
+                    { pid: newPid, questions: draft.customQuestions },
+                    { onSuccess: finishRegistration, onError: finishRegistration },
+                );
             },
             // Unlike step 2's classify, a failed submit must not advance —
             // keep the user here with their input intact.
@@ -109,7 +133,7 @@ export default function Rehome() {
     };
 
     const handleNext = () => {
-        if (step === 3) {
+        if (step === STEPS.length) {
             handleSubmit();
             return;
         }
@@ -131,7 +155,11 @@ export default function Rehome() {
         <Box width="100%" pb="64px" px={{ base: "24px", md: "9%" }}>
             <S2SPageTitle title="Register a Pet" />
 
-            <Flex justify="center" mt={{ base: "32px", md: "64px" }} overflowX="auto">
+            <Flex
+                justify={{ base: "flex-start", md: "center" }}
+                mt={{ base: "32px", md: "64px" }}
+                overflowX="auto"
+            >
                 <S2SStepper steps={STEPS} current={step} />
             </Flex>
 
@@ -152,8 +180,15 @@ export default function Rehome() {
                     <Step3Details
                         draft={draft}
                         breeds={breeds}
+                        breedImages={breedImages}
                         colors={colors}
                         onChange={patchDraft}
+                    />
+                )}
+                {step === 4 && (
+                    <Step4ScreeningQuestions
+                        questions={draft.customQuestions}
+                        onChange={(customQuestions) => patchDraft({ customQuestions })}
                     />
                 )}
 
@@ -187,7 +222,7 @@ export default function Rehome() {
                         height={{ base: "35.65px", md: "44.80px" }}
                         fontSize={{ base: "14.32px", md: "20px" }}
                         disabled={!canGoNext}
-                        loading={classify.isPending || register.isPending}
+                        loading={classify.isPending || register.isPending || saveScreeningQuestions.isPending}
                         onClick={handleNext}
                     />
                 </Flex>

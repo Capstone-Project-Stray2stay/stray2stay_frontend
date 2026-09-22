@@ -1,11 +1,9 @@
 import {
   Badge,
   Box,
-  Dialog,
   Flex,
   Icon,
   Image,
-  Portal,
   Text,
   VStack,
   IconButton
@@ -21,17 +19,17 @@ import {
   LuPawPrint,
   LuStethoscope,
   LuSyringe,
-  LuTrash2,
   LuX,
 } from "react-icons/lu";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
-import { useAdoptPet, useDeletePet, usePetInfo } from "../hooks/query/pet.query";
+import { useAdoptPet, usePetInfo } from "../hooks/query/pet.query";
 import { useAuth } from "../hooks/query/auth.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
 import { VACCINE_OPTIONS } from "../types/rehome.type";
 import AdoptScreeningForm from "../components/profile/adoptScreeningForm.component";
+import ManageScreeningQuestionsDialog from "../components/profile/manageScreeningQuestionsDialog.component";
 import type { AdoptSubmission } from "../services/apis/pet.api";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
@@ -56,19 +54,12 @@ export default function PetProfile() {
   const { user } = useAuth();
   const { pet, isOwner, adoptionStatus, isLoading, isError } = usePetInfo(pid);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const deletePetMutation = useDeletePet();
-
-  const handleDelete = () => {
-    if (!pid) return;
-    deletePetMutation.mutate(pid, {
-      onSuccess: () => navigate("/adopt"),
-    });
-  };
 
   const [showAdoptForm, setShowAdoptForm] = useState(false);
   const [adoptError, setAdoptError] = useState("");
   const adoptPetMutation = useAdoptPet();
+
+  const [showScreeningBuilder, setShowScreeningBuilder] = useState(false);
 
   const handleAdoptClick = () => {
     if (!user) {
@@ -140,7 +131,7 @@ export default function PetProfile() {
           </Flex>
 
           <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap">
-            <Box flex="1 1 320px" maxW="320px">
+            <Box flex="1 1 320px" maxW="320px" minW={0}>
               <Box position="relative" borderRadius="13px" overflow="hidden">
                 <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="300px" objectFit="contain" />
 
@@ -186,10 +177,11 @@ export default function PetProfile() {
               </Box>
 
               {images.length > 1 && (
-                <Flex mt={4} gap={4}>
+                <Flex mt={4} gap={4} overflowX="auto" pb={1}>
                   {images.map((src, index) => (
                     <Box
                       key={src}
+                      flexShrink={0}
                       w="80px"
                       h="80px"
                       borderRadius="13px"
@@ -206,7 +198,7 @@ export default function PetProfile() {
               )}
             </Box>
 
-            <VStack flex="1 1 340px" align="flex-start" gap={6}>
+            <VStack flex="1 1 340px" minW={0} align="flex-start" gap={6}>
               <Box>
                 <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
                   Name
@@ -389,21 +381,20 @@ export default function PetProfile() {
           />
         </Box>
 
-        {/* The two roles get different actions on the same page: the finder
-            manages their own listing, everyone else can ask to adopt it. */}
-        {isOwner ? (
+        {isOwner && (
           <Flex justify="center" mt="48px">
             <S2SButton
-              text="Delete Pet"
-              icon={<LuTrash2 size={18} />}
-              bgColor="red.500"
-              width="200px"
+              text="Manage Screening Questions"
+              variant="outline"
+              width="auto"
               height="48px"
               fontSize="18px"
-              onClick={() => setShowDeleteConfirm(true)}
+              onClick={() => setShowScreeningBuilder(true)}
             />
           </Flex>
-        ) : (
+        )}
+
+        {!isOwner && (
           <Flex justify="center" mt="48px">
             {pet.status === "ADOPTED" ? (
               <Text fontSize="18px" fontWeight="600" color="GreyText">
@@ -431,52 +422,23 @@ export default function PetProfile() {
         )}
       </Box>
 
-      <Dialog.Root
-        open={showDeleteConfirm}
-        onOpenChange={(e) => setShowDeleteConfirm(e.open)}
-        placement="center"
-      >
-        <Portal>
-          <Dialog.Backdrop bg="blackAlpha.400" />
-          <Dialog.Positioner>
-            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-              <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
-                  Delete this pet?
-                </Text>
-                <Text fontSize="14px" color="GreyText" textAlign="center">
-                  This removes {pet.petName || "this pet"}'s listing and all of its photos permanently. This can't be undone.
-                </Text>
-                <Flex gap="12px" mt="8px">
-                  <S2SButton
-                    text="Cancel"
-                    variant="outline"
-                    width="120px"
-                    onClick={() => setShowDeleteConfirm(false)}
-                    disabled={deletePetMutation.isPending}
-                  />
-                  <S2SButton
-                    text="Delete"
-                    bgColor="red.500"
-                    width="120px"
-                    loading={deletePetMutation.isPending}
-                    onClick={handleDelete}
-                  />
-                </Flex>
-              </VStack>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
-
       <AdoptScreeningForm
         isOpen={showAdoptForm}
+        pid={pid ?? ""}
         petName={pet.petName || "this pet"}
         isSubmitting={adoptPetMutation.isPending}
         serverError={adoptError}
         onClose={() => setShowAdoptForm(false)}
         onSubmit={handleAdoptSubmit}
       />
+
+      {isOwner && (
+        <ManageScreeningQuestionsDialog
+          isOpen={showScreeningBuilder}
+          pid={pid ?? ""}
+          onClose={() => setShowScreeningBuilder(false)}
+        />
+      )}
     </Box>
   );
 }

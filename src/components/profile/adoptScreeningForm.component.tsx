@@ -1,10 +1,143 @@
-import { useState } from "react";
-import { Dialog, Flex, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { useRef, useState } from "react";
+import { Dialog, Flex, Image, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
 
-import { S2SButton, S2SInput, S2SDialogCloseButton } from "../S2S.components";
+import { S2SButton, S2SCheckbox, S2SInput, S2SDialogCloseButton } from "../S2S.components";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type { AdoptSubmission } from "../../services/apis/pet.api";
+import { screeningAnswersSchema, screeningMissingNumbers } from "../../validators/screening.validator";
+import { useScreeningQuestions, useUploadScreeningAnswerImage } from "../../hooks/query/pet.query";
+import type { CustomScreeningQuestion } from "../../types/profile.type";
+
+/** Draft value for one custom question — string for essay/multiple-choice/image, string[] for checklist. */
+type CustomDraft = Record<number, string | string[]>;
+
+function isAnswered(value: string | string[] | undefined): boolean {
+    if (value === undefined) return false;
+    return Array.isArray(value) ? value.length > 0 : value.trim().length > 0;
+}
+
+function CustomQuestionInput({
+    pid,
+    question,
+    value,
+    onChange,
+}: {
+    pid: string | number;
+    question: CustomScreeningQuestion;
+    value: string | string[] | undefined;
+    onChange: (value: string | string[]) => void;
+}) {
+    const uploadImage = useUploadScreeningAnswerImage();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    if (question.questionType === "ESSAY") {
+        return (
+            <S2SInput
+                w="465px"
+                maxW="100%"
+                borderRadius="132px"
+                placeholder="Type here.."
+                value={typeof value === "string" ? value : ""}
+                onChange={(e) => onChange(e.target.value)}
+            />
+        );
+    }
+
+    if (question.questionType === "MULTIPLE_CHOICE") {
+        const selected = typeof value === "string" ? value : "";
+        return (
+            <RadioGroup.Root
+                value={selected}
+                onValueChange={(e) => onChange(e.value ?? "")}
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-start"
+                gap="10px"
+            >
+                {(question.questionOptions ?? []).map((option) => (
+                    <RadioGroup.Item key={option} value={option} gap="15px" cursor="pointer">
+                        <RadioGroup.ItemHiddenInput />
+                        <RadioGroup.ItemIndicator
+                            boxSize="20px"
+                            borderWidth="1px"
+                            borderColor="BlueText"
+                            bg="transparent"
+                            color="BlueText"
+                            _checked={{ bg: "transparent", borderColor: "BlueText", color: "BlueText" }}
+                        />
+                        <RadioGroup.ItemText fontSize="16px" fontWeight="500" color="Grey">
+                            {option}
+                        </RadioGroup.ItemText>
+                    </RadioGroup.Item>
+                ))}
+            </RadioGroup.Root>
+        );
+    }
+
+    if (question.questionType === "CHECKLIST") {
+        const selected = Array.isArray(value) ? value : [];
+        const toggle = (option: string) =>
+            onChange(
+                selected.includes(option)
+                    ? selected.filter((o) => o !== option)
+                    : [...selected, option],
+            );
+        return (
+            <VStack align="flex-start" gap="10px">
+                {(question.questionOptions ?? []).map((option) => (
+                    <S2SCheckbox
+                        key={option}
+                        label={option}
+                        checked={selected.includes(option)}
+                        onChange={() => toggle(option)}
+                    />
+                ))}
+            </VStack>
+        );
+    }
+
+    // IMAGE
+    const imageUrl = typeof value === "string" ? value : "";
+    return (
+        <VStack align="stretch" gap="10px" w="100%">
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    uploadImage.mutate(
+                        { pid, file },
+                        { onSuccess: (url) => onChange(url) },
+                    );
+                    e.target.value = "";
+                }}
+            />
+            <S2SButton
+                text={uploadImage.isPending ? "Uploading..." : imageUrl ? "Replace Image" : "Upload Image"}
+                variant="outline"
+                width="180px"
+                height="40px"
+                fontSize="14px"
+                loading={uploadImage.isPending}
+                onClick={() => fileInputRef.current?.click()}
+            />
+            {imageUrl && (
+                <Image
+                    src={imageUrl}
+                    alt={question.questionText}
+                    w="100%"
+                    maxH="400px"
+                    objectFit="cover"
+                    borderRadius="12px"
+                />
+            )}
+        </VStack>
+    );
+}
 
 interface ScreeningDraft {
     Q1_1: boolean | null;
@@ -40,31 +173,7 @@ const EMPTY_DRAFT: ScreeningDraft = {
     Note: "",
 };
 
-function missingQuestions(draft: ScreeningDraft): string[] {
-    const missing: string[] = [];
-
-    for (const section of SCREENING_SECTIONS) {
-        for (const question of section.questions) {
-            if (question.id === "Note") continue;
-
-            const value = draft[question.id];
-            const isBlank =
-                question.kind === "boolean"
-                    ? value === null
-                    : question.id === "Q2_1"
-                        ? value === ""
-                        : question.kind === "choice"
-                            ? value === null
-                            : typeof value === "string" && value.trim() === "";
-
-            if (isBlank) missing.push(question.number);
-        }
-    }
-
-    return missing;
-}
-
-function toSubmission(draft: ScreeningDraft): AdoptSubmission {
+function toSubmission(draft: ScreeningDraft, customDraft: CustomDraft): AdoptSubmission {
     return {
         q1_1: draft.Q1_1 === true,
         q1_2: draft.Q1_2 === true,
@@ -80,6 +189,9 @@ function toSubmission(draft: ScreeningDraft): AdoptSubmission {
         q6_1: draft.Q6_1 ?? 0,
         q6_2: draft.Q6_2 ?? 0,
         note: draft.Note.trim(),
+        answers: Object.entries(customDraft)
+            .filter(([, value]) => isAnswered(value))
+            .map(([questionId, value]) => ({ questionId: Number(questionId), value })),
     };
 }
 
@@ -199,6 +311,7 @@ function QuestionInput({
 
 export default function AdoptScreeningForm({
     isOpen,
+    pid,
     petName,
     isSubmitting,
     serverError,
@@ -206,6 +319,7 @@ export default function AdoptScreeningForm({
     onSubmit,
 }: {
     isOpen: boolean;
+    pid: string | number;
     petName: string;
     isSubmitting: boolean;
     serverError?: string;
@@ -213,23 +327,40 @@ export default function AdoptScreeningForm({
     onSubmit: (answers: AdoptSubmission) => void;
 }) {
     const [draft, setDraft] = useState<ScreeningDraft>(EMPTY_DRAFT);
+    const [customDraft, setCustomDraft] = useState<CustomDraft>({});
     const [formError, setFormError] = useState("");
+    const { questions: customQuestions } = useScreeningQuestions(isOpen ? pid : undefined);
 
     const patchDraft = (patch: Partial<ScreeningDraft>) =>
         setDraft((d) => ({ ...d, ...patch }));
 
+    const patchCustomDraft = (questionId: number, value: string | string[]) =>
+        setCustomDraft((d) => ({ ...d, [questionId]: value }));
+
     const handleSubmit = () => {
-        const missing = missingQuestions(draft);
-        if (missing.length > 0) {
-            setFormError(`Please answer: ${missing.join(", ")}.`);
+        const parsed = screeningAnswersSchema.safeParse(draft);
+        if (!parsed.success) {
+            setFormError(`Please answer: ${screeningMissingNumbers(parsed.error).join(", ")}.`);
             return;
         }
+
+        const missingCustom = customQuestions.filter(
+            (q) => q.questionRequired && !isAnswered(customDraft[q.questionId]),
+        );
+        if (missingCustom.length > 0) {
+            setFormError(
+                `Please answer: ${missingCustom.map((q) => q.questionText).join(", ")}.`,
+            );
+            return;
+        }
+
         setFormError("");
-        onSubmit(toSubmission(draft));
+        onSubmit(toSubmission(draft, customDraft));
     };
 
     const handleClose = () => {
         setDraft(EMPTY_DRAFT);
+        setCustomDraft({});
         setFormError("");
         onClose();
     };
@@ -283,6 +414,32 @@ export default function AdoptScreeningForm({
                                         </VStack>
                                     </VStack>
                                 ))}
+
+                                {customQuestions.length > 0 && (
+                                    <VStack align="stretch" gap="20px">
+                                        <Text fontSize="16px" color="black">
+                                            Additional Questions
+                                        </Text>
+                                        <VStack align="stretch" gap="25px" px="25px">
+                                            {customQuestions.map((question) => (
+                                                <VStack key={question.questionId} align="flex-start" gap="12px">
+                                                    <Text fontSize="16px" color="black">
+                                                        {question.questionText}
+                                                        {!question.questionRequired && " (optional)"}
+                                                    </Text>
+                                                    <CustomQuestionInput
+                                                        pid={pid}
+                                                        question={question}
+                                                        value={customDraft[question.questionId]}
+                                                        onChange={(value) =>
+                                                            patchCustomDraft(question.questionId, value)
+                                                        }
+                                                    />
+                                                </VStack>
+                                            ))}
+                                        </VStack>
+                                    </VStack>
+                                )}
                             </VStack>
 
                             {(formError || serverError) && (

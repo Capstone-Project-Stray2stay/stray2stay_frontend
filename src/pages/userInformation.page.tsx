@@ -14,15 +14,7 @@ import type { PersonalInfoDraft, PetPreferenceDraft } from "../types/profile.typ
 
 import PersonalInfoFields from "../components/profile/personalInfoFields.component";
 import PetPreferencesFields from "../components/profile/petPreferencesFields.component";
-
-const isPersonalInfoComplete = (info: PersonalInfoDraft) =>
-    info.firstName.trim() !== "" &&
-    info.lastName.trim() !== "" &&
-    info.phone.trim() !== "" &&
-    info.state.trim() !== "" &&
-    info.district.trim() !== "" &&
-    info.subDistrict.trim() !== "" &&
-    info.street.trim() !== "";
+import { personalInfoSchema } from "../validators/profile.validator";
 
 export default function UserInformation() {
     const { personalInfo, loading } = useUserInfo();
@@ -45,7 +37,7 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
     const updateNewUserStatusMutation = useUpdateNewUserStatus();
 
     const handleFinish = async () => {
-        if (!isPersonalInfoComplete(personalInfo)) {
+        if (!personalInfoSchema.safeParse(personalInfo).success) {
             setShowIncompleteWarning(true);
             return;
         }

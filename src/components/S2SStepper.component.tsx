@@ -10,7 +10,12 @@ const CIRCLE_SHADOW = {
 
 export default function S2SStepper({ steps, current }: S2SStepperType) {
     return (
-        <Flex align="flex-start" justify="center" wrap="nowrap" w="100%">
+        <Flex
+            align="flex-start"
+            justify={{ base: "flex-start", md: "center" }}
+            wrap="nowrap"
+            w="100%"
+        >
             {steps.map((label, i) => {
                 const step = i + 1;
                 const isDone = step <= current;

@@ -1,9 +1,9 @@
-import { Box, Dialog, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { Box, Dialog, Image, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
 
 import { S2SDialogCloseButton } from "../S2S.components";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
-import type { ScreeningAnswers } from "../../types/profile.type";
+import type { CustomAnswerResponse, ScreeningAnswersWithCustom } from "../../types/profile.type";
 
 function AnswerRadioGroup({
     value,
@@ -83,7 +83,7 @@ function Answer({
     answers,
 }: {
     question: ScreeningQuestion;
-    answers: ScreeningAnswers;
+    answers: ScreeningAnswersWithCustom;
 }) {
     const value = answers[question.id];
 
@@ -122,6 +122,36 @@ function Answer({
     );
 }
 
+function CustomAnswerView({ answer }: { answer: CustomAnswerResponse }) {
+    if (answer.questionType === "ESSAY") {
+        return <TextAnswer value={String(answer.value ?? "")} full />;
+    }
+
+    if (answer.questionType === "IMAGE") {
+        const url = typeof answer.value === "string" ? answer.value : "";
+        return url ? (
+            <Image
+                src={url}
+                alt={answer.questionText}
+                w="100%"
+                maxH="400px"
+                objectFit="cover"
+                borderRadius="12px"
+            />
+        ) : (
+            <TextAnswer value="" full />
+        );
+    }
+
+    if (answer.questionType === "CHECKLIST") {
+        const selected = Array.isArray(answer.value) ? answer.value : [];
+        return <TextAnswer value={selected.join(", ")} full />;
+    }
+
+    // MULTIPLE_CHOICE
+    return <TextAnswer value={typeof answer.value === "string" ? answer.value : ""} full />;
+}
+
 export default function ScreeningAnswersModal({
     isOpen,
     adopterName,
@@ -130,7 +160,7 @@ export default function ScreeningAnswersModal({
 }: {
     isOpen: boolean;
     adopterName: string;
-    answers: ScreeningAnswers | undefined;
+    answers: ScreeningAnswersWithCustom | undefined;
     onClose: () => void;
 }) {
     return (
@@ -203,6 +233,30 @@ export default function ScreeningAnswersModal({
                                             </VStack>
                                         </VStack>
                                     ))}
+
+                                    {answers.CustomAnswers && answers.CustomAnswers.length > 0 && (
+                                        <VStack align="stretch" gap="20px">
+                                            <Text fontSize="16px" color="black">
+                                                Additional Questions
+                                            </Text>
+                                            <VStack align="stretch" gap="25px" px="25px">
+                                                {answers.CustomAnswers.map((answer) => (
+                                                    <VStack
+                                                        key={answer.questionId}
+                                                        align="stretch"
+                                                        gap="12px"
+                                                        w="100%"
+                                                    >
+                                                        <Text fontSize="16px" color="black">
+                                                            {answer.questionText}
+                                                        </Text>
+                                                        <CustomAnswerView answer={answer} />
+                                                    </VStack>
+                                                ))}
+                                            </VStack>
+                                        </VStack>
+                                    )}
+
                                     <Box h="1px" flexShrink={0} />
                                 </VStack>
                             )}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Box, Drawer, Flex, Grid, Image, Portal, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useMemo, useState } from "react";
+import { Box, Drawer, Flex, Image, Portal, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
 import { LuFilter } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ import {
 
 import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.query";
 import { useThaiProvinces } from "../hooks/query/address.query";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
 import PhotoSearchModal from "../components/home/photoSearchModal.component";
@@ -74,9 +75,12 @@ export default function Adopt() {
         setPage(1);
     };
 
+    const debouncedKeyword = useDebouncedValue(keyword.trim(), 400);
+    useEffect(() => setPage(1), [debouncedKeyword]);
+
     const { breedItems, loading: breedsLoading } = useAdoptBreeds(category);
     const breedOptions = useMemo(
-        () => breedItems.map(({ value, label }) => ({ value, label })),
+        () => breedItems.map(({ value, label, image }) => ({ value, label, image })),
         [breedItems]
     );
 
@@ -99,6 +103,7 @@ export default function Adopt() {
         petGender: gender || undefined,
         petAgeGroup: ageGroup || undefined,
         petLocation: location || undefined,
+        keyword: debouncedKeyword || undefined,
     });
 
     const handleBreedChange = (value: string) => {
@@ -279,35 +284,23 @@ export default function Adopt() {
                     </Drawer.Positioner>
                 </Portal>
             </Drawer.Root>
-            <Box maxW="100%" px={{ base: "24px", md: "9%" }}>
+            <Box maxW="100%">
                 {isError ? (
                     <Flex minH="300px" align="center" justify="center">
                         <Text color="Grey" fontSize="md">Unable to load pets right now.</Text>
                     </Flex>
                 ) : isLoading ? (
-                    <Grid
-                        templateColumns={{ base: "repeat(1, 240px)", sm: "repeat(2, 240px)", md: "repeat(4, 240px)" }}
-                        justifyContent="center"
-                        columnGap="20px"
-                        rowGap={6}
-                        mt="64px"
-                    >
+                    <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }} mt="64px">
                         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
                             <S2SPetCardSkeleton key={i} width={{base: "169px", md: "240px"}} height={{ base: "230px", md: "309px" }} />
                         ))}
-                    </Grid>
+                    </SimpleGrid>
                 ) : pets.length === 0 ? (
                     <Flex minH="300px" align="center" justify="center">
                         <Text color="Grey" fontSize="md">No pets match these filters.</Text>
                     </Flex>
                 ) : (
-                    <Grid
-                        templateColumns={{ base: "repeat(1, 240px)", sm: "repeat(2, 240px)", md: "repeat(4, 240px)" }}
-                        justifyContent="center"
-                        columnGap="20px"
-                        rowGap={6}
-                        mt="64px"
-                    >
+                    <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }} mt="64px">
                         {pets.map((p, i) => (
                             <S2SPetCard
                                 key={p.pid}
@@ -323,7 +316,7 @@ export default function Adopt() {
                                 onClick={() => navigate(`/pet-profile/${p.pid}`)}
                             />
                         ))}
-                    </Grid>
+                    </SimpleGrid>
                 )}
             </Box>
 

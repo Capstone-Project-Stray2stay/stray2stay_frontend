@@ -61,6 +61,47 @@ export interface ScreeningAnswers {
     Note: string;
 }
 
+/** ScreeningAnswers plus the owner's custom-question answers — the shape getScreeningAnswerAPI actually returns. Kept separate from ScreeningAnswers so `keyof ScreeningAnswers` (used to type the fixed question ids in screeningForm.ts) isn't polluted. */
+export interface ScreeningAnswersWithCustom extends ScreeningAnswers {
+    /** Key matches domain.ScreeningAnswer's untagged Go field name. */
+    CustomAnswers?: CustomAnswerResponse[];
+}
+
+export type CustomQuestionType = "CHECKLIST" | "MULTIPLE_CHOICE" | "ESSAY" | "IMAGE";
+
+/** A custom question an owner defined for one pet's screening form. */
+export interface CustomScreeningQuestion {
+    questionId: number;
+    questionType: CustomQuestionType;
+    questionText: string;
+    questionOptions?: string[];
+    questionRequired: boolean;
+    questionOrder: number;
+}
+
+/** Draft shape used by the question-builder UI, before a question has an id (not yet saved). */
+export interface CustomScreeningQuestionDraft {
+    questionType: CustomQuestionType;
+    questionText: string;
+    questionOptions: string[];
+    questionRequired: boolean;
+    questionOrder: number;
+}
+
+/** One answer to a custom question, submitted alongside the fixed AdoptSubmission fields. */
+export interface CustomScreeningAnswer {
+    questionId: number;
+    value: string | string[];
+}
+
+/** A submitted custom answer paired back with its question's text/type, for the owner's read-only view. */
+export interface CustomAnswerResponse {
+    questionId: number;
+    questionText: string;
+    questionType: CustomQuestionType;
+    value: string | string[];
+}
+
 export interface RehomingInterest {
     id: string;
     rid: number;

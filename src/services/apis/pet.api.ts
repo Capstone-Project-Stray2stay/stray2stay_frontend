@@ -2,7 +2,12 @@ import axiosInstance from "../axios/axiosInstance";
 
 import { resolveLocation } from "../../utils/location";
 import type { EditPetDraft, RehomeDraft } from "../../types/rehome.type";
-import type { ScreeningAnswers } from "../../types/profile.type";
+import type {
+  ScreeningAnswersWithCustom,
+  CustomScreeningQuestion,
+  CustomScreeningQuestionDraft,
+  CustomScreeningAnswer,
+} from "../../types/profile.type";
 
 export async function classifyPetAPI(petType: "dog" | "cat", images: File[]) {
     const formData = new FormData();
@@ -29,6 +34,21 @@ export async function petBreedsAPI(petType: "dog" | "cat") {
         return res;
     }
     throw new Error("Failed to fetch breeds");
+}
+
+/**
+ * One representative image per breed for a species — reuses the same
+ * per-breed `possibleColors[0].link` data the color dropdown pulls from, just
+ * grouped by breed instead of by breed+color. Response envelope key is
+ * `imageData`, entries are `{ breed, image }` (domain.PetBreedImageResponse
+ * has proper json tags, unlike PetColorResponse).
+ */
+export async function petBreedImagesAPI(petType: "dog" | "cat") {
+    const res = await axiosInstance.get(`/pets/breeds/images?petType=${petType}`);
+    if (res.status === 200) {
+        return res;
+    }
+    throw new Error("Failed to fetch breed images");
 }
 
 /**
@@ -180,6 +200,7 @@ export interface PetSearchParams {
   petBreed?: string;
   petColor?: string;
   petLocation?: string;
+  keyword?: string;
 }
 
 export interface PetSearchResult {
@@ -254,6 +275,50 @@ export interface AdoptSubmission {
   q6_1: number;
   q6_2: number;
   note: string;
+  /** Answers to the pet owner's custom screening questions, if any are defined. */
+  answers: CustomScreeningAnswer[];
+}
+
+/** Backed by GetScreeningQuestions — the pet owner's custom questions plus whether they're locked (pet already has applicants). */
+export async function getScreeningQuestionsAPI(
+  pid: string | number,
+): Promise<{ questions: CustomScreeningQuestion[]; locked: boolean }> {
+  const res = await axiosInstance.get(`/pets/${pid}/screening-questions`);
+  if (res.status === 200) {
+    return {
+      questions: res.data.questions ?? [],
+      locked: res.data.locked ?? false,
+    };
+  }
+  throw new Error("Failed to fetch screening questions");
+}
+
+/** Backed by SaveScreeningQuestions — owner-only, replaces the pet's full custom question set. Rejected server-side once the pet has applicants. */
+export async function saveScreeningQuestionsAPI(
+  pid: string | number,
+  questions: CustomScreeningQuestionDraft[],
+): Promise<void> {
+  const res = await axiosInstance.put(`/pets/${pid}/screening-questions`, { questions });
+  if (res.status !== 200) {
+    throw new Error("Failed to save screening questions");
+  }
+}
+
+/** Backed by UploadScreeningAnswerImage — uploads one IMAGE-type answer to Cloudinary and returns its URL. */
+export async function uploadScreeningAnswerImageAPI(
+  pid: string | number,
+  file: File,
+): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await axiosInstance.post(`/pets/${pid}/screening-answer-image`, formData, {
+    timeout: 30000,
+  });
+  if (res.status === 200) {
+    return res.data.imageUrl as string;
+  }
+  throw new Error("Failed to upload image");
 }
 
 /** Backed by PostPetAdopt — submits the screening form, creating a PENDING request. */
@@ -304,7 +369,7 @@ export async function getPetAdoptorsAPI(): Promise<PetAdoptorsInfoResponse[]> {
 export async function getScreeningAnswerAPI(
   pid: string | number,
   rid: number,
-): Promise<ScreeningAnswers> {
+): Promise<ScreeningAnswersWithCustom> {
   const res = await axiosInstance.get(`/pets/${pid}/screening-answer?rid=${rid}`);
   if (res.status === 200) {
     return res.data.screeningAnswer;
@@ -359,6 +424,7 @@ export async function searchPetsAPI(params: PetSearchParams): Promise<PetSearchR
   if (params.petBreed) query.set("petBreed", params.petBreed);
   if (params.petColor) query.set("petColor", params.petColor);
   if (params.petLocation) query.set("petLocation", params.petLocation);
+  if (params.keyword) query.set("keyword", params.keyword);
 
   const res = await axiosInstance.get(`/pets?${query.toString()}`);
   if (res.status === 200) {
