@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Flex, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Flex, Spinner, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
+import { isAxiosError } from "axios";
 
 import { S2SPageTitle, S2SButton } from "../components/S2S.components";
 
-import { addMonths, toDateKey } from "../utils/dateUtils";
-import { mockAdoptedPets, mockEntries, mockFinder } from "../utils/mockDiary";
-import type { DiaryEntry } from "../types/diary.type";
+import { addMonths, fromDateKey, toDateKey, today, visibleRange } from "../utils/dateUtils";
+import { useDiaryEntries, useMyDiaryPets, useSaveDiaryEntry } from "../hooks/query/diary.query";
 
 import PetSummaryCard from "../components/diary/petSummaryCard.component";
 import FinderCard from "../components/diary/finderCard.component";
@@ -15,75 +15,132 @@ import MonthCalendar from "../components/diary/monthCalendar.component";
 import DayEntries from "../components/diary/dayEntries.component";
 import MyAdoptionsModal from "../components/diary/myAdoptionsModal.component";
 
+/** Surfaces the server's own message; the diary handlers answer with { error }. */
+function serverMessage(error: unknown): string {
+    if (isAxiosError(error)) {
+        const data = error.response?.data as { error?: string; message?: string } | undefined;
+        return data?.error ?? data?.message ?? error.message;
+    }
+    return error instanceof Error ? error.message : "Unknown error";
+}
+
 export default function Diary() {
     const navigate = useNavigate();
 
+    // The desktop layout is two independently-flowing columns, and the finder
+    // card moves from the right column into the middle of the mobile flow — a
+    // reorder plain CSS direction:column can't express. So the arrangement is
+    // picked once here, in JS, rather than mounting the page twice behind
+    // display:none (which would double up DayEntries' internal edit state).
     const isDesktop = useBreakpointValue({ base: false, lg: true }) ?? false;
 
-    const [selectedPetId, setSelectedPetId] = useState(mockAdoptedPets[0].id);
-    const [selectedDate, setSelectedDate] = useState(() => new Date());
-    const [viewMonth, setViewMonth] = useState(() => new Date());
-    const [entries, setEntries] = useState<DiaryEntry[]>(mockEntries);
+    const [selectedPid, setSelectedPid] = useState<number | null>(null);
+    const [selectedDate, setSelectedDate] = useState(() => today());
+    // Paged independently of the selection, so browsing ahead a month doesn't
+    // move which day the diary is showing.
+    const [viewMonth, setViewMonth] = useState(() => today());
     const [isPetModalOpen, setIsPetModalOpen] = useState(false);
+    const [saveError, setSaveError] = useState("");
 
-    const selectedPet = mockAdoptedPets.find((pet) => pet.id === selectedPetId) ?? mockAdoptedPets[0];
+    const { diaryPets, loading: petsLoading, error: petsError } = useMyDiaryPets();
+
+    // Falling back to the first pet keeps the page usable before the user has
+    // picked one, and after the selected pet disappears from the list.
+    const selectedPet =
+        diaryPets.find((pet) => pet.pid === selectedPid) ?? diaryPets[0] ?? null;
+
+    const [from, to] = useMemo(
+        () => visibleRange(viewMonth, selectedDate),
+        [viewMonth, selectedDate],
+    );
+
+    const { entries, loading: entriesLoading } = useDiaryEntries(
+        selectedPet?.pid ?? null,
+        from,
+        to,
+    );
+    const saveEntry = useSaveDiaryEntry();
+
     const selectedKey = toDateKey(selectedDate);
-
-    const petEntries = useMemo(
-        () => entries.filter((entry) => entry.petId === selectedPetId),
-        [entries, selectedPetId],
-    );
-
-    const dayEntry = petEntries.find((entry) => entry.dateKey === selectedKey);
+    const dayEntry = entries.find((entry) => entry.date === selectedKey);
     const entryDateKeys = useMemo(
-        () => new Set(petEntries.map((entry) => entry.dateKey)),
-        [petEntries],
+        () => new Set(entries.map((entry) => entry.date)),
+        [entries],
     );
+
+    // The same window the server enforces: from the adoption up to today. The
+    // UI applies it so days that would be rejected are visibly inert instead.
+    const writableDay = useMemo(() => {
+        if (!selectedPet?.canWrite) return false;
+
+        const day = fromDateKey(selectedKey);
+        const since = fromDateKey(selectedPet.since);
+        if (!day) return false;
+        if (day > today()) return false;
+        return !since || day >= since;
+    }, [selectedPet, selectedKey]);
 
     const handleSelectDate = (date: Date) => {
+        setSaveError("");
         setSelectedDate(date);
         setViewMonth(new Date(date.getFullYear(), date.getMonth(), 1));
     };
 
-    const handleSaveEntry = (photo: File | null, caption: string) => {
-        setEntries((current) => {
-            const existing = current.find(
-                (entry) => entry.petId === selectedPetId && entry.dateKey === selectedKey,
-            );
+    const handleSaveEntry = async (photo: File | null, caption: string) => {
+        if (!selectedPet) return false;
 
-            if (existing) {
-                if (photo && existing.photo) URL.revokeObjectURL(existing.imageURL);
-
-                return current.map((entry) =>
-                    entry.id === existing.id
-                        ? {
-                              ...entry,
-                              caption,
-                              ...(photo ? { photo, imageURL: URL.createObjectURL(photo) } : {}),
-                          }
-                        : entry,
-                );
-            }
-
-            if (!photo) return current;
-
-            return [
-                ...current,
-                {
-                    id: crypto.randomUUID(),
-                    petId: selectedPetId,
-                    dateKey: selectedKey,
-                    photo,
-                    imageURL: URL.createObjectURL(photo),
-                    caption,
-                },
-            ];
-        });
+        setSaveError("");
+        try {
+            await saveEntry.mutateAsync({
+                pid: selectedPet.pid,
+                date: selectedKey,
+                photo,
+                caption,
+            });
+            return true;
+        } catch (error) {
+            setSaveError(serverMessage(error));
+            return false;
+        }
     };
 
+    if (petsLoading) {
+        return (
+            <Box width="100%" px={{ base: "30px", md: "9%" }}>
+                <S2SPageTitle title="Pet Diary" />
+                <Flex justify="center" py="120px">
+                    <Spinner color="Blue" size="lg" />
+                </Flex>
+            </Box>
+        );
+    }
+
+    if (petsError || !selectedPet) {
+        return (
+            <Box width="100%" px={{ base: "30px", md: "9%" }}>
+                <S2SPageTitle title="Pet Diary" />
+                <VStack gap="16px" py="120px">
+                    <Text fontSize="18px" fontWeight="600" color="Grey" textAlign="center">
+                        {petsError
+                            ? "Couldn't load your diaries."
+                            : "You don't have a pet diary yet."}
+                    </Text>
+                    <Text fontSize="16px" fontWeight="500" color="GreyMuted" textAlign="center">
+                        {petsError
+                            ? "Please try again in a moment."
+                            : "A diary opens once an adoption is accepted."}
+                    </Text>
+                    <S2SButton text="Find a pet" width="160px" height="45px" onClick={() => navigate("/adopt")} />
+                </VStack>
+            </Box>
+        );
+    }
+
+    // Each piece is built exactly once and just gets slotted into whichever
+    // grouping matches the breakpoint below.
     const petCard = <PetSummaryCard pet={selectedPet} onChangeClick={() => setIsPetModalOpen(true)} />;
 
-    const finderCard = <FinderCard finder={mockFinder} />;
+    const finderCard = <FinderCard pet={selectedPet} />;
 
     const monthCalendar = (
         <MonthCalendar
@@ -98,11 +155,21 @@ export default function Diary() {
         <WeekStrip selectedDate={selectedDate} entryDateKeys={entryDateKeys} onSelect={handleSelectDate} />
     );
 
-    const dayEntries = (
+    const dayEntries = entriesLoading ? (
+        <Flex justify="center" py="80px">
+            <Spinner color="Blue" />
+        </Flex>
+    ) : (
         <DayEntries
-            key={`${selectedPetId}-${selectedKey}`}
+            // Remounting on pet or day drops any half-written draft rather than
+            // carrying it across to a different entry.
+            key={`${selectedPet.pid}-${selectedKey}`}
             date={selectedDate}
             entry={dayEntry}
+            canWrite={selectedPet.canWrite}
+            isWritableDay={writableDay}
+            isSaving={saveEntry.isPending}
+            saveError={saveError}
             onSaveEntry={handleSaveEntry}
         />
     );
@@ -137,7 +204,7 @@ export default function Diary() {
     );
 
     return (
-        <Box width="100%" px={{ base: "24px", md: "9%" }}>
+        <Box width="100%" px={{ base: "30px", md: "9%" }}>
             <S2SPageTitle title="Pet Diary" />
 
             {isDesktop ? (
@@ -173,10 +240,13 @@ export default function Diary() {
 
             <MyAdoptionsModal
                 isOpen={isPetModalOpen}
-                pets={mockAdoptedPets}
-                selectedPetId={selectedPetId}
+                pets={diaryPets}
+                selectedPid={selectedPet.pid}
                 onClose={() => setIsPetModalOpen(false)}
-                onSelect={setSelectedPetId}
+                onSelect={(pid) => {
+                    setSaveError("");
+                    setSelectedPid(pid);
+                }}
             />
         </Box>
     );
