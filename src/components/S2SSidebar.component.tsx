@@ -1,4 +1,4 @@
-import { Box, Heading, VStack } from "@chakra-ui/react"
+import { Box, Flex, Heading, VStack } from "@chakra-ui/react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch } from "../hooks/redux"
 import { setAuth } from "../store/slices/authSlices"
@@ -56,9 +56,11 @@ export default function S2SSidebar() {
             py={4}
             overflow="hidden"
         >
-            <Heading p={4} color="Grey">
-                Stray2Stay
-            </Heading>
+            <Flex p={4} align="center">
+                <Heading color="Grey" fontSize="lg">
+                    Stray2Stay
+                </Heading>
+            </Flex>
 
             <VStack gap={2} align="stretch" mt={4}>
                 {NAV_ITEMS.map((item) => (

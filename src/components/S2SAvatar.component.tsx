@@ -1,5 +1,6 @@
 import { Avatar, Box, Text } from "@chakra-ui/react"
 import { useAuth } from "../hooks/query/auth.query"
+import S2SNotificationCenter from "./S2SNotificationCenter.component"
 
 export default function S2SAvatar() {
     const { user } = useAuth()
@@ -13,6 +14,7 @@ export default function S2SAvatar() {
                 <Avatar.Image src={user.data.userCoverImage} />
             </Avatar.Root>
             <Text fontWeight="semibold" color="Grey" pr="1">{user.data.userFirstname}</Text>
+            <S2SNotificationCenter enabled />
         </Box>
     )
 }

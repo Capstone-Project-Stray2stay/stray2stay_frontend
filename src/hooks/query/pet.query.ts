@@ -24,6 +24,11 @@ import {
   type RandomPetResponseItem,
   type AdoptSubmission
 } from "../../services/apis/pet.api"
+import {
+  getNotificationsAPI,
+  markNotificationReadAPI,
+  markAllNotificationsReadAPI,
+} from "../../services/apis/notification.api"
 import type { EditPetDraft, PetType, RehomeDraft } from "../../types/rehome.type"
 import type { CustomScreeningQuestionDraft } from "../../types/profile.type"
 
@@ -306,6 +311,44 @@ export function useCancelAdoptionRequest() {
     mutationFn: (rid: number) => cancelAdoptionRequestAPI(rid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pets", "adoptions", "mine"] })
+    },
+  })
+}
+
+export function useNotifications(enabled: boolean) {
+  const query = useQuery({
+    queryKey: ["notifications"],
+    queryFn: getNotificationsAPI,
+    enabled,
+    refetchInterval: enabled ? 30_000 : false,
+    retry: 1,
+  })
+
+  return {
+    notifications: query.data?.notifications ?? [],
+    unreadCount: query.data?.unreadCount ?? 0,
+    isLoading: query.isLoading,
+  }
+}
+
+export function useMarkNotificationRead() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: markNotificationReadAPI,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
+    },
+  })
+}
+
+export function useMarkAllNotificationsRead() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: markAllNotificationsReadAPI,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
     },
   })
 }
