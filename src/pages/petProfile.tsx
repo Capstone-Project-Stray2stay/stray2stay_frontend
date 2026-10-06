@@ -130,7 +130,7 @@ export default function PetProfile() {
             </Flex>
           </Flex>
 
-          <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap">
+          <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap" justify="center">
             <Box flex="1 1 320px" maxW="320px" minW={0}>
               <Box position="relative" borderRadius="13px" overflow="hidden">
                 <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="300px" objectFit="contain" />
