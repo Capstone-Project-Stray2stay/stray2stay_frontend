@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import {
     Combobox,
     HStack,
@@ -24,14 +24,18 @@ export default function S2SDropDown({
     bg="white",
 }: S2SDropDownType) {
     const { contains } = useFilter({ sensitivity: "base" })
+    const items = useMemo(
+        () => data.filter((item) => typeof item?.value === "string" && item.value.trim() !== ""),
+        [data],
+    )
 
     const { collection, filter, set } = useListCollection({
-        initialItems: data,
+        initialItems: items,
         filter: contains,
     })
     useEffect(() => {
-        set(data)
-    }, [data, set])
+        set(items)
+    }, [items, set])
 
     const controlProps = onValueChange
         ? {
