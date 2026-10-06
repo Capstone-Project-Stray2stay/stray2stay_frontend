@@ -45,7 +45,7 @@ export default function PetLocationSection({
     return (
         <DetailSection title="Pet's Location">
             <Flex direction="column" align="stretch" gap={{ base: "18.38px", md: "14px" }}>
-                <DetailField label="State">
+                <DetailField label="State" required>
                     <S2SDropDown
                         key={provinceItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""
@@ -64,7 +64,7 @@ export default function PetLocationSection({
                     />
                 </DetailField>
 
-                <DetailField label="District">
+                <DetailField label="District" required>
                     <S2SDropDown
                         key={districtItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""
@@ -78,7 +78,7 @@ export default function PetLocationSection({
                     />
                 </DetailField>
 
-                <DetailField label="Sub District">
+                <DetailField label="Sub District" required>
                     <S2SDropDown
                         key={subDistrictItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""

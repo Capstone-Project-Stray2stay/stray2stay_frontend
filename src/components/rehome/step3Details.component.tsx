@@ -4,7 +4,7 @@ import { IoAdd, IoInformationCircleOutline } from "react-icons/io5";
 
 import { S2SChip, S2SCheckbox, S2SDropDown, S2SInput } from "../S2S.components";
 import { ageGroupOptions, genderOptions } from "../../utils/petOptions.util";
-import DetailField, { DetailSection } from "./detailField.component";
+import DetailField, { DetailSection, RequiredAsterisk } from "./detailField.component";
 import { detailDropDownStyle, detailInputStyle } from "../../utils/detailField.style";
 import PetLocationSection from "./petLocationSection.component";
 import { PERSONALITY_OPTIONS } from "../../utils/personalityOptions";
@@ -90,7 +90,7 @@ export default function Step3Details({
                         />
                     </DetailField>
 
-                    <DetailField label="Breed">
+                    <DetailField label="Breed" required>
                         <S2SDropDown
                             key={breedItems.length === 0 ? "loading" : "loaded"}
                             placeholder=""
@@ -101,7 +101,7 @@ export default function Step3Details({
                         />
                     </DetailField>
 
-                    <DetailField label="Color">
+                    <DetailField label="Color" required>
                         <S2SDropDown
                             key={colorItems.length === 0 ? "loading" : "loaded"}
                             placeholder=""
@@ -113,7 +113,7 @@ export default function Step3Details({
                         />
                     </DetailField>
 
-                    <DetailField label="Age Group">
+                    <DetailField label="Age Group" required>
                         <S2SDropDown
                             placeholder=""
                             {...detailDropDownStyle}
@@ -123,7 +123,7 @@ export default function Step3Details({
                         />
                     </DetailField>
 
-                    <DetailField label="Gender">
+                    <DetailField label="Gender" required>
                         <S2SDropDown
                             placeholder=""
                             {...detailDropDownStyle}
@@ -135,7 +135,7 @@ export default function Step3Details({
                 </Flex>
             </DetailSection>
 
-            <DetailSection title="Pet's Personality">
+            <DetailSection title="Pet's Personality" required>
                 <Flex wrap="wrap" gap={{ base: "6.97px", md: "12px" }} align="center">
                     {personalityChips.map((text) => (
                         <S2SChip
@@ -235,7 +235,7 @@ export default function Step3Details({
                             fontWeight="500"
                             color="Grey"
                         >
-                            Sterilized
+                            Sterilized<RequiredAsterisk />
                         </Text>
                         <Flex
                             direction={{ base: "column", md: "row" }}

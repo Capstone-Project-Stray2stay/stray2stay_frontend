@@ -54,7 +54,13 @@ export default function Rehome() {
     const canGoNext =
         step === 1 ? draft.petType !== null
             : step === 2 ? draft.photos.length > 0
-                : true;
+                : step === 3 ? petDetailsSchema.safeParse(draft).success
+                    : true;
+
+    const finishRegistration = () => {
+        setDraft(emptyRehomeDraft);
+        navigate("/adopt");
+    };
 
     const finishRegistration = () => {
         setDraft(emptyRehomeDraft);
@@ -135,6 +141,17 @@ export default function Rehome() {
     const handleNext = () => {
         if (step === STEPS.length) {
             handleSubmit();
+            return;
+        }
+
+        if (step === 3) {
+            const parsed = petDetailsSchema.safeParse(draft);
+            if (!parsed.success) {
+                setFormError(`Please fill in: ${petDetailsMissingLabels(parsed.error).join(", ")}.`);
+                return;
+            }
+            setFormError("");
+            goNext();
             return;
         }
 
