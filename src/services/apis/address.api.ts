@@ -26,19 +26,61 @@ export interface ThaiSubDistrict {
     long: number | null;
 }
 
+interface ThaiName {
+    th: string;
+    en: string;
+}
+
+interface ThaiProvinceResponse {
+    id: number;
+    name: ThaiName;
+}
+
+interface ThaiDistrictResponse {
+    id: number;
+    name: ThaiName;
+    province_id: number;
+}
+
+interface ThaiSubDistrictResponse {
+    id: number;
+    zip_code: number;
+    name: ThaiName;
+    district_id: number;
+    lat: number | null;
+    long: number | null;
+}
+
 export async function getThaiProvincesAPI() {
-    const res = await axios.get<ThaiProvince[]>(`${THAI_ADDRESS_BASE}/province.json`);
-    return res.data;
+    const res = await axios.get<ThaiProvinceResponse[]>(`${THAI_ADDRESS_BASE}/province.json`);
+    return res.data.map((province): ThaiProvince => ({
+        id: province.id,
+        name_th: province.name.th,
+        name_en: province.name.en,
+    }));
 }
 
 export async function getThaiDistrictsAPI() {
-    const res = await axios.get<ThaiDistrict[]>(`${THAI_ADDRESS_BASE}/district.json`);
-    return res.data;
+    const res = await axios.get<ThaiDistrictResponse[]>(`${THAI_ADDRESS_BASE}/district.json`);
+    return res.data.map((district): ThaiDistrict => ({
+        id: district.id,
+        name_th: district.name.th,
+        name_en: district.name.en,
+        province_id: district.province_id,
+    }));
 }
 
 export async function getThaiSubDistrictsAPI() {
-    const res = await axios.get<ThaiSubDistrict[]>(`${THAI_ADDRESS_BASE}/sub_district.json`);
-    return res.data;
+    const res = await axios.get<ThaiSubDistrictResponse[]>(`${THAI_ADDRESS_BASE}/sub_district.json`);
+    return res.data.map((subDistrict): ThaiSubDistrict => ({
+        id: subDistrict.id,
+        zip_code: subDistrict.zip_code,
+        name_th: subDistrict.name.th,
+        name_en: subDistrict.name.en,
+        district_id: subDistrict.district_id,
+        lat: subDistrict.lat,
+        long: subDistrict.long,
+    }));
 }
 
 /**
