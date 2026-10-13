@@ -62,11 +62,6 @@ export default function Rehome() {
         navigate("/adopt");
     };
 
-    const finishRegistration = () => {
-        setDraft(emptyRehomeDraft);
-        navigate("/adopt");
-    };
-
     const goNext = () => setStep((s) => Math.min(s + 1, STEPS.length));
 
     const prefillBreed = (detectedBreed: string | null) => {
