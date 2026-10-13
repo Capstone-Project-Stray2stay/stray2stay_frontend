@@ -17,3 +17,11 @@ export function formatGender(gender: string): string {
     if (normalized === "female") return "Female";
     return gender || "Unknown";
 }
+
+/** "BABY" as stored becomes the "Baby" the designs show. */
+export function formatAgeGroup(ageGroup: string): string {
+    const match = ageGroupOptions.find(
+        (option) => option.value.toLowerCase() === ageGroup?.toLowerCase(),
+    );
+    return match?.label ?? ageGroup ?? "";
+}

@@ -33,7 +33,7 @@ const PHOTO_PROPS = {
 function EntryView({ entry }: { entry: DiaryEntry }) {
     return (
         <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
-            <Image {...PHOTO_PROPS} src={entry.imageURL} alt={entry.caption || "Diary photo"} objectFit="cover" />
+            <Image {...PHOTO_PROPS} src={entry.imageAddress} alt={entry.caption || "Diary photo"} objectFit="cover" />
 
             <Box
                 bg="white"
@@ -53,10 +53,12 @@ function EntryView({ entry }: { entry: DiaryEntry }) {
 
 function EntryEditor({
     entry,
+    isSaving,
     onSave,
     onCancel,
 }: {
     entry?: DiaryEntry;
+    isSaving: boolean;
     onSave: (photo: File | null, caption: string) => void;
     onCancel?: () => void;
 }) {
@@ -74,7 +76,7 @@ function EntryEditor({
         };
     }, [preview]);
 
-    const shownImage = preview || entry?.imageURL || "";
+    const shownImage = preview || entry?.imageAddress || "";
 
     const acceptFile = (incoming: FileList | File[]) => {
         const image = Array.from(incoming).find((file) => file.type.startsWith("image/"));
@@ -86,7 +88,7 @@ function EntryEditor({
         setPhoto(image);
     };
 
-    const canSave = photo !== null || Boolean(entry?.imageURL);
+    const canSave = photo !== null || Boolean(entry?.imageAddress);
 
     return (
         <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
@@ -180,6 +182,7 @@ function EntryEditor({
                             width="115px"
                             height="38px"
                             fontSize="16px"
+                            disabled={isSaving}
                             onClick={onCancel}
                         />
                     )}
@@ -188,6 +191,7 @@ function EntryEditor({
                         width="115px"
                         height="38px"
                         fontSize="16px"
+                        loading={isSaving}
                         onClick={() => onSave(photo, caption.trim())}
                     />
                 </Flex>
@@ -205,22 +209,33 @@ function EntryEditor({
 export default function DayEntries({
     date,
     entry,
+    canWrite,
+    isWritableDay,
+    isSaving,
+    saveError,
     onSaveEntry,
 }: {
     date: Date;
     entry?: DiaryEntry;
-    onSaveEntry: (photo: File | null, caption: string) => void;
+    /** False for a finder, who may read the diary but not add to it. */
+    canWrite: boolean;
+    /** False outside [adoption date, today] — see the page's writableDay check. */
+    isWritableDay: boolean;
+    isSaving: boolean;
+    saveError: string;
+    /** Resolves false when the save failed, so the editor stays open with the draft. */
+    onSaveEntry: (photo: File | null, caption: string) => Promise<boolean>;
 }) {
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleSave = (photo: File | null, caption: string) => {
-        onSaveEntry(photo, caption);
-        setIsEditing(false);
+    const handleSave = async (photo: File | null, caption: string) => {
+        if (await onSaveEntry(photo, caption)) setIsEditing(false);
     };
 
-    const isComplete = Boolean(entry?.imageURL);
+    const isComplete = Boolean(entry?.imageAddress);
+    const canEdit = canWrite && isWritableDay;
 
-    const editPencil = isComplete && !isEditing && (
+    const editPencil = isComplete && canEdit && !isEditing && (
         <IconButton
             aria-label="Edit entry"
             variant="plain"
@@ -284,12 +299,36 @@ export default function DayEntries({
 
                 {entry && isComplete && !isEditing ? (
                     <EntryView entry={entry} />
-                ) : (
+                ) : canEdit ? (
                     <EntryEditor
                         entry={entry}
+                        isSaving={isSaving}
                         onSave={handleSave}
                         onCancel={isComplete ? () => setIsEditing(false) : undefined}
                     />
+                ) : (
+                    // Nothing recorded and nothing this user can do about it:
+                    // either they only have read access, or the day is outside
+                    // the window they may write to.
+                    <Flex
+                        {...PHOTO_PROPS}
+                        align="center"
+                        justify="center"
+                        px="24px"
+                        borderRadius={{ base: "11.62px", md: "16px" }}
+                    >
+                        <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyMuted" textAlign="center">
+                            {!canWrite
+                                ? "No entry for this day."
+                                : "This day is outside the diary's range."}
+                        </Text>
+                    </Flex>
+                )}
+
+                {saveError && (
+                    <Text fontSize="14px" color="red.500">
+                        {saveError}
+                    </Text>
                 )}
             </VStack>
         </S2SCardShell>

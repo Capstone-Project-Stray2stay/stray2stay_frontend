@@ -51,3 +51,41 @@ export function buildMonthGrid(year: number, month: number): (Date | null)[][] {
 export function addMonths(date: Date, delta: number): Date {
     return new Date(date.getFullYear(), date.getMonth() + delta, 1);
 }
+
+/** Midnight today, for comparing calendar days without the clock getting in. */
+export function today(): Date {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+/** Parses a YYYY-MM-DD key back into a local Date. Invalid input gives null. */
+export function fromDateKey(key: string): Date | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+    if (!match) return null;
+
+    const [, year, month, day] = match;
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    // Rejects keys like 2026-02-31, which Date would silently roll forward.
+    return toDateKey(date) === key ? date : null;
+}
+
+/**
+ * The span of days the page can currently show, as [from, to] date keys. The
+ * week strip can reach into the neighbouring month, so the range has to cover
+ * the visible month *and* the selected week — fetching only the month would
+ * leave the strip's overhanging days looking empty.
+ */
+export function visibleRange(viewMonth: Date, selectedDate: Date): [string, string] {
+    const week = weekOf(selectedDate);
+    const times = [
+        new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1),
+        new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 0),
+        week[0],
+        week[6],
+    ].map((date) => date.getTime());
+
+    return [
+        toDateKey(new Date(Math.min(...times))),
+        toDateKey(new Date(Math.max(...times))),
+    ];
+}

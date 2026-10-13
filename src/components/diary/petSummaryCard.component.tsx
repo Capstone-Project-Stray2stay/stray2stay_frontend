@@ -3,6 +3,7 @@ import { IoFemale, IoMale } from "react-icons/io5";
 
 import { S2SCardShell } from "../S2S.components";
 
+import { formatAgeGroup, formatGender } from "../../utils/petOptions.util";
 import type { DiaryPet } from "../../types/diary.type";
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
@@ -45,13 +46,13 @@ export default function PetSummaryCard({
         >
             <Flex gap={{ base: "20px", md: "24px" }} align="center">
                 <Avatar.Root boxSize={{ base: "78px", md: "85px" }} flexShrink={0}>
-                    <Avatar.Fallback name={pet.name} />
-                    <Avatar.Image src={pet.imageURL} />
+                    <Avatar.Fallback name={pet.petName} />
+                    <Avatar.Image src={pet.petImageAddress[0]} />
                 </Avatar.Root>
 
                 <VStack align="flex-start" gap={{ base: "11px", md: "10px" }}>
                     <Text fontSize={{ base: "16px", md: "20px" }} fontWeight="600" color="Grey">
-                        {pet.name}
+                        {pet.petName}
                     </Text>
                     <Button
                         variant="plain"
@@ -79,23 +80,25 @@ export default function PetSummaryCard({
                 minW={{ md: "274px" }}
             >
                 <Detail label="Age Group">
-                    <Value>{pet.ageGroup}</Value>
+                    <Value>{formatAgeGroup(pet.petAgeGroup)}</Value>
                 </Detail>
                 <Detail label="Color">
-                    <Value>{pet.color}</Value>
+                    <Value>{pet.petColor}</Value>
                 </Detail>
                 <Detail label="Gender">
                     <Flex align="center" gap="3px">
+                        {/* Gender is stored uppercase ("FEMALE"), so compare on
+                            the formatted label rather than the raw column. */}
                         <Icon
-                            as={pet.gender === "Female" ? IoFemale : IoMale}
+                            as={formatGender(pet.petGender) === "Female" ? IoFemale : IoMale}
                             boxSize={{ base: "17px", md: "16px" }}
-                            color={pet.gender === "Female" ? "pink.400" : "blue.400"}
+                            color={formatGender(pet.petGender) === "Female" ? "pink.400" : "blue.400"}
                         />
-                        <Value>{pet.gender}</Value>
+                        <Value>{formatGender(pet.petGender)}</Value>
                     </Flex>
                 </Detail>
                 <Detail label="Breed">
-                    <Value>{pet.breed}</Value>
+                    <Value>{pet.petBreed}</Value>
                 </Detail>
             </SimpleGrid>
         </S2SCardShell>
