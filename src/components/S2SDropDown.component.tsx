@@ -67,11 +67,11 @@ export default function S2SDropDown({
                     borderColor={borderColor}
                     bg={bg}
                     boxShadow={boxShadow}
-                    transition="background 0.15s ease, border-radius 0.15s ease"
+                    transition="background 0.15s ease"
                     _placeholder={placeholderColor ? { color: placeholderColor } : undefined}
                     _hover={{ bg: "White_hover" }}
                     _active={{ bg: "White_active" }}
-                    _open={{ bg: "white", borderTopRadius: "10px", borderBottomRadius: "0" }}
+                    _open={{ bg: "white" }}
                     focusRingColor="BlueText"
                     _focus={{ borderColor: "Blue" }}
                     _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed", bg }}
@@ -87,13 +87,13 @@ export default function S2SDropDown({
                 <Combobox.Positioner>
                     <Combobox.Content
                         bg="white"
-                        borderTopRadius="0"
+                        borderTopRadius="10px"
                         borderBottomRadius="10px"
                         boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)"
                         maxH="376px"
                         py="12px"
                     >
-                        <Combobox.Empty px="25px" color="GreyText" fontSize={fontSize}>No items found</Combobox.Empty>
+                        <Combobox.Empty px="25px" color="GreyText" fontSize={{ base: "14", md: "16" }}>No items found</Combobox.Empty>
                         {collection.items.map((item) => (
                             <Combobox.Item
                                 item={item}
@@ -102,9 +102,10 @@ export default function S2SDropDown({
                                 py="9.5px"
                                 rounded="0"
                                 color="GreyText"
-                                fontSize={fontSize}
+                                fontSize={{ base: "14", md: "16" }}
                                 fontWeight="500"
-                                _highlighted={{ bg: "White_hover" }}
+                                _hover={{ bg: "gray.50" }}
+                                _highlighted={{ bg: "gray.50" }}
                             >
                                 <HStack gap={2}>
                                     {item.image && (

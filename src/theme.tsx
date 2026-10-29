@@ -1,11 +1,8 @@
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
-// ตัวคูณขนาดตัวอักษรทั้งเว็บ: เปลี่ยนที่นี่ที่เดียว ทุกหน้าจะย่อ/ขยายตาม (เช่น 1.1 = ใหญ่ขึ้น 10%)
-const FONT_SCALE = 1;
-const scaled = (size: number) => Math.round(size * FONT_SCALE * 100) / 100;
-const px = (size: number) => ({ value: `${scaled(size)}px` });
-// Chakra's own scale is in rem; keep it that way so built-in components (Heading size, Input, etc.) render exactly as before
-const rem = (size: number) => ({ value: `${scaled(size) / 16}rem` });
+// Desktop font-size adjustments; mobile retains the original token sizes.
+const px = (size: number) => ({ value: `var(--font-size-${size}, ${size}px)` });
+const rem = (size: number) => ({ value: `var(--font-size-${size}, ${size / 16}rem)` });
 
 const config = defineConfig({
   theme: {
@@ -73,8 +70,7 @@ const config = defineConfig({
         heading: { value: "'Montserrat', sans-serif" },
         body: { value: "'Montserrat', sans-serif" },
       },
-      // ใช้แบบ fontSize="14" หรือ fontSize={{ base: "14", md: "16" }}
-      // ชื่อ token = ขนาด px ตาม Figma; ค่าจริง = ขนาดนั้น x FONT_SCALE
+      // Named font-size tokens use the design size on mobile and scale down on desktop.
       fontSizes: {
         "10": px(10),
         "12": px(12),
@@ -120,6 +116,23 @@ const config = defineConfig({
     "html, body": {
       fontFamily: "'Montserrat', sans-serif",
       overflowX: "hidden",
+      "@media screen and (min-width: 768px)": {
+        "--font-size-14": "13px",
+        "--font-size-15": "14px",
+        "--font-size-16": "15px",
+        "--font-size-18": "17px",
+        "--font-size-20": "18px",
+        "--font-size-22": "20px",
+        "--font-size-24": "22px",
+        "--font-size-30": "27px",
+        "--font-size-32": "28px",
+        "--font-size-36": "32px",
+        "--font-size-48": "42px",
+        "--font-size-60": "52px",
+        "--font-size-72": "62px",
+        "--font-size-96": "82px",
+        "--font-size-128": "108px",
+      },
     },
     "*": {
       WebkitTapHighlightColor: "transparent",
