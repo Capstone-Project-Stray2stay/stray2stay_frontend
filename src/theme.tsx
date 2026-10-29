@@ -74,15 +74,11 @@ const config = defineConfig({
       fontSizes: {
         "10": px(10),
         "12": px(12),
-        "13.05": px(13.05),
-        "13.75": px(13.75),
+        "13": px(13),
         "14": px(14),
-        "14.32": px(14.32),
         "15": px(15),
         "16": px(16),
-        "16.32": px(16.32),
-        "17.14": px(17.14),
-        "17.33": px(17.33),
+        "17": px(17),
         "18": px(18),
         "20": px(20),
         "22": px(22),
@@ -115,24 +111,7 @@ const config = defineConfig({
   globalCss: {
     "html, body": {
       fontFamily: "'Montserrat', sans-serif",
-      overflowX: "hidden",
-      "@media screen and (min-width: 768px)": {
-        "--font-size-14": "13px",
-        "--font-size-15": "14px",
-        "--font-size-16": "15px",
-        "--font-size-18": "17px",
-        "--font-size-20": "18px",
-        "--font-size-22": "20px",
-        "--font-size-24": "22px",
-        "--font-size-30": "27px",
-        "--font-size-32": "28px",
-        "--font-size-36": "32px",
-        "--font-size-48": "42px",
-        "--font-size-60": "52px",
-        "--font-size-72": "62px",
-        "--font-size-96": "82px",
-        "--font-size-128": "108px",
-      },
+      overflowX: "hidden"
     },
     "*": {
       WebkitTapHighlightColor: "transparent",

@@ -194,7 +194,7 @@ export default function Adopt() {
                         h="48px"
                         ps="24px"
                         pe="56px"
-                        fontSize="20"
+                        fontSize="16"
                         fontWeight="500"
                         color="Grey"
                         bg={FILTER_BG}
@@ -218,7 +218,7 @@ export default function Adopt() {
                     placeholder="Breed"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -232,7 +232,7 @@ export default function Adopt() {
                     placeholder="Color"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -246,7 +246,7 @@ export default function Adopt() {
                     placeholder="Gender"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -259,7 +259,7 @@ export default function Adopt() {
                     placeholder="Age Group"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -273,7 +273,7 @@ export default function Adopt() {
                     placeholder="Location"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
