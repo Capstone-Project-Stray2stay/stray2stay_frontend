@@ -46,7 +46,7 @@ export default function S2SSidebar() {
     return (
         <Box
             w="12vw"
-            h="100vh"
+            h={{ base: "100vh", md: "111.111vh" }}
             display={{ base: "none", lg: "block" }}
             bgColor="white"
             position="fixed"
