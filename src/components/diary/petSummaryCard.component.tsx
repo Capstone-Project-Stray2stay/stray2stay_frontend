@@ -61,9 +61,10 @@ export default function PetSummaryCard({
 
             <SimpleGrid
                 columns={2}
-                columnGap={{ base: "27.12px", md: "50px" }}
+                columnGap={{ base: "27.12px", md: "32px" }}
                 rowGap="8px"
                 flex={{ md: "1" }}
+                maxW={{ md: "460px" }}
                 minW={{ md: "274px" }}
             >
                 <Detail label="Age Group">

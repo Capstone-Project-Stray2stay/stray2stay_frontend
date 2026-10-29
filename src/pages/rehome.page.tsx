@@ -239,7 +239,7 @@ export default function Rehome() {
                             variant="outline"
                             width={{ base: "106.94px", md: "120px" }}
                             height={{ base: "35.65px", md: "48px" }}
-                            fontSize={{ base: "14.32", md: "20" }}
+                            fontSize={{ base: "14", md: "20" }}
                             onClick={() => setStep((s) => s - 1)}
                         />
                     ) : (
@@ -250,7 +250,7 @@ export default function Rehome() {
                         // Figma "Large Short": 120px min width, 48px tall
                         width={{ base: "106.94px", md: "120px" }}
                         height={{ base: "35.65px", md: "48px" }}
-                        fontSize={{ base: "14.32", md: "20" }}
+                        fontSize={{ base: "14", md: "20" }}
                         disabled={!canGoNext}
                         loading={classify.isPending || register.isPending || isUploadingImages || saveScreeningQuestions.isPending}
                         onClick={handleNext}
