@@ -13,14 +13,13 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isAxiosError } from "axios";
 import {
   LuCheck,
+  LuEye,
+  LuPencil,
   LuChevronLeft,
   LuChevronRight,
-  LuHeart,
-  LuPawPrint,
-  LuStethoscope,
-  LuSyringe,
   LuX,
 } from "react-icons/lu";
+import { FaPaw } from "react-icons/fa6";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
@@ -29,7 +28,7 @@ import { useAuth } from "../hooks/query/auth.query";
 import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
 import { VACCINE_OPTIONS } from "../types/rehome.type";
 import AdoptScreeningForm from "../components/profile/adoptScreeningForm.component";
-import ManageScreeningQuestionsDialog from "../components/profile/manageScreeningQuestionsDialog.component";
+import PendingIcon from "../components/icons/pendingIcon.component";
 import type { AdoptSubmission } from "../services/apis/pet.api";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
@@ -59,7 +58,7 @@ export default function PetProfile() {
   const [adoptError, setAdoptError] = useState("");
   const adoptPetMutation = useAdoptPet();
 
-  const [showScreeningBuilder, setShowScreeningBuilder] = useState(false);
+  const [showScreeningPreview, setShowScreeningPreview] = useState(false);
 
   const handleAdoptClick = () => {
     if (!user) {
@@ -119,57 +118,64 @@ export default function PetProfile() {
     <Box width="100%" px={{ base: "30px", md: "9%"}}>
       <S2SPageTitle title="Pet Profile" />
 
-      <Box maxW="900px" mx="auto" mt="48px">
+      <Box maxW="900px" mx="auto" mt={{ base: "48px", md: "64px" }}>
         <Box borderRadius="24px" overflow="hidden" boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)">
-          <Flex bg="rgba(135, 207, 240, 0.70)" align="center" justify="space-between" px={{ base: 5, md: 10 }} py={6}>
-            <Text color="White" fontSize="24px" fontWeight="600">
+          <Flex bg="rgba(135, 207, 240, 0.70)" align="center" justify="space-between" px={{ base: 5, md: 10 }} py="16px">
+            <Text color="White" fontSize="24" fontWeight="600">
               Pet ID Card
             </Text>
-            <Flex bg="rgba(255,255,255,0.35)" p={2.5} borderRadius="full" color="White">
-              <LuPawPrint size={20} />
+            <Flex boxSize="48px" align="center" justify="center" color="White">
+              <FaPaw size={40} />
             </Flex>
           </Flex>
 
-          <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: 10 }} wrap="wrap" justify="center">
+          <Flex bg="White" p={{ base: 5, md: 10 }} gap={{ base: 6, md: "48px" }} wrap="wrap" justify="center">
             <Box flex="1 1 320px" maxW="320px" minW={0}>
-              <Box position="relative" borderRadius="13px" overflow="hidden">
-                <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="300px" objectFit="contain" />
+              <Box position="relative" borderRadius="13.39px" overflow="hidden" bg="#E9E9E9">
+                <Image src={activeImage} alt={pet.petName || pet.petBreed} w="100%" h="300px" objectFit="cover" />
 
                 {images.length > 1 && (
                   <>
+                    {/* Figma: bare white chevrons, no button chrome */}
                     <IconButton
+                      aria-label="Previous photo"
                       onClick={prevImage}
                       position="absolute"
-                      left={2}
+                      left="10px"
                       top="50%"
                       transform="translateY(-50%)"
+                      minW="unset"
+                      boxSize="36px"
                       color="white"
-                      bg="Grey"
-                      opacity={0.75}
+                      bg="transparent"
+                      filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.35))"
+                      _hover={{ bg: "blackAlpha.200" }}
                       rounded="full"
-                      _hover={{ opacity: 1 }}
                     >
-                      <LuChevronLeft size={20} />
+                      <LuChevronLeft size={27} />
                     </IconButton>
 
                     <IconButton
+                      aria-label="Next photo"
                       onClick={nextImage}
                       position="absolute"
-                      right={2}
+                      right="10px"
                       top="50%"
                       transform="translateY(-50%)"
+                      minW="unset"
+                      boxSize="36px"
                       color="white"
-                      bg="Grey"
-                      opacity={0.75}
+                      bg="transparent"
+                      filter="drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.35))"
+                      _hover={{ bg: "blackAlpha.200" }}
                       rounded="full"
-                      _hover={{ opacity: 1 }}
                     >
-                      <LuChevronRight size={20} />
+                      <LuChevronRight size={27} />
                     </IconButton>
 
-                    <Flex position="absolute" bottom={3} left="50%" transform="translateX(-50%)" gap={2}>
+                    <Flex position="absolute" bottom="18px" left="50%" transform="translateX(-50%)" gap="7px">
                       {images.map((_, index) => (
-                        <Box key={index} w="6px" h="6px" borderRadius="full" bg={index === activeImageIndex ? "white" : "rgba(255,255,255,0.5)"} />
+                        <Box key={index} boxSize="8px" borderRadius="full" bg={index === activeImageIndex ? "white" : "#C7C7C7"} />
                       ))}
                     </Flex>
                   </>
@@ -177,14 +183,14 @@ export default function PetProfile() {
               </Box>
 
               {images.length > 1 && (
-                <Flex mt={4} gap={4} overflowX="auto" pb={1}>
+                <Flex mt="25px" gap="18px" overflowX="auto" pb={1}>
                   {images.map((src, index) => (
                     <Box
                       key={src}
                       flexShrink={0}
                       w="80px"
                       h="80px"
-                      borderRadius="13px"
+                      borderRadius="13.39px"
                       overflow="hidden"
                       border={index === activeImageIndex ? "2px solid #85BFE2" : "1px solid #E9E9E9"}
                       bg="#E9E9E9"
@@ -198,55 +204,56 @@ export default function PetProfile() {
               )}
             </Box>
 
-            <VStack flex="1 1 340px" minW={0} align="flex-start" gap={6}>
+            <VStack flex="1 1 340px" maxW={{ md: "406px" }} minW={0} align="flex-start" gap={6}>
               <Box>
-                <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                   Name
                 </Text>
-                <Badge bg="#FFEEC1" color="Grey" borderRadius="full" px={4} py={1.5} fontSize="18px" fontWeight="500">
+                <Badge bg="Cream" color="Grey" borderRadius="full" px="16px" py="8px" fontSize="18" fontWeight="500">
                   {pet.petName || "Unnamed"}
                 </Badge>
               </Box>
 
-              <Flex w="100%" gap={12}>
-                <Box>
-                  <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+              {/* Figma: fixed 200px first column so Breed/Age Group and Color/Gender line up */}
+              <Flex w="100%" gap={{ base: 6, md: "48px" }}>
+                <Box w={{ md: "200px" }} flexShrink={0}>
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                     Breed
                   </Text>
-                  <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
+                  <Text color="GreyText" fontSize="18" fontWeight="500">
                     {pet.petBreed || "Mixed breed"}
                   </Text>
                 </Box>
-                <Box>
-                  <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+                <Box flex="1" minW={0}>
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                     Color
                   </Text>
-                  <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
+                  <Text color="GreyText" fontSize="18" fontWeight="500">
                     {pet.petColor || "Unknown"}
                   </Text>
                 </Box>
               </Flex>
 
-              <Flex w="100%" gap={12}>
-                <Box>
-                  <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+              <Flex w="100%" gap={{ base: 6, md: "48px" }}>
+                <Box w={{ md: "200px" }} flexShrink={0}>
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                     Age Group
                   </Text>
-                  <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
+                  <Text color="GreyText" fontSize="18" fontWeight="500">
                     {formatAgeGroup(pet.petAgeGroup)}
                   </Text>
                 </Box>
-                <Box>
-                  <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+                <Box flex="1" minW={0}>
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                     Gender
                   </Text>
-                  <Flex align="center" gap={1.5}>
+                  <Flex align="center" gap="7px">
                     {pet.petGender?.toUpperCase() === "MALE" ? (
-                      <IoMaleOutline size={16} color="#87CFF0" />
+                      <IoMaleOutline size={16.59} color="#87CFF0" />
                     ) : (
-                      <IoFemaleOutline size={16} color="#FF69B4" />
+                      <IoFemaleOutline size={16.59} color="#FF69B4" />
                     )}
-                    <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
+                    <Text color="GreyText" fontSize="18" fontWeight="500">
                       {formatGender(pet.petGender)}
                     </Text>
                   </Flex>
@@ -254,27 +261,27 @@ export default function PetProfile() {
               </Flex>
 
               <Box>
-                <Text color="BlueText" fontSize="16px" fontWeight="500" mb={1}>
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                   Location
                 </Text>
-                <Text color="#7E7E7E" fontSize="18px" fontWeight="500">
+                <Text color="GreyText" fontSize="18" fontWeight="500">
                   {pet.petAddress || "Unknown"}
                 </Text>
               </Box>
 
               <Box>
-                <Text color="BlueText" fontSize="16px" fontWeight="500" mb={2}>
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
                   Personality
                 </Text>
-                <Flex gap={3} wrap="wrap">
+                <Flex gap="7px" wrap="wrap">
                   {pet.petPersonality.length > 0 ? (
                     pet.petPersonality.map((tag) => (
-                      <Badge key={tag} bg="#E3F4FF" color="#7E7E7E" borderRadius="full" px={4} py={2} fontSize="16px" fontWeight="500">
+                      <Badge key={tag} bg="#E3F4FF" color="GreyText" borderRadius="full" px="16px" py="8px" fontSize="16" fontWeight="500">
                         {tag}
                       </Badge>
                     ))
                   ) : (
-                    <Text color="#7E7E7E" fontSize="16px">None</Text>
+                    <Text color="#7E7E7E" fontSize="16">None</Text>
                   )}
                 </Flex>
               </Box>
@@ -283,18 +290,18 @@ export default function PetProfile() {
         </Box>
 
         <Box mt={8} borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: 10 }} py={{ base: 5, md: 8 }}>
-          <Text color="Grey" fontSize="20px" fontWeight="600" mb={2}>
+          <Text color="Grey" fontSize="20" fontWeight="600" mb={2}>
             Health &amp; Conditions
           </Text>
-          <Box height="1px" bg="#C6E7F7" mb={6} />
+          <Box height="1.81px" bg="SkyBlue" mb={6} />
 
-          <Flex gap="96px" wrap="wrap">
-            <Flex align="flex-start" gap={3}>
-              <Flex w="41px" h="41px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="1px solid #D5D5D5" align="center" justify="center">
-                <Icon as={LuSyringe} boxSize={6} color="#6a8ea5" />
+          <Flex gap={{ base: 6, md: "80px" }} wrap="wrap">
+            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
+              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
+                <Image src="/assets/icons/vaccination.png" alt="" boxSize="23.23px" />
               </Flex>
               <Box>
-                <Text color="Grey" fontSize="18px" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
                   Vaccinations
                 </Text>
                 <VStack align="flex-start" gap={1}>
@@ -303,7 +310,7 @@ export default function PetProfile() {
                     return (
                       <Flex key={vaccine} align="center" gap={1.5}>
                         <Icon as={received ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={received ? "#76CAAC" : "#F57676"} />
-                        <Text color="#969696" fontSize="18px" fontWeight="400">
+                        <Text color="GreyInfo" fontSize="18" fontWeight="500">
                           {vaccine}
                         </Text>
                       </Flex>
@@ -313,41 +320,41 @@ export default function PetProfile() {
               </Box>
             </Flex>
 
-            <Flex align="flex-start" gap={3}>
-              <Flex w="41px" h="41px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="1px solid #D5D5D5" align="center" justify="center">
-                <Icon as={LuStethoscope} boxSize={6} color="#6a8ea5" />
+            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
+              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
+                <Image src="/assets/icons/sterilized.png" alt="" boxSize="23.23px" />
               </Flex>
               <Box>
-                <Text color="Grey" fontSize="18px" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
                   Sterilized
                 </Text>
                 <Flex align="center" gap={1.5}>
                   <Icon as={pet.petSterilized ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={pet.petSterilized ? "#76CAAC" : "#F57676"} />
-                  <Text color="#969696" fontSize="18px" fontWeight="400">
+                  <Text color="GreyInfo" fontSize="18" fontWeight="500">
                     {pet.petSterilized ? "Yes" : "No"}
                   </Text>
                 </Flex>
               </Box>
             </Flex>
 
-            <Flex align="flex-start" gap={3}>
-              <Flex w="41px" h="41px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="1px solid #D5D5D5" align="center" justify="center">
-                <Icon as={LuHeart} boxSize={6} color="#6a8ea5" />
+            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
+              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
+                <Image src="/assets/icons/special_care.png" alt="" boxSize="20.74px" />
               </Flex>
               <Box>
-                <Text color="Grey" fontSize="18px" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
                   Special Care
                 </Text>
                 {specialCareItems.length > 0 ? (
                   <VStack align="flex-start" gap={0.5}>
                     {specialCareItems.map((item, i) => (
-                      <Text key={i} color="#969696" fontSize="18px" fontWeight="400">
+                      <Text key={i} color="GreyInfo" fontSize="18" fontWeight="500">
                         • {item}
                       </Text>
                     ))}
                   </VStack>
                 ) : (
-                  <Text color="#969696" fontSize="18px" fontWeight="400">
+                  <Text color="GreyInfo" fontSize="18" fontWeight="500">
                     None
                   </Text>
                 )}
@@ -357,11 +364,11 @@ export default function PetProfile() {
         </Box>
 
         <Box mt={8} borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: 10 }} py={{ base: 5, md: 8 }}>
-          <Text color="Grey" fontSize="20px" fontWeight="600" mb={2}>
+          <Text color="Grey" fontSize="20" fontWeight="600" mb={2}>
             Note
           </Text>
-          <Box height="1px" bg="#C6E7F7" mb={4} />
-          <Text color="#969696" fontSize="18px" fontWeight="400" lineHeight="1.7">
+          <Box height="1.81px" bg="SkyBlue" mb={6} />
+          <Text color="GreyInfo" fontSize="18" fontWeight="500" lineHeight="1.2">
             {pet.note || "No additional notes."}
           </Text>
         </Box>
@@ -373,8 +380,8 @@ export default function PetProfile() {
             width="100%"
             px={{ base: 5, md: 10 }}
             py={{ base: 5, md: 8 }}
-            fontSize="20px"
-            contentFontSize="18px"
+            fontSize="20"
+            contentFontSize="18"
             contentPt="0px"
             contentPb="32px"
             contentColor="#969696"
@@ -382,39 +389,44 @@ export default function PetProfile() {
         </Box>
 
         {isOwner && (
-          <Flex justify="center" mt="48px">
+          // Figma (owner view): screening form on the left, edit on the right, 48px below the cards
+          <Flex justify="space-between" gap="16px" wrap="wrap" mt="48px">
             <S2SButton
-              text="Manage Screening Questions"
+              text="Screening form"
               variant="outline"
-              width="auto"
-              height="48px"
-              fontSize="18px"
-              onClick={() => setShowScreeningBuilder(true)}
+              bgColor="BlueText"
+              size="lgShort"
+              icon={<LuEye />}
+              onClick={() => setShowScreeningPreview(true)}
+            />
+            <S2SButton
+              text="Edit Pet Profile"
+              bgColor="Cream"
+              size="lgShort"
+              icon={<LuPencil />}
+              onClick={() => navigate(`/rehome/${pid}/edit`)}
             />
           </Flex>
         )}
 
         {!isOwner && (
-          <Flex justify="center" mt="48px">
+          <Flex justify="center" mt={{ base: "48px", md: "64px" }}>
             {pet.status === "ADOPTED" ? (
-              <Text fontSize="18px" fontWeight="600" color="GreyText">
+              <Text fontSize="18" fontWeight="600" color="GreyText">
                 This pet has already been adopted.
               </Text>
             ) : adoptionStatus === "PENDING" ? (
               <S2SButton
-                text="Request Pending"
-                bgColor="Yellow"
-                width="200px"
-                height="48px"
-                fontSize="18px"
-                disabled
+                text="Pending Approval"
+                bgColor="Orange"
+                icon={<PendingIcon />}
+                size="lg"
               />
             ) : (
               <S2SButton
-                text="Adopt the Pet"
-                width="200px"
-                height="48px"
-                fontSize="18px"
+                text="Adopt this pet"
+                icon={<FaPaw />}
+                size="lg"
                 onClick={handleAdoptClick}
               />
             )}
@@ -433,10 +445,13 @@ export default function PetProfile() {
       />
 
       {isOwner && (
-        <ManageScreeningQuestionsDialog
-          isOpen={showScreeningBuilder}
+        // Figma: the owner's "Screening form" shows the form exactly as adopters get it, without Submit
+        <AdoptScreeningForm
+          isOpen={showScreeningPreview}
           pid={pid ?? ""}
-          onClose={() => setShowScreeningBuilder(false)}
+          petName={pet.petName || "this pet"}
+          preview
+          onClose={() => setShowScreeningPreview(false)}
         />
       )}
     </Box>

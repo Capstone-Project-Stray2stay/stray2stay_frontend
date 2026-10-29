@@ -242,8 +242,16 @@ export interface PetInfoResult {
 export async function getPetInfoAPI(pid: string | number): Promise<PetInfoResult> {
   const res = await axiosInstance.get(`/pets/${pid}`);
   if (res.status === 200) {
+    const pet = res.data.petsInfo as PetInfoResponse;
     return {
-      pet: res.data.petsInfo,
+      // Go encodes an empty (nil) slice as null, so a pet saved without e.g. vaccinations
+      // comes back with null here — every caller treats these as arrays
+      pet: {
+        ...pet,
+        petImageAddress: pet.petImageAddress ?? [],
+        petPersonality: pet.petPersonality ?? [],
+        petVaccination: pet.petVaccination ?? [],
+      },
       isOwner: res.data.isOwner ?? false,
       adoptionStatus: res.data.adoptionStatus ?? "",
     };

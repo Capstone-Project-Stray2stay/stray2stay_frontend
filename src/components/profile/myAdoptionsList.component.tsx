@@ -22,12 +22,12 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
                     <Avatar.Image src={pet.imageURL} />
                 </Avatar.Root>
                 <VStack align="flex-start" gap="12px">
-                    <Text fontSize="18px" fontWeight="500" color="Grey">
+                    <Text fontSize="18" fontWeight="500" color="Grey">
                         {pet.name}
                     </Text>
                     <Flex align="center" gap="8px">
                         <Icon as={LuPhone} boxSize="14px" color="GreyText" />
-                        <Text fontSize="15px" fontWeight="500" color="GreyMuted">
+                        <Text fontSize="15" fontWeight="500" color="GreyMuted">
                             {pet.phone}
                         </Text>
                     </Flex>
@@ -65,10 +65,10 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
                         <Dialog.Positioner>
                             <Dialog.Content maxW="380px" borderRadius="30px" p="0">
                                 <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                    <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                         Withdraw this request?
                                     </Text>
-                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                    <Text fontSize="14" color="GreyText" textAlign="center">
                                         This cancels your adoption request for {pet.name}. This can't be
                                         undone.
                                     </Text>
@@ -105,7 +105,7 @@ export default function MyAdoptionsList({ pets }: { pets: AdoptedPet[] }) {
     if (pets.length === 0) {
         return (
             <Flex minH="200px" align="center" justify="center">
-                <Text color="Grey" fontSize="md">You haven't requested to adopt any pets yet.</Text>
+                <Text color="Grey" fontSize="16">You haven't requested to adopt any pets yet.</Text>
             </Flex>
         );
     }

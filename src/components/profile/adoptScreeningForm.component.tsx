@@ -1,42 +1,90 @@
-import { useRef, useState } from "react";
-import { Dialog, Flex, Image, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import { Dialog, Flex, Grid, Image, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
 
 import { S2SButton, S2SCheckbox, S2SInput, S2SDialogCloseButton } from "../S2S.components";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type { AdoptSubmission } from "../../services/apis/pet.api";
 import { screeningAnswersSchema, screeningMissingNumbers } from "../../validators/screening.validator";
-import { useScreeningQuestions, useUploadScreeningAnswerImage } from "../../hooks/query/pet.query";
-import type { CustomScreeningQuestion } from "../../types/profile.type";
+import { useScreeningQuestions } from "../../hooks/query/pet.query";
+import {
+    OTHER_ANSWER_PREFIX,
+    OTHER_OPTION,
+    type CustomScreeningQuestion,
+    type CustomScreeningQuestionDraft,
+} from "../../types/profile.type";
 
-/** Draft value for one custom question — string for essay/multiple-choice/image, string[] for checklist. */
+/** Draft value for one custom question — string for essay/multiple-choice, string[] for checklist. IMAGE questions take no answer. */
 type CustomDraft = Record<number, string | string[]>;
+
+// Figma text field: 36px pill, frosted white, BlueText outline
+const TEXT_FIELD_PROPS = {
+    h: "36px",
+    px: "20px",
+    bg: "rgba(255, 255, 255, 0.70)",
+    borderRadius: "132px",
+    fontSize: "16",
+    _placeholder: { color: "GreyText" },
+} as const;
+
+/** An "Other: " entry with nothing typed after it doesn't count as an answer. */
+function isFilled(entry: string): boolean {
+    const text = entry.trim();
+    return text !== "" && text !== OTHER_ANSWER_PREFIX.trim();
+}
 
 function isAnswered(value: string | string[] | undefined): boolean {
     if (value === undefined) return false;
-    return Array.isArray(value) ? value.length > 0 : value.trim().length > 0;
+    return Array.isArray(value) ? value.some(isFilled) : isFilled(value);
+}
+
+/** Drops empty "Other" entries so they are never submitted. */
+function cleanAnswer(value: string | string[]): string | string[] {
+    return Array.isArray(value) ? value.filter(isFilled) : value.trim();
+}
+
+// Figma "Other:" field: just an underline that runs to the end of the row
+function OtherTextInput({ value, onFocus, onChange }: { value: string; onFocus: () => void; onChange: (text: string) => void }) {
+    return (
+        <Input
+            flex="1"
+            minW={0}
+            h="28px"
+            px="4px"
+            border="none"
+            borderBottom="1px solid"
+            borderColor="BlueText"
+            borderRadius="0"
+            bg="transparent"
+            fontSize="16"
+            color="Grey"
+            _focusVisible={{ outline: "none", borderColor: "Blue" }}
+            value={value}
+            onFocus={onFocus}
+            onChange={(e) => onChange(e.target.value)}
+        />
+    );
 }
 
 function CustomQuestionInput({
-    pid,
     question,
     value,
     onChange,
 }: {
-    pid: string | number;
     question: CustomScreeningQuestion;
     value: string | string[] | undefined;
     onChange: (value: string | string[]) => void;
 }) {
-    const uploadImage = useUploadScreeningAnswerImage();
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const options = question.questionOptions ?? [];
+    const hasOther = options.includes(OTHER_OPTION);
+    const choices = options.filter((option) => option !== OTHER_OPTION);
 
     if (question.questionType === "ESSAY") {
         return (
             <S2SInput
+                {...TEXT_FIELD_PROPS}
                 w="465px"
                 maxW="100%"
-                borderRadius="132px"
                 placeholder="Type here.."
                 value={typeof value === "string" ? value : ""}
                 onChange={(e) => onChange(e.target.value)}
@@ -45,47 +93,67 @@ function CustomQuestionInput({
     }
 
     if (question.questionType === "MULTIPLE_CHOICE") {
-        const selected = typeof value === "string" ? value : "";
+        const raw = typeof value === "string" ? value : "";
+        const isOther = raw.startsWith(OTHER_ANSWER_PREFIX);
+        const otherText = isOther ? raw.slice(OTHER_ANSWER_PREFIX.length) : "";
+        const radioItem = (itemValue: string, label: string) => (
+            <RadioGroup.Item key={itemValue} value={itemValue} gap="15px" cursor="pointer" flexShrink={0}>
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator
+                    boxSize="20px"
+                    borderWidth="1px"
+                    borderColor="BlueText"
+                    bg="transparent"
+                    color="BlueText"
+                    _checked={{ bg: "transparent", borderColor: "BlueText", color: "BlueText" }}
+                />
+                <RadioGroup.ItemText fontSize="16" fontWeight="400" color="Grey">
+                    {label}
+                </RadioGroup.ItemText>
+            </RadioGroup.Item>
+        );
         return (
             <RadioGroup.Root
-                value={selected}
-                onValueChange={(e) => onChange(e.value ?? "")}
+                value={isOther ? OTHER_OPTION : raw}
+                onValueChange={(e) =>
+                    onChange(e.value === OTHER_OPTION ? OTHER_ANSWER_PREFIX + otherText : e.value ?? "")
+                }
                 display="flex"
                 flexDirection="column"
                 alignItems="flex-start"
-                gap="10px"
+                gap="8px"
+                w="100%"
             >
-                {(question.questionOptions ?? []).map((option) => (
-                    <RadioGroup.Item key={option} value={option} gap="15px" cursor="pointer">
-                        <RadioGroup.ItemHiddenInput />
-                        <RadioGroup.ItemIndicator
-                            boxSize="20px"
-                            borderWidth="1px"
-                            borderColor="BlueText"
-                            bg="transparent"
-                            color="BlueText"
-                            _checked={{ bg: "transparent", borderColor: "BlueText", color: "BlueText" }}
+                {choices.map((option) => radioItem(option, option))}
+                {hasOther && (
+                    <Flex align="center" gap="8px" w="100%">
+                        {radioItem(OTHER_OPTION, "Other:")}
+                        <OtherTextInput
+                            value={otherText}
+                            onFocus={() => !isOther && onChange(OTHER_ANSWER_PREFIX)}
+                            onChange={(text) => onChange(OTHER_ANSWER_PREFIX + text)}
                         />
-                        <RadioGroup.ItemText fontSize="16px" fontWeight="500" color="Grey">
-                            {option}
-                        </RadioGroup.ItemText>
-                    </RadioGroup.Item>
-                ))}
+                    </Flex>
+                )}
             </RadioGroup.Root>
         );
     }
 
     if (question.questionType === "CHECKLIST") {
         const selected = Array.isArray(value) ? value : [];
+        const otherEntry = selected.find((s) => s.startsWith(OTHER_ANSWER_PREFIX));
+        const withoutOther = selected.filter((s) => s !== otherEntry);
         const toggle = (option: string) =>
             onChange(
                 selected.includes(option)
                     ? selected.filter((o) => o !== option)
                     : [...selected, option],
             );
+        const setOther = (text: string | null) =>
+            onChange(text === null ? withoutOther : [...withoutOther, OTHER_ANSWER_PREFIX + text]);
         return (
-            <VStack align="flex-start" gap="10px">
-                {(question.questionOptions ?? []).map((option) => (
+            <VStack align="stretch" gap="8px" w="100%">
+                {choices.map((option) => (
                     <S2SCheckbox
                         key={option}
                         label={option}
@@ -93,49 +161,47 @@ function CustomQuestionInput({
                         onChange={() => toggle(option)}
                     />
                 ))}
+                {hasOther && (
+                    <Flex align="center" gap="8px" w="100%">
+                        <S2SCheckbox
+                            label="Other:"
+                            checked={otherEntry !== undefined}
+                            onChange={(checked) => setOther(checked ? "" : null)}
+                        />
+                        <OtherTextInput
+                            value={otherEntry ? otherEntry.slice(OTHER_ANSWER_PREFIX.length) : ""}
+                            onFocus={() => otherEntry === undefined && setOther("")}
+                            onChange={setOther}
+                        />
+                    </Flex>
+                )}
             </VStack>
         );
     }
 
-    // IMAGE
-    const imageUrl = typeof value === "string" ? value : "";
+    // IMAGE: the owner's photos, shown for context only — nothing to answer
+    if (choices.length === 0) return null;
     return (
-        <VStack align="stretch" gap="10px" w="100%">
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    uploadImage.mutate(
-                        { pid, file },
-                        { onSuccess: (url) => onChange(url) },
-                    );
-                    e.target.value = "";
-                }}
-            />
-            <S2SButton
-                text={uploadImage.isPending ? "Uploading..." : imageUrl ? "Replace Image" : "Upload Image"}
-                variant="outline"
-                width="180px"
-                height="40px"
-                fontSize="14px"
-                loading={uploadImage.isPending}
-                onClick={() => fileInputRef.current?.click()}
-            />
-            {imageUrl && (
+        <Grid
+            w="100%"
+            gap="10px"
+            templateColumns={{
+                base: "1fr",
+                md: choices.length === 1 ? "1fr" : choices.length === 2 ? "1fr 2fr" : "repeat(3, 1fr)",
+            }}
+        >
+            {choices.map((url, i) => (
                 <Image
-                    src={imageUrl}
-                    alt={question.questionText}
+                    key={url}
+                    src={url}
+                    alt={`${question.questionText || "Owner photo"} ${i + 1}`}
                     w="100%"
-                    maxH="400px"
+                    h={{ base: "220px", md: "320px" }}
                     objectFit="cover"
-                    borderRadius="12px"
+                    bg="#E9E9E9"
                 />
-            )}
-        </VStack>
+            ))}
+        </Grid>
     );
 }
 
@@ -191,7 +257,7 @@ function toSubmission(draft: ScreeningDraft, customDraft: CustomDraft): AdoptSub
         note: draft.Note.trim(),
         answers: Object.entries(customDraft)
             .filter(([, value]) => isAnswered(value))
-            .map(([questionId, value]) => ({ questionId: Number(questionId), value })),
+            .map(([questionId, value]) => ({ questionId: Number(questionId), value: cleanAnswer(value) })),
     };
 }
 
@@ -240,7 +306,7 @@ function RadioOptionGroup({
                         color="BlueText"
                         _checked={{ bg: "transparent", borderColor: "BlueText", color: "BlueText" }}
                     />
-                    <RadioGroup.ItemText fontSize="16px" fontWeight="500" color="Grey">
+                    <RadioGroup.ItemText fontSize="16" fontWeight="400" color="Grey">
                         {option.label}
                     </RadioGroup.ItemText>
                 </RadioGroup.Item>
@@ -279,9 +345,9 @@ function QuestionInput({
         const value = draft[question.id] as string;
         return (
             <S2SInput
+                {...TEXT_FIELD_PROPS}
                 w={question.number === "" ? "100%" : "465px"}
                 maxW="100%"
-                borderRadius="132px"
                 placeholder="Type here.."
                 value={value}
                 onChange={(e) => onChange({ [question.id]: e.target.value })}
@@ -302,9 +368,11 @@ function QuestionInput({
             }))}
             onValueChange={(v) => onChange({ [question.id]: isLabelStored ? v : Number(v) })}
             flexDirection={question.layout === "stacked" ? "column" : "row"}
-            gap={question.layout === "stacked" ? "10px" : "24px"}
+            gap={question.layout === "stacked" ? "8px" : "24px"}
+            // Figma: inline options spread across a 603px row
+            justifyContent={question.layout === "stacked" ? undefined : "space-between"}
             flexWrap="wrap"
-            width="100%"
+            width={question.layout === "stacked" ? "100%" : "min(603px, 100%)"}
         />
     );
 }
@@ -313,23 +381,41 @@ export default function AdoptScreeningForm({
     isOpen,
     pid,
     petName,
-    isSubmitting,
+    isSubmitting = false,
     serverError,
     onClose,
     onSubmit,
+    preview = false,
+    previewQuestions,
 }: {
     isOpen: boolean;
-    pid: string | number;
+    pid?: string | number;
     petName: string;
-    isSubmitting: boolean;
+    isSubmitting?: boolean;
     serverError?: string;
     onClose: () => void;
-    onSubmit: (answers: AdoptSubmission) => void;
+    onSubmit?: (answers: AdoptSubmission) => void;
+    /** Preview mode (owner checking what adopters see): no Submit button. */
+    preview?: boolean;
+    /** Unsaved questions to preview instead of the pet's saved ones (Register a Pet, step 4). Implies preview. */
+    previewQuestions?: CustomScreeningQuestionDraft[];
 }) {
     const [draft, setDraft] = useState<ScreeningDraft>(EMPTY_DRAFT);
     const [customDraft, setCustomDraft] = useState<CustomDraft>({});
     const [formError, setFormError] = useState("");
-    const { questions: customQuestions } = useScreeningQuestions(isOpen ? pid : undefined);
+    const isPreview = preview || previewQuestions !== undefined;
+    const { questions: savedQuestions } = useScreeningQuestions(
+        isOpen && previewQuestions === undefined ? pid : undefined,
+    );
+    // Drafts have no id yet, so their position stands in for one
+    const customQuestions: CustomScreeningQuestion[] = previewQuestions
+        ? previewQuestions.map((q, i) => ({ ...q, questionId: i }))
+        : savedQuestions;
+    // IMAGE questions only show the owner's photos, so they get no number
+    const answerableNumbers = new Map<number, number>();
+    customQuestions
+        .filter((q) => q.questionType !== "IMAGE")
+        .forEach((q, i) => answerableNumbers.set(q.questionId, i + 1));
 
     const patchDraft = (patch: Partial<ScreeningDraft>) =>
         setDraft((d) => ({ ...d, ...patch }));
@@ -345,7 +431,7 @@ export default function AdoptScreeningForm({
         }
 
         const missingCustom = customQuestions.filter(
-            (q) => q.questionRequired && !isAnswered(customDraft[q.questionId]),
+            (q) => q.questionType !== "IMAGE" && q.questionRequired && !isAnswered(customDraft[q.questionId]),
         );
         if (missingCustom.length > 0) {
             setFormError(
@@ -355,7 +441,7 @@ export default function AdoptScreeningForm({
         }
 
         setFormError("");
-        onSubmit(toSubmission(draft, customDraft));
+        onSubmit?.(toSubmission(draft, customDraft));
     };
 
     const handleClose = () => {
@@ -371,37 +457,45 @@ export default function AdoptScreeningForm({
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
                     <Dialog.Content
-                        maxW="915px"
-                        borderRadius="50px"
+                        maxW="800px"
+                        borderRadius="24px"
                         p="0"
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={handleClose} zIndex={1} />
+                        <S2SDialogCloseButton onClick={handleClose} top="32px" right="32px" boxSize="28px" iconBoxSize="14px" zIndex={1} />
 
-                        <VStack pt="53px" pb="40px" px={{ base: "24px", md: "54px" }} gap="30px" align="stretch">
-                            <VStack gap="12px" maxW="626px" alignSelf="center">
-                                <Text fontSize="24px" fontWeight="600" color="Grey" textAlign="center">
+                        <VStack py="32px" px={{ base: "24px", md: "32px" }} gap="24px" align="stretch">
+                            <VStack gap="8px" maxW="626px" alignSelf="center" px={{ base: "28px", md: 0 }}>
+                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize="16px" fontWeight="500" color="GreyText" textAlign="center">
+                                <Text fontSize="16" fontWeight="400" color="Grey" textAlign="center">
                                     Your responses will be shared with {petName}&apos;s current owner/finder to
                                     assist in the adoption approval process.
                                 </Text>
                             </VStack>
 
-                            <VStack align="stretch" gap="30px" maxH="55vh" overflowY="auto" pr="8px" pb="10px">
-                                {SCREENING_SECTIONS.map((section) => (
-                                    <VStack key={section.title} align="stretch" gap="20px">
-                                        <Text fontSize="16px" color="black">
+                            <VStack align="stretch" gap="16px" maxH="55vh" overflowY="auto" pr="8px" pb="10px">
+                                {SCREENING_SECTIONS.map((section, sectionIndex) => (
+                                    <VStack key={section.title} align="stretch" gap="12px">
+                                        <Text fontSize="16" fontWeight="400" color="Grey">
+                                            {/* Other Notes (the last, unnumbered section) has no number */}
+                                            {section.questions.some((q) => q.number !== "") && `${sectionIndex + 1}. `}
                                             {section.title}
                                         </Text>
-                                        <VStack align="stretch" gap="25px" px="25px">
+                                        {/* Figma: numbered questions are indented 24px; the bare Other Notes field is not */}
+                                        <VStack
+                                            align="stretch"
+                                            gap="12px"
+                                            px={section.questions.every((q) => q.number === "") ? 0 : "24px"}
+                                        >
                                             {section.questions.map((question) => (
-                                                <VStack key={question.id} align="flex-start" gap="12px">
+                                                <VStack key={question.id} align="flex-start" gap="8px">
                                                     {question.text && (
-                                                        <Text fontSize="16px" color="black">
-                                                            {question.number} {question.text}
+                                                        <Text fontSize="16" fontWeight="400" color="Grey">
+                                                            {question.number} {question.text}{" "}
+                                                            <Text as="span" color="#FF5151">*</Text>
                                                         </Text>
                                                     )}
                                                     <QuestionInput
@@ -416,19 +510,28 @@ export default function AdoptScreeningForm({
                                 ))}
 
                                 {customQuestions.length > 0 && (
-                                    <VStack align="stretch" gap="20px">
-                                        <Text fontSize="16px" color="black">
-                                            Additional Questions
+                                    <VStack align="stretch" gap="12px">
+                                        <Text fontSize="16" fontWeight="500" color="BlueText" textDecoration="underline">
+                                            Owner&apos;s Additional Questions
                                         </Text>
-                                        <VStack align="stretch" gap="25px" px="25px">
+                                        <VStack align="stretch" gap="12px" px="24px">
                                             {customQuestions.map((question) => (
-                                                <VStack key={question.questionId} align="flex-start" gap="12px">
-                                                    <Text fontSize="16px" color="black">
-                                                        {question.questionText}
-                                                        {!question.questionRequired && " (optional)"}
-                                                    </Text>
+                                                <VStack key={question.questionId} align="flex-start" gap="8px">
+                                                    {question.questionType === "IMAGE" ? (
+                                                        question.questionText && (
+                                                            <Text fontSize="16" fontWeight="400" color="Grey">
+                                                                {question.questionText}
+                                                            </Text>
+                                                        )
+                                                    ) : (
+                                                        <Text fontSize="16" fontWeight="400" color="Grey">
+                                                            {answerableNumbers.get(question.questionId)}. {question.questionText}
+                                                            {question.questionRequired
+                                                                ? <>{" "}<Text as="span" color="#FF5151">*</Text></>
+                                                                : " (optional)"}
+                                                        </Text>
+                                                    )}
                                                     <CustomQuestionInput
-                                                        pid={pid}
                                                         question={question}
                                                         value={customDraft[question.questionId]}
                                                         onChange={(value) =>
@@ -442,22 +545,22 @@ export default function AdoptScreeningForm({
                                 )}
                             </VStack>
 
-                            {(formError || serverError) && (
-                                <Text fontSize="14px" color="red.500" textAlign="center">
+                            {!isPreview && (formError || serverError) && (
+                                <Text fontSize="14" color="red.500" textAlign="center">
                                     {formError || serverError}
                                 </Text>
                             )}
 
-                            <Flex justify="center">
-                                <S2SButton
-                                    text="Submit"
-                                    width="185px"
-                                    height="51px"
-                                    fontSize="20px"
-                                    loading={isSubmitting}
-                                    onClick={handleSubmit}
-                                />
-                            </Flex>
+                            {!isPreview && (
+                                <Flex justify="center">
+                                    <S2SButton
+                                        text="Submit"
+                                        size="lg"
+                                        loading={isSubmitting}
+                                        onClick={handleSubmit}
+                                    />
+                                </Flex>
+                            )}
                         </VStack>
                     </Dialog.Content>
                 </Dialog.Positioner>

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { Box, Text, VStack } from "@chakra-ui/react";
 
 import { S2SPageTitle } from "../components/S2S.components";
 import { useUpdateUser, useUpdateUserImage, useUserInfo } from "../hooks/query/user.query";
@@ -7,35 +8,34 @@ import { useMyAdoptionRequests, useMyPets } from "../hooks/query/pet.query";
 import { geocodeAddressAPI } from "../services/apis/address.api";
 
 import { joinAddress, joinAddressForGeocode } from "../utils/address.util";
-import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "../types/profile.type";
+import { serverMessage } from "../utils/error.util";
+import { toPreferencePayload } from "../services/apis/user.api";
+import { EMPTY_PERSONAL_INFO } from "../types/profile.type";
 import type {
     AdoptedPet,
     AdoptionStatus,
-    InfoTab,
     ListTab,
     PersonalInfoDraft,
     PetPreferenceDraft,
     RehomingPet,
 } from "../types/profile.type";
 
-import ProfileSummaryCard from "../components/profile/profileSummaryCard.component";
-import PersonalInfoForm from "../components/profile/personalInfoForm.component";
-import PetPreferencesForm from "../components/profile/petPreferencesForm.component";
+import ProfileInfoCard from "../components/profile/profileInfoCard.component";
+import PetPreferencesDialog from "../components/profile/petPreferencesDialog.component";
 import ListTabs from "../components/profile/listTabs.component";
 import MyRehomingList from "../components/profile/myRehomingList.component";
 import MyAdoptionsList from "../components/profile/myAdoptionsList.component";
 import { personalInfoSchema } from "../validators/profile.validator";
 
 export default function Profile() {
-    const { personalInfo, dogPreference, catPreference, imageURL, loading } = useUserInfo();
+    const { personalInfo, preferences, imageURL, loading } = useUserInfo();
 
     if (loading) return <Box></Box>;
 
     return (
         <ProfileContent
             initialPersonalInfo={personalInfo ?? EMPTY_PERSONAL_INFO}
-            initialDogPreference={dogPreference ?? EMPTY_PET_PREFERENCE}
-            initialCatPreference={catPreference ?? EMPTY_PET_PREFERENCE}
+            initialPreferences={preferences ?? []}
             initialImageURL={imageURL ?? ""}
         />
     );
@@ -43,17 +43,24 @@ export default function Profile() {
 
 function ProfileContent({
     initialPersonalInfo,
-    initialDogPreference,
-    initialCatPreference,
+    initialPreferences,
     initialImageURL,
 }: {
     initialPersonalInfo: PersonalInfoDraft;
-    initialDogPreference: PetPreferenceDraft;
-    initialCatPreference: PetPreferenceDraft;
+    initialPreferences: PetPreferenceDraft[];
     initialImageURL: string;
 }) {
-    const [infoTab, setInfoTab] = useState<InfoTab>("personal");
-    const [listTab, setListTab] = useState<ListTab>("rehoming");
+    // The list tab and the pet to open live in the URL, so a notification can link
+    // straight to them (/profile?tab=rehoming&pet=12) even while already on this page
+    const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
+    const listTab: ListTab = searchParams.get("tab") === "adoptions" ? "adoptions" : "rehoming";
+    const setListTab = (tab: ListTab) => setSearchParams({ tab }, { replace: true });
+    // location.key changes on every navigation, so clicking the same notification
+    // twice re-opens the row even though the URL stays the same
+    const focusPet = searchParams.get("pet")
+        ? { id: searchParams.get("pet") as string, token: location.key }
+        : null;
 
     const { myPets } = useMyPets();
     const rehomingPets: RehomingPet[] = myPets.map((pet) => ({
@@ -78,26 +85,37 @@ function ProfileContent({
     }));
 
     const [personalInfo, setPersonalInfo] = useState<PersonalInfoDraft>(initialPersonalInfo);
-    const [dogPreference, setDogPreference] = useState<PetPreferenceDraft>(initialDogPreference);
-    const [catPreference, setCatPreference] = useState<PetPreferenceDraft>(initialCatPreference);
+    const [preferences, setPreferences] = useState<PetPreferenceDraft[]>(initialPreferences);
     const [imageURL, setImageURL] = useState<string>(initialImageURL);
 
     const patchPersonal = (patch: Partial<PersonalInfoDraft>) =>
         setPersonalInfo((current) => ({ ...current, ...patch }));
 
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
-    const [isEditingPreferences, setIsEditingPreferences] = useState(false);
+    const [showPreferences, setShowPreferences] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
     const [personalInfoError, setPersonalInfoError] = useState("");
+    const [preferencesError, setPreferencesError] = useState("");
     const updateUserMutation = useUpdateUser();
+    const saving = resolvingLocation || updateUserMutation.isPending;
 
-    const handleSaveProfile = async (onSuccess: () => void) => {
+    // The update endpoint takes the whole profile, so both the personal info card
+    // and the preferences popup save through here
+    const saveProfile = async ({
+        nextPreferences,
+        onSuccess,
+        onError,
+    }: {
+        nextPreferences: PetPreferenceDraft[];
+        onSuccess: () => void;
+        onError: (message: string) => void;
+    }) => {
         const parsed = personalInfoSchema.safeParse(personalInfo);
         if (!parsed.success) {
-            setPersonalInfoError(parsed.error.issues[0]?.message ?? "Please check your information");
+            onError(parsed.error.issues[0]?.message ?? "Please check your information");
             return;
         }
-        setPersonalInfoError("");
+        onError("");
 
         const address = joinAddress(personalInfo);
 
@@ -118,16 +136,12 @@ function ProfileContent({
                 address,
                 addressLat: lat,
                 addressLong: long,
-                dogBreed: dogPreference.breed,
-                dogColor: dogPreference.color,
-                dogAgeGroup: dogPreference.ageGroup,
-                dogGender: dogPreference.gender,
-                catBreed: catPreference.breed,
-                catColor: catPreference.color,
-                catAgeGroup: catPreference.ageGroup,
-                catGender: catPreference.gender,
+                preferences: toPreferencePayload(nextPreferences),
             },
-            { onSuccess }
+            {
+                onSuccess,
+                onError: (error) => onError(`Couldn't save your profile: ${serverMessage(error)}`),
+            }
         );
     };
 
@@ -148,47 +162,35 @@ function ProfileContent({
         <Box width="100%" px={{ base: "30px", md: "9%"}}>
             <S2SPageTitle title="Profile" />
             <VStack gap="64px" align="stretch">
-                <Flex gap="32px" width={"100%"} direction={{ base: "column", lg: "row" }}>
-                    <ProfileSummaryCard
+                <VStack gap="12px" align="stretch">
+                    <ProfileInfoCard
                         name={`${personalInfo.firstName} ${personalInfo.lastName}`.trim()}
                         imageURL={imageURL}
                         onImageChange={handleImageChange}
-                        activeTab={infoTab}
-                        onTabChange={setInfoTab}
+                        personalInfo={personalInfo}
+                        onPersonalInfoChange={patchPersonal}
+                        isEditing={isEditingPersonal}
+                        saving={saving && !showPreferences}
+                        onEdit={() => setIsEditingPersonal(true)}
+                        onSave={() =>
+                            saveProfile({
+                                nextPreferences: preferences,
+                                onSuccess: () => setIsEditingPersonal(false),
+                                onError: setPersonalInfoError,
+                            })
+                        }
+                        onEditPreferences={() => {
+                            setPreferencesError("");
+                            setShowPreferences(true);
+                        }}
                     />
 
-                    {infoTab === "personal" ? (
-                        <PersonalInfoForm
-                            value={personalInfo}
-                            onChange={patchPersonal}
-                            isEditing={isEditingPersonal}
-                            saving={resolvingLocation || updateUserMutation.isPending}
-                            onToggleEdit={() => setIsEditingPersonal(true)}
-                            onSave={() => handleSaveProfile(() => setIsEditingPersonal(false))}
-                        />
-                    ) : (
-                        <PetPreferencesForm
-                            dog={dogPreference}
-                            cat={catPreference}
-                            onDogChange={(patch) =>
-                                setDogPreference((current) => ({ ...current, ...patch }))
-                            }
-                            onCatChange={(patch) =>
-                                setCatPreference((current) => ({ ...current, ...patch }))
-                            }
-                            isEditing={isEditingPreferences}
-                            saving={resolvingLocation || updateUserMutation.isPending}
-                            onToggleEdit={() => setIsEditingPreferences(true)}
-                            onSave={() => handleSaveProfile(() => setIsEditingPreferences(false))}
-                        />
+                    {personalInfoError && (
+                        <Text fontSize="14" color="red.500">
+                            {personalInfoError}
+                        </Text>
                     )}
-                </Flex>
-
-                {personalInfoError && (
-                    <Text fontSize="14px" color="red.500">
-                        {personalInfoError}
-                    </Text>
-                )}
+                </VStack>
 
                 <VStack
                     bg="white"
@@ -201,12 +203,31 @@ function ProfileContent({
                     <ListTabs value={listTab} onChange={setListTab} />
 
                     {listTab === "rehoming" ? (
-                        <MyRehomingList pets={rehomingPets} />
+                        <MyRehomingList pets={rehomingPets} focusPet={focusPet} />
                     ) : (
                         <MyAdoptionsList pets={adoptedPets} />
                     )}
                 </VStack>
             </VStack>
+
+            {showPreferences && (
+                <PetPreferencesDialog
+                    initialPreferences={preferences}
+                    saving={saving}
+                    error={preferencesError}
+                    onCancel={() => setShowPreferences(false)}
+                    onFinish={(nextPreferences) =>
+                        saveProfile({
+                            nextPreferences,
+                            onSuccess: () => {
+                                setPreferences(nextPreferences);
+                                setShowPreferences(false);
+                            },
+                            onError: setPreferencesError,
+                        })
+                    }
+                />
+            )}
         </Box>
     );
 }

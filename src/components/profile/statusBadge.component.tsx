@@ -21,7 +21,7 @@ export default function StatusBadge({ status }: { status: AdoptionStatus }) {
             bg={style.bg}
             flexShrink={0}
         >
-            <Text fontSize="18px" fontWeight="500" color={style.color}>
+            <Text fontSize="18" fontWeight="500" color={style.color}>
                 {style.label}
             </Text>
         </Flex>

@@ -19,6 +19,8 @@ import Step3Details from "../components/rehome/step3Details.component";
 import Step4ScreeningQuestions from "../components/rehome/step4ScreeningQuestions.component";
 import SelectAiPhotosModal from "../components/rehome/selectAiPhotosModal.component";
 import { emptyRehomeDraft, MAX_AI_PHOTOS, type RehomeDraft } from "../types/rehome.type";
+import { screeningQuestionsError } from "../validators/screeningQuestions.validator";
+import { uploadStagedScreeningImages } from "../utils/screeningImages.util";
 import { petDetailsMissingLabels, petDetailsSchema } from "../validators/pet.validator";
 
 const STEPS = ["Select Species", "Upload Photos", "Fill in Details", "Screening Questions"];
@@ -38,6 +40,7 @@ export default function Rehome() {
     const [draft, setDraft] = useState<RehomeDraft>(emptyRehomeDraft);
     const [classifyError, setClassifyError] = useState("");
     const [formError, setFormError] = useState("");
+    const [isUploadingImages, setIsUploadingImages] = useState(false);
     const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
     const classify = useClassifyPet();
@@ -106,6 +109,11 @@ export default function Rehome() {
             setFormError(`Please fill in: ${petDetailsMissingLabels(parsed.error).join(", ")}.`);
             return;
         }
+        const questionProblem = screeningQuestionsError(draft.customQuestions);
+        if (questionProblem) {
+            setFormError(questionProblem);
+            return;
+        }
 
         setFormError("");
         // The step-2 "couldn't detect the breed" hint is stale by now — the
@@ -120,10 +128,17 @@ export default function Rehome() {
                 // The pet is already created at this point — a failure here
                 // shouldn't block navigation; the owner can still add
                 // questions later from the pet's profile page.
-                saveScreeningQuestions.mutate(
-                    { pid: newPid, questions: draft.customQuestions },
-                    { onSuccess: finishRegistration, onError: finishRegistration },
-                );
+                // Image-question photos wait in the browser until now, when there's a pid to save them under.
+                setIsUploadingImages(true);
+                uploadStagedScreeningImages(newPid, draft.customQuestions)
+                    .then((questions) =>
+                        saveScreeningQuestions.mutate(
+                            { pid: newPid, questions },
+                            { onSuccess: finishRegistration, onError: finishRegistration },
+                        ),
+                    )
+                    .catch(finishRegistration)
+                    .finally(() => setIsUploadingImages(false));
             },
             // Unlike step 2's classify, a failed submit must not advance —
             // keep the user here with their input intact.
@@ -175,7 +190,8 @@ export default function Rehome() {
                 <S2SStepper steps={STEPS} current={step} />
             </Flex>
 
-            <Box maxW="736px" mx="auto" mt={{ base: "40px", md: "80px" }}>
+            {/* Figma: the details form (step 3) runs wider than the other steps */}
+            <Box maxW={step === 3 ? "787px" : "736px"} mx="auto" mt={{ base: "40px", md: "80px" }}>
                 {step === 1 && (
                     <Step1Species
                         value={draft.petType}
@@ -204,13 +220,14 @@ export default function Rehome() {
                     />
                 )}
 
-                {classifyError && (
-                    <Text mt="16px" fontSize="14px" color="red.500">
+                {/* "Pick it manually in the next step" only makes sense on that next step */}
+                {classifyError && step === 3 && (
+                    <Text mt="16px" fontSize="14" color="red.500">
                         {classifyError}
                     </Text>
                 )}
                 {formError && (
-                    <Text mt="16px" fontSize="14px" color="red.500">
+                    <Text mt="16px" fontSize="14" color="red.500">
                         {formError}
                     </Text>
                 )}
@@ -220,9 +237,9 @@ export default function Rehome() {
                         <S2SButton
                             text="Back"
                             variant="outline"
-                            width={{ base: "106.94px", md: "134.39px" }}
-                            height={{ base: "35.65px", md: "44.80px" }}
-                            fontSize={{ base: "14.32px", md: "20px" }}
+                            width={{ base: "106.94px", md: "120px" }}
+                            height={{ base: "35.65px", md: "48px" }}
+                            fontSize={{ base: "14.32", md: "20" }}
                             onClick={() => setStep((s) => s - 1)}
                         />
                     ) : (
@@ -230,11 +247,12 @@ export default function Rehome() {
                     )}
                     <S2SButton
                         text={step === STEPS.length ? "Finish" : "Next"}
-                        width={{ base: "106.94px", md: "134.39px" }}
-                        height={{ base: "35.65px", md: "44.80px" }}
-                        fontSize={{ base: "14.32px", md: "20px" }}
+                        // Figma "Large Short": 120px min width, 48px tall
+                        width={{ base: "106.94px", md: "120px" }}
+                        height={{ base: "35.65px", md: "48px" }}
+                        fontSize={{ base: "14.32", md: "20" }}
                         disabled={!canGoNext}
-                        loading={classify.isPending || register.isPending || saveScreeningQuestions.isPending}
+                        loading={classify.isPending || register.isPending || isUploadingImages || saveScreeningQuestions.isPending}
                         onClick={handleNext}
                     />
                 </Flex>

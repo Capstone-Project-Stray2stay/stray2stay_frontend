@@ -3,7 +3,7 @@ import { Flex, Text } from "@chakra-ui/react";
 
 export function RequiredAsterisk() {
     return (
-        <Text as="span" color="red.500" aria-hidden="true">
+        <Text as="span" color="#FF5151" aria-hidden="true">
             {" *"}
         </Text>
     );
@@ -20,7 +20,7 @@ export default function DetailField({
 }) {
     return (
         <Flex direction="column" align="stretch" gap={{ base: "5.71px", md: "6.52px" }} w="100%">
-            <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyText">
+            <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="GreyText">
                 {label}
                 {required && <RequiredAsterisk />}
             </Text>
@@ -48,7 +48,7 @@ export function DetailSection({
             <Text
                 w={{ base: "auto", md: "200px" }}
                 flexShrink={0}
-                fontSize={{ base: "16px", md: "20px" }}
+                fontSize={{ base: "16", md: "20" }}
                 fontWeight="600"
                 color="Grey"
             >

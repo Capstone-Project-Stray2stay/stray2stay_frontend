@@ -30,19 +30,20 @@ export const EMPTY_PERSONAL_INFO: PersonalInfoDraft = {
     long: null,
 };
 
+/** One "a pet like this" card. A user may have any number per species (Dog #1, Dog #2, Cat #1 …). */
 export interface PetPreferenceDraft {
+    /** Client-only key so removing a card in the middle doesn't shuffle the others' inputs. */
+    id: string;
+    species: Species;
     breed: string;
     color: string;
     ageGroup: string;
     gender: string;
 }
 
-export const EMPTY_PET_PREFERENCE: PetPreferenceDraft = {
-    breed: "",
-    color: "",
-    ageGroup: "",
-    gender: "",
-};
+export function emptyPetPreference(species: Species): PetPreferenceDraft {
+    return { id: crypto.randomUUID(), species, breed: "", color: "", ageGroup: "", gender: "" };
+}
 
 export interface ScreeningAnswers {
     Q1_1: boolean;
@@ -78,6 +79,15 @@ export interface CustomScreeningQuestion {
     questionRequired: boolean;
     questionOrder: number;
 }
+
+/**
+ * Kept in questionOptions of a MULTIPLE_CHOICE / CHECKLIST question to switch on the free-text
+ * "Other:" choice. It is a flag, never shown as a label. (IMAGE questions store the owner's
+ * photo URLs in questionOptions instead.)
+ */
+export const OTHER_OPTION = "__other__";
+/** An adopter's free-text "Other" answer is saved as this prefix + their text, e.g. "Other: rabbit". */
+export const OTHER_ANSWER_PREFIX = "Other: ";
 
 /** Draft shape used by the question-builder UI, before a question has an id (not yet saved). */
 export interface CustomScreeningQuestionDraft {

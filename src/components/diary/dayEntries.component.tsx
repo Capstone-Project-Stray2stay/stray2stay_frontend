@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Flex, Icon, IconButton, Image, Input, Text, VStack } from "@chakra-ui/react";
-import { LuImage, LuPencil } from "react-icons/lu";
+import { LuPencil } from "react-icons/lu";
+import { IoImages } from "react-icons/io5";
 
 import { S2SButton } from "../S2S.components";
 import { S2SCardShell } from "../S2S.components";
@@ -15,16 +16,17 @@ const CAPTION_INPUT_PROPS = {
     px: { base: "16px", md: "24px" },
     py: "8px",
     h: { base: "41px", md: "38px" },
-    fontSize: { base: "14px", md: "16px" },
-    fontWeight: "500",
+    fontSize: { base: "14", md: "16" },
+    fontWeight: "400",
     color: "Grey",
-    _placeholder: { color: "GreyMuted" },
+    _placeholder: { color: "GreyText" },
 } as const;
 
+// Figma (filled entry): 426×260 photo above the caption
 const PHOTO_PROPS = {
     w: "100%",
-    maxW: { base: "100%", md: "425.72px" },
-    h: { base: "183.25px", md: "252.80px" },
+    maxW: { base: "100%", md: "426px" },
+    h: { base: "183.25px", md: "260px" },
     bg: "rgba(255,255,255,0.60)",
     borderRadius: { base: "11.62px", md: "21.42px" },
     alignSelf: { base: "stretch", md: "flex-end" },
@@ -43,7 +45,7 @@ function EntryView({ entry }: { entry: DiaryEntry }) {
                 px={{ base: "16px", md: "24px" }}
                 py="8px"
             >
-                <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyMuted">
+                <Text fontSize={{ base: "14", md: "16" }} fontWeight="400" color="Grey">
                     {entry.caption}
                 </Text>
             </Box>
@@ -114,10 +116,14 @@ function EntryEditor({
                     onClick={() => inputRef.current?.click()}
                 />
             ) : (
+                // Figma: grows with its content (32px top/bottom) instead of a fixed photo-sized box
                 <Box
-                    {...PHOTO_PROPS}
-                    borderRadius={{ base: "11.62px", md: "16px" }}
-                    borderWidth="1.51px"
+                    w="100%"
+                    py={{ base: "24px", md: "32px" }}
+                    px="16px"
+                    bg="rgba(255,255,255,0.60)"
+                    borderRadius={{ base: "11.62px", md: "24px" }}
+                    borderWidth="1.5px"
                     borderStyle="dashed"
                     borderColor={isDragging ? "BlueText" : "Blue"}
                     transition="border-color 0.15s ease"
@@ -134,16 +140,16 @@ function EntryEditor({
                         acceptFile(e.dataTransfer.files);
                     }}
                 >
-                    <VStack justify="center" h="100%" gap={{ base: "9.14px", md: "16.85px" }} px="16px">
+                    <VStack gap={{ base: "9.14px", md: "16px" }}>
                         <Icon
-                            as={LuImage}
-                            w={{ base: "50px", md: "62.56px" }}
-                            h={{ base: "46px", md: "57.42px" }}
+                            as={IoImages}
+                            w={{ base: "50px", md: "68.33px" }}
+                            h={{ base: "46px", md: "64.92px" }}
                             color="SkyBlue"
                         />
                         <VStack gap="12px">
                             <Text
-                                fontSize={{ base: "14px", md: "18px" }}
+                                fontSize={{ base: "14", md: "20" }}
                                 fontWeight="600"
                                 color="Blue"
                                 textAlign="center"
@@ -151,12 +157,13 @@ function EntryEditor({
                                 Drag and Drop Photos here
                             </Text>
                             <Box onClick={(e) => e.stopPropagation()}>
+                                {/* Figma "Small" Line button */}
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width={{ base: "160px", md: "154.11px" }}
-                                    height={{ base: "28px", md: "26.83px" }}
-                                    fontSize={{ base: "12px", md: "14px" }}
+                                    width={{ base: "160px", md: "158px" }}
+                                    height={{ base: "28px", md: "38px" }}
+                                    fontSize={{ base: "12", md: "18" }}
                                     onClick={() => inputRef.current?.click()}
                                 />
                             </Box>
@@ -181,7 +188,7 @@ function EntryEditor({
                             variant="outline"
                             width="115px"
                             height="38px"
-                            fontSize="16px"
+                            fontSize="16"
                             disabled={isSaving}
                             onClick={onCancel}
                         />
@@ -190,7 +197,7 @@ function EntryEditor({
                         text="Save"
                         width="115px"
                         height="38px"
-                        fontSize="16px"
+                        fontSize="16"
                         loading={isSaving}
                         onClick={() => onSave(photo, caption.trim())}
                     />
@@ -198,7 +205,7 @@ function EntryEditor({
             )}
 
             {error && (
-                <Text fontSize="14px" color="red.500">
+                <Text fontSize="14" color="red.500">
                     {error}
                 </Text>
             )}
@@ -240,7 +247,7 @@ export default function DayEntries({
             aria-label="Edit entry"
             variant="plain"
             minW="unset"
-            boxSize={{ base: "14.36px", md: "15.43px" }}
+            boxSize={{ base: "14.36px", md: "16px" }}
             p="0"
             color="Blue"
             flexShrink={0}
@@ -273,10 +280,10 @@ export default function DayEntries({
                     align={{ base: "baseline", md: "center" }}
                     gap={{ base: "8px", md: "0.86px" }}
                 >
-                    <Text fontSize={{ base: "20px", md: "32px" }} fontWeight="600" color="Grey">
+                    <Text fontSize={{ base: "20", md: "32" }} fontWeight="600" color="Grey">
                         {date.getDate()}
                     </Text>
-                    <Text fontSize={{ base: "14px", md: "18px" }} fontWeight="600" color="Grey">
+                    <Text fontSize={{ base: "14", md: "18" }} fontWeight="600" color="Grey">
                         {WEEKDAYS[date.getDay()]}
                     </Text>
                 </Flex>
@@ -317,7 +324,7 @@ export default function DayEntries({
                         px="24px"
                         borderRadius={{ base: "11.62px", md: "16px" }}
                     >
-                        <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyMuted" textAlign="center">
+                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="GreyMuted" textAlign="center">
                             {!canWrite
                                 ? "No entry for this day."
                                 : "This day is outside the diary's range."}
@@ -326,7 +333,7 @@ export default function DayEntries({
                 )}
 
                 {saveError && (
-                    <Text fontSize="14px" color="red.500">
+                    <Text fontSize="14" color="red.500">
                         {saveError}
                     </Text>
                 )}

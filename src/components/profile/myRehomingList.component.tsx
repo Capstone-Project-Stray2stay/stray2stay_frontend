@@ -1,7 +1,17 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Button, Dialog, Flex, Icon, IconButton, Portal, Text, VStack } from "@chakra-ui/react";
-import { LuBookOpen, LuChevronDown, LuChevronUp, LuPencil, LuPhone, LuTrash2 } from "react-icons/lu";
+import { Avatar, Dialog, Flex, Icon, IconButton, Portal, Text, VStack } from "@chakra-ui/react";
+import {
+    LuBookOpen,
+    LuCheck,
+    LuChevronDown,
+    LuChevronUp,
+    LuClipboardList,
+    LuEye,
+    LuPencil,
+    LuPhone,
+    LuTrash2,
+} from "react-icons/lu";
 
 import { S2SButton } from "../S2S.components";
 import { useDeletePet, useMyPetAdoptors, useScreeningAnswer, useSelectAdopter } from "../../hooks/query/pet.query";
@@ -9,38 +19,6 @@ import RoundIconButton from "./roundIconButton.component";
 import ScreeningAnswersModal from "./screeningAnswersModal.component";
 import StatusBadge from "./statusBadge.component";
 import type { RehomingInterest, RehomingPet } from "../../types/profile.type";
-
-function PillButton({
-    label,
-    borderColor,
-    width,
-    onClick,
-}: {
-    label: string;
-    borderColor: string;
-    width: string;
-    onClick?: () => void;
-}) {
-    return (
-        <Button
-            variant="plain"
-            h="38px"
-            w={width}
-            maxW="100%"
-            px="12px"
-            borderRadius="30.44px"
-            borderWidth="1px"
-            borderColor={borderColor}
-            transition="background 0.15s ease"
-            _hover={{ bg: "blackAlpha.50" }}
-            onClick={onClick}
-        >
-            <Text fontSize="18px" fontWeight="500" color="GreyText" whiteSpace="nowrap">
-                {label}
-            </Text>
-        </Button>
-    );
-}
 
 function InterestRow({ pid, interest }: { pid: string; interest: RehomingInterest }) {
     const [showAnswers, setShowAnswers] = useState(false);
@@ -55,39 +33,61 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
     const selectAdopterMutation = useSelectAdopter();
 
     return (
-        <Flex justify="space-between" align="center" gap="24px" wrap="wrap" w="100%">
-            <Flex align="center" gap="32px">
-                <Avatar.Root boxSize="85px">
+        <Flex justify="space-between" align="center" gap="16px" w="100%">
+            <Flex align="center" gap="16px" minW={0}>
+                <Avatar.Root boxSize={{ base: "48px", md: "60px" }} flexShrink={0}>
                     <Avatar.Fallback name={interest.name} />
                     <Avatar.Image src={interest.imageURL} />
                 </Avatar.Root>
-                <VStack align="flex-start" gap="12px">
-                    <Text fontSize="18px" fontWeight="500" color="Grey">
+                <VStack align="flex-start" gap="4px" minW={0}>
+                    <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey" truncate maxW="100%">
                         {interest.name}
                     </Text>
                     <Flex align="center" gap="8px">
                         <Icon as={LuPhone} boxSize="14px" color="GreyText" />
-                        <Text fontSize="15px" fontWeight="500" color="GreyMuted">
+                        <Text fontSize={{ base: "13", md: "15" }} fontWeight="500" color="GreyMuted" whiteSpace="nowrap">
                             {interest.phone}
                         </Text>
                     </Flex>
                 </VStack>
             </Flex>
 
-            <Flex align="center" gap="16px" wrap="wrap">
-                <PillButton
-                    label="View Screening Answers"
-                    borderColor="Blue"
-                    width="276px"
+            {/* Figma: labelled Small "Line" buttons on desktop, icon-only circles on mobile */}
+            <Flex align="center" gap="16px" flexShrink={0} hideBelow="md">
+                <S2SButton
+                    text="Screening Answers"
+                    variant="outline"
+                    bgColor="BlueText"
+                    size="sm"
+                    icon={<LuEye />}
                     onClick={() => setShowAnswers(true)}
                 />
                 {isAccepted ? (
                     <StatusBadge status="success" />
                 ) : (
-                    <PillButton
-                        label="Accept"
-                        borderColor="GreenBorder"
-                        width="115px"
+                    <S2SButton
+                        text="Accept"
+                        variant="outline"
+                        bgColor="AcceptGreen"
+                        size="sm"
+                        onClick={() => setShowAcceptConfirm(true)}
+                    />
+                )}
+            </Flex>
+            <Flex align="center" gap="8px" flexShrink={0} hideFrom="md">
+                <RoundIconButton
+                    icon={LuClipboardList}
+                    ariaLabel={`View ${interest.name}'s screening answers`}
+                    color="BlueText"
+                    onClick={() => setShowAnswers(true)}
+                />
+                {isAccepted ? (
+                    <StatusBadge status="success" />
+                ) : (
+                    <RoundIconButton
+                        icon={LuCheck}
+                        ariaLabel={`Accept ${interest.name}`}
+                        color="AcceptGreen"
                         onClick={() => setShowAcceptConfirm(true)}
                     />
                 )}
@@ -115,10 +115,10 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
                         <Dialog.Positioner>
                             <Dialog.Content maxW="380px" borderRadius="30px" p="0">
                                 <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                    <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                         Accept {interest.name}?
                                     </Text>
-                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                    <Text fontSize="14" color="GreyText" textAlign="center">
                                         This marks the pet as adopted and denies every other pending request.
                                         This can't be undone.
                                     </Text>
@@ -151,64 +151,84 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
     );
 }
 
-function RehomingRow({ pet, interests }: { pet: RehomingPet; interests: RehomingInterest[] }) {
+function RehomingRow({
+    pet,
+    interests,
+    focusToken,
+}: {
+    pet: RehomingPet;
+    interests: RehomingInterest[];
+    /** Set when a notification linked to this pet; a new value opens the row again */
+    focusToken: string | null;
+}) {
     const navigate = useNavigate();
-    const [expanded, setExpanded] = useState(false);
+    const rowRef = useRef<HTMLDivElement>(null);
+    const [expanded, setExpanded] = useState(focusToken !== null);
+    const [seenFocusToken, setSeenFocusToken] = useState(focusToken);
+    if (focusToken !== seenFocusToken) {
+        setSeenFocusToken(focusToken);
+        if (focusToken !== null) setExpanded(true);
+    }
+    useEffect(() => {
+        if (focusToken !== null) rowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, [focusToken]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const deletePetMutation = useDeletePet();
     const pendingCount = interests.filter((interest) => interest.status === "pending").length;
     const isAdopted = interests.some((interest) => interest.status === "accepted");
 
     return (
-        <VStack align="stretch" gap="32px" w="100%">
-            <Flex justify="space-between" align="center" gap="24px" wrap="wrap" w="100%">
-                <Flex align="center" gap="32px">
-                    <Avatar.Root boxSize="85px">
+        <VStack ref={rowRef} align="stretch" gap="16px" w="100%">
+            <Flex justify="space-between" align="center" gap="16px" w="100%">
+                <Flex align="center" gap={{ base: "16px", md: "24px" }} minW={0}>
+                    <Avatar.Root boxSize={{ base: "60px", md: "85px" }} flexShrink={0}>
                         <Avatar.Fallback name={pet.name} />
                         <Avatar.Image src={pet.imageURL} />
                     </Avatar.Root>
-                    <VStack align="flex-start" gap="12px">
-                        <Text fontSize="18px" fontWeight="500" color="Grey">
+                    <VStack align="flex-start" gap="8px" minW={0}>
+                        <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey" truncate maxW="100%">
                             {pet.name}
                         </Text>
                         <Flex align="center" gap="8px">
                             <Flex
                                 boxSize="8px"
                                 borderRadius="full"
-                                bg={isAdopted ? "Green" : "YellowBorder"}
+                                bg={isAdopted ? "Green" : "Orange"}
                                 flexShrink={0}
                             />
-                            <Text fontSize="15px" fontWeight="500" color="GreyMuted">
+                            <Text fontSize="15" fontWeight="500" color="GreyMuted">
                                 {isAdopted ? "Adopted" : `${pendingCount} Interested`}
                             </Text>
                         </Flex>
                     </VStack>
                 </Flex>
 
-                <Flex align="center" gap="16px">
-                    {isAdopted ? (
-                        <RoundIconButton
-                            icon={LuBookOpen}
-                            ariaLabel={`Open ${pet.name}'s diary`}
-                            color="BlueText"
-                            onClick={() => navigate("/diary")}
-                        />
-                    ) : (
-                        <>
+                <Flex align="center" gap={{ base: "12px", md: "24px" }} flexShrink={0}>
+                    <Flex align="center" gap={{ base: "8px", md: "12px" }}>
+                        {isAdopted ? (
                             <RoundIconButton
-                                icon={LuPencil}
-                                ariaLabel={`Edit ${pet.name}`}
-                                color="Blue"
-                                onClick={() => navigate(`/rehome/${pet.id}/edit`)}
+                                icon={LuBookOpen}
+                                ariaLabel={`Open ${pet.name}'s diary`}
+                                color="BlueText"
+                                onClick={() => navigate("/diary")}
                             />
-                            <RoundIconButton
-                                icon={LuTrash2}
-                                ariaLabel={`Delete ${pet.name}`}
-                                color="GreyMuted"
-                                onClick={() => setShowDeleteConfirm(true)}
-                            />
-                        </>
-                    )}
+                        ) : (
+                            <>
+                                <RoundIconButton
+                                    icon={LuPencil}
+                                    ariaLabel={`Edit ${pet.name}`}
+                                    color="Blue"
+                                    onClick={() => navigate(`/rehome/${pet.id}/edit`)}
+                                />
+                                <RoundIconButton
+                                    icon={LuTrash2}
+                                    ariaLabel={`Delete ${pet.name}`}
+                                    color="GreyMuted"
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                />
+                            </>
+                        )}
+                    </Flex>
                     <IconButton
                         aria-label={expanded ? "Collapse" : "Expand"}
                         variant="plain"
@@ -223,7 +243,7 @@ function RehomingRow({ pet, interests }: { pet: RehomingPet; interests: Rehoming
             </Flex>
 
             {expanded && (
-                <VStack align="stretch" gap="32px" pl={{ base: "24px", lg: "112px" }} w="100%">
+                <VStack align="stretch" gap="24px" pl={{ base: "16px", md: "96px" }} w="100%">
                     {interests.map((interest) => (
                         <InterestRow key={interest.id} pid={pet.id} interest={interest} />
                     ))}
@@ -241,10 +261,10 @@ function RehomingRow({ pet, interests }: { pet: RehomingPet; interests: Rehoming
                         <Dialog.Positioner>
                             <Dialog.Content maxW="380px" borderRadius="30px" p="0">
                                 <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                    <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                    <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                         Delete this pet?
                                     </Text>
-                                    <Text fontSize="14px" color="GreyText" textAlign="center">
+                                    <Text fontSize="14" color="GreyText" textAlign="center">
                                         This removes {pet.name}'s listing and all of its photos permanently. This can't be undone.
                                     </Text>
                                     <Flex gap="12px" mt="8px">
@@ -276,7 +296,14 @@ function RehomingRow({ pet, interests }: { pet: RehomingPet; interests: Rehoming
     );
 }
 
-export default function MyRehomingList({ pets }: { pets: RehomingPet[] }) {
+export default function MyRehomingList({
+    pets,
+    focusPet = null,
+}: {
+    pets: RehomingPet[];
+    /** The pet a notification linked to, opened and scrolled to on arrival */
+    focusPet?: { id: string; token: string } | null;
+}) {
     // Fetched once for every pet at once (see useMyPetAdoptors), then each
     // row picks its own slice out of the result below.
     const { adoptorsByPet } = useMyPetAdoptors(pets.length > 0);
@@ -311,15 +338,20 @@ export default function MyRehomingList({ pets }: { pets: RehomingPet[] }) {
     if (pets.length === 0) {
         return (
             <Flex minH="200px" align="center" justify="center">
-                <Text color="Grey" fontSize="md">You haven't listed any pets for rehoming yet.</Text>
+                <Text color="Grey" fontSize="16">You haven't listed any pets for rehoming yet.</Text>
             </Flex>
         );
     }
 
     return (
-        <VStack align="stretch" gap="32px" w="100%">
+        <VStack align="stretch" gap={{ base: "24px", md: "40px" }} px={{ base: "0", md: "40px" }} w="100%">
             {sortedRows.map(({ pet, interests }) => (
-                <RehomingRow key={pet.id} pet={pet} interests={interests} />
+                <RehomingRow
+                    key={pet.id}
+                    pet={pet}
+                    interests={interests}
+                    focusToken={focusPet?.id === pet.id ? focusPet.token : null}
+                />
             ))}
         </VStack>
     );

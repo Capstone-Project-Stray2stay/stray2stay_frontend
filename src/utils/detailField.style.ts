@@ -1,5 +1,5 @@
 const FIELD_HEIGHT = { base: "34px", md: "38px" };
-const FIELD_FONT_SIZE = { base: "14px", md: "16px" };
+const FIELD_FONT_SIZE = { base: "14", md: "16" };
 const FIELD_BG = "rgba(255,255,255,0.70)";
 const FIELD_BORDER = "BlueText";
 

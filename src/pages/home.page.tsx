@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Flex, Grid, GridItem, Image, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Image, Text, useBreakpointValue } from "@chakra-ui/react";
 import { FaCamera, FaHouse, FaPaw } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.components";
@@ -8,31 +8,43 @@ import { formatGender } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
 import PhotoSearchModal from "../components/home/photoSearchModal.component";
 
+// Figma: fixed 240px cards pushed to both edges, 32px between rows. Capped at the design's
+// 1043px content width so wide screens don't spread the cards; left-aligned under the heading
+const CARD_GRID = {
+  maxW: "1043px",
+  templateColumns: { base: "repeat(2, auto)", lg: "repeat(4, 240px)" },
+  justifyContent: "space-between",
+  columnGap: { base: 3, md: 5 },
+  rowGap: { base: 3, md: "32px" },
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const { recommendedPets, isLoading, isError } = useRandomPets();
-  const displayPets = recommendedPets.slice(0, 4);
+  // Figma: 2 rows of 4 on desktop, 3 rows of 2 on mobile
+  const petCount = useBreakpointValue({ base: 6, lg: 8 }) ?? 6;
+  const displayPets = recommendedPets.slice(0, petCount);
   const [isPhotoSearchOpen, setIsPhotoSearchOpen] = useState(false);
 
   return (
     <Box width="100%">
       <Grid
         overflow="hidden"
-        bgGradient="BlueYellow"
+        bgGradient="HomeHero"
         pb={{ base: "90px", md: "150px" }}
         px={{ base: "30px", md: "9%"}}
         templateAreas={{
           base: `"title image" "Description Description" "buttons buttons"`,
           lg: `"title image" "Description image" "buttons image"`,
         }}
-        templateColumns={{ base: "1fr auto", md: "1fr 200px", lg: "1fr 400px" }}
+        templateColumns={{ base: "1fr auto", md: "1fr 200px", lg: "1fr 438px" }}
         columnGap={{ base: 4, lg: 10 }}
-        rowGap={{ base: 6, lg: 3 }}
+        rowGap={{ base: 6, lg: "17px" }}
         alignItems="center"
       >
         <GridItem area="title">
           <Text
-            fontSize={{ base: "32px", md: "56px", lg: "64px" }}
+            fontSize={{ base: "32", md: "56", lg: "60" }}
             color="Grey"
             fontWeight={500}
             lineHeight={{ base: "1.2", md: "1.1" }}
@@ -40,8 +52,8 @@ export default function Home() {
             Take me
           </Text>
           <Text
-            fontSize={{ base: "32px", md: "56px", lg: "64px" }}
-            color="BlueText"
+            fontSize={{ base: "32", md: "56", lg: "60" }}
+            color="TitleBlue"
             fontWeight={500}
             lineHeight={{ base: "1.2", md: "1.1" }}
           >
@@ -49,7 +61,7 @@ export default function Home() {
           </Text>
         </GridItem>
         <GridItem area="image" justifySelf={{ base: "end", lg: "center" }}>
-          <Box position="relative" width={{ base: "140px", md: "250px", lg: "400px" }} maxW="100%">
+          <Box position="relative" width={{ base: "140px", md: "250px", lg: "438px" }} maxW="100%">
             <Image
               src="/assets/images/cloud.png"
               alt=""
@@ -70,27 +82,32 @@ export default function Home() {
         </GridItem>
         <GridItem area="Description">
           <Text
-            color="LightGrey"
-            fontSize={{ base: "14px", lg: "lg" }}
-            maxW={{ lg: "420px" }}
+            color="GreyText"
+            fontSize={{ base: "14", lg: "20" }}
+            fontWeight={500}
+            maxW={{ lg: "533px" }}
           >
             Every pet deserves a place to call home. Search, connect, and adopt all in one place.
           </Text>
         </GridItem>
-        <GridItem area="buttons">
-          <Flex direction="row" wrap="wrap" gap={{ base: 2, sm: 3 }} align="center">
+        <GridItem area="buttons" pt={{ lg: "13px" }}>
+          <Flex direction="row" wrap="wrap" gap={{ base: 2, sm: 3, lg: 5 }} align="center">
             <S2SButton
               text="Adopt a Pet"
-              bgColor="Yellow"
+              bgColor="Orange"
               icon={<FaPaw />}
-              width={{ base: "48%", lg: "180px" }}
+              width={{ base: "48%", lg: "200px" }}
+              height={{ lg: "48px" }}
+              fontSize={{ lg: "20" }}
               onClick={() => navigate("/adopt")}
             />
             <S2SButton
               text="Rehome a Pet"
               bgColor="Blue"
               icon={<FaHouse />}
-              width={{ base: "48%", lg: "180px" }}
+              width={{ base: "48%", lg: "220px" }}
+              height={{ lg: "48px" }}
+              fontSize={{ lg: "20" }}
               onClick={() => navigate("/rehome")}
             />
           </Flex>
@@ -122,81 +139,96 @@ export default function Home() {
           maxW="1300px"
           direction="row"
           align="center"
-          justify="space-around"
+          justify="center"
           gap={{ base: 4, md: 10 }}
           zIndex={1}
           pt={"50px"}
         >
-          <Image
-            src="/assets/images/people_with_dog.png"
-            alt="Person walking dog"
-            width={{ base: "140px", md: "300px", lg: "350px" }}
-            maxW="100%"
-            flexShrink={0}
-          />
-          <Box flex="1" minW={0}>
+          <Box position="relative" flexShrink={0} width={{ base: "140px", md: "300px", lg: "424px" }} maxW="100%">
+            {/* yellow sun glow behind the illustration */}
+            <Box
+              position="absolute"
+              top="12%"
+              left="28%"
+              w="73%"
+              aspectRatio={1}
+              bg="GlowYellow"
+              borderRadius="full"
+              filter="blur(44.59px)"
+              pointerEvents="none"
+            />
+            <Image
+              src="/assets/images/people_with_dog.png"
+              alt="Person walking dog"
+              width="100%"
+              position="relative"
+            />
+          </Box>
+          <Box flex="1" minW={0} maxW={{ lg: "440px" }}>
             <Text
-              fontSize={{ base: "20px", md: "32px", lg: "48px" }}
+              fontSize={{ base: "20", md: "32", lg: "40" }}
               color="Grey"
+              fontWeight={500}
             >
               Find your match
-            </Text>
-            <Text
-              fontSize={{ base: "20px", md: "32px", lg: "48px" }}
-              color="Grey"
-            >
+              <Box as="br" />
               By Photo !
             </Text>
-            <Text mt={4} color="LightGrey" fontSize={{ base: "14px", md: "xl" }}>
+            <Text mt={{ base: 4, lg: "21px" }} color="GreyText" fontSize={{ base: "14", md: "20" }} fontWeight={500}>
               Share a photo of the pet you're looking for.
               <Box as="br" />
               We'll find them for you!
             </Text>
-            <Box mt={6}>
+            <Box mt={{ base: 6, lg: "32px" }}>
               <S2SButton
                 text="Upload Photo"
                 bgColor="Blue"
                 icon={<FaCamera />}
                 width="full"
+                height={{ lg: "48px" }}
+                fontSize={{ lg: "20" }}
                 onClick={() => setIsPhotoSearchOpen(true)}
               />
             </Box>
           </Box>
         </Flex>
       </Box>
+
+      {/* Recommended + What We Do share one continuous gradient in Figma */}
       <Box
         mt={{ base: "-20px", md: "-40px", lg: "-50px" }}
-        bgGradient="YellowBlue"
-        borderTopLeftRadius={{ base: "32px", md: "52px" }}
-        borderTopRightRadius={{ base: "32px", md: "52px" }}
+        bgGradient="HomeContent"
+        borderTopLeftRadius={{ base: "32px", md: "52px", lg: "80px" }}
+        borderTopRightRadius={{ base: "32px", md: "52px", lg: "80px" }}
         borderBottomLeftRadius="0"
         borderBottomRightRadius="0"
         px={{ base: "24px", md: "9%" }}
+        pt={{ base: 12, lg: "80px" }}
         pb={{ base: "30px", md: "56px" }}
       >
-        <Text color="Grey" fontSize={{ base: "22px", md: "32px" }} fontWeight="600" pb={6} pt={12}>
+        <Text color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600" pb={{ base: 6, lg: "32px" }}>
           Recommended
         </Text>
         {isLoading ? (
-          <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <S2SPetCardSkeleton key={i} width="100%" height="300px" />
+          <Grid {...CARD_GRID}>
+            {Array.from({ length: petCount }).map((_, i) => (
+              <S2SPetCardSkeleton key={i} width={{base: "169px", md: "240px"}} height={{base: "231px", md: "309px" }} />
             ))}
-          </SimpleGrid>
+          </Grid>
         ) : isError ? (
           <Flex minH="240px" align="center" justify="center">
-            <Text color="Grey" fontSize="md">
+            <Text color="Grey" fontSize="16">
               Unable to load recommended pets right now.
             </Text>
           </Flex>
         ) : displayPets.length === 0 ? (
           <Flex minH="400px" align="center" justify="center">
-            <Text color="Grey" fontSize="md">
+            <Text color="Grey" fontSize="16">
               No recommended pets available right now.
             </Text>
           </Flex>
         ) : (
-          <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }}>
+          <Grid {...CARD_GRID}>
             {displayPets.map((pet) => (
               <S2SPetCard
                 key={pet.pid}
@@ -211,34 +243,29 @@ export default function Home() {
                 onClick={() => navigate(`/pet-profile/${pet.pid}`)}
               />
             ))}
-          </SimpleGrid>
+          </Grid>
         )}
-      </Box>
-      <Box bg="LightBlue" px={{ base: "24px", md: "9%" }} py={{ base: "30px", md: "56px" }}>
-        <Text color="Grey" fontSize={{ base: "22px", md: "36px" }} fontWeight="600">
+
+        <Text mt={{ base: 12, lg: "112px" }} color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600">
           What We Do ?
         </Text>
-        <Flex direction={{ base: "column", lg: "row" }} align="center" gap={{ base: 6, md: 12 }} pt={10}>
-          <Box
-            bg="rgba(135, 207, 240, 0.7)"
-            borderRadius="50%"
-            w={{ base: "200px", md: "300px", lg: "350px" }}
-            h={{ base: "200px", md: "300px", lg: "350px" }}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            overflow="hidden"
+        <Flex direction={{ base: "column", lg: "row" }} align={{ base: "center", lg: "flex-start" }} gap={{ base: 6, lg: 0 }} pt={{ base: 6, lg: "32px" }}>
+          <Image
+            src="/assets/images/dog_high_five.png"
+            alt="Dog giving a high five"
+            w={{ base: "260px", md: "400px", lg: "556px" }}
+            maxW="100%"
+            aspectRatio={556 / 341}
+            objectFit="contain"
             flexShrink={0}
+          />
+          <Text
+            maxW={{ lg: "481px" }}
+            color="GreyText"
+            fontSize={{ base: "14", md: "20" }}
+            lineHeight="1.2"
+            fontWeight="500"
           >
-            <Image
-              src="/assets/images/people_with_dog.png"
-              alt="Pet section illustration"
-              w="85%"
-              h="85%"
-              objectFit="contain"
-            />
-          </Box>
-          <Text color="LightGrey" fontSize={{ base: "14px", md: "lg" }} lineHeight="1.35" fontWeight="500">
             We are a centralized pet adoption platform designed to make finding and adopting pets in Thailand easier, faster, and more reliable.
             <Box as="br" />
             <Box as="br" />
@@ -249,12 +276,14 @@ export default function Home() {
           </Text>
         </Flex>
 
-        <Text mt={{ base: 10, md: 12 }} color="Grey" fontSize={{ base: "22px", md: "36px" }} fontWeight="600">
-          Our Goals
-        </Text>
-        <Text mt={5} color="LightGrey" fontSize={{ base: "14px", md: "lg" }} whiteSpace="pre-line" lineHeight="1.35" fontWeight="500">
-          Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
-        </Text>
+        <Box maxW={{ lg: "999px" }} mx={{ lg: "auto" }} mt={{ base: 10, lg: "32px" }}>
+          <Text color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600">
+            Our Goals
+          </Text>
+          <Text mt={{ base: 5, lg: "30px" }} color="GreyText" fontSize={{ base: "14", md: "20" }} lineHeight="1.2" fontWeight="500">
+            Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
+          </Text>
+        </Box>
       </Box>
 
       <PhotoSearchModal

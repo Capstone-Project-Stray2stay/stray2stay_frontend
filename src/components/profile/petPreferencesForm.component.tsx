@@ -5,19 +5,15 @@ import PetPreferencesFields from "./petPreferencesFields.component";
 import type { PetPreferenceDraft } from "../../types/profile.type";
 
 export default function PetPreferencesForm({
-    dog,
-    cat,
-    onDogChange,
-    onCatChange,
+    preferences,
+    onChange,
     isEditing,
     saving,
     onToggleEdit,
     onSave,
 }: {
-    dog: PetPreferenceDraft;
-    cat: PetPreferenceDraft;
-    onDogChange: (patch: Partial<PetPreferenceDraft>) => void;
-    onCatChange: (patch: Partial<PetPreferenceDraft>) => void;
+    preferences: PetPreferenceDraft[];
+    onChange: (preferences: PetPreferenceDraft[]) => void;
     isEditing: boolean;
     saving: boolean;
     onToggleEdit: () => void;
@@ -34,10 +30,8 @@ export default function PetPreferencesForm({
             align="flex-start"
         >
             <PetPreferencesFields
-                dog={dog}
-                cat={cat}
-                onDogChange={onDogChange}
-                onCatChange={onCatChange}
+                preferences={preferences}
+                onChange={onChange}
                 disabled={!isEditing}
                 headerAction={
                     <EditSaveButton

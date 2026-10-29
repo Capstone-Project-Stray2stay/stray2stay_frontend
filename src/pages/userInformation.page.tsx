@@ -9,7 +9,9 @@ import { useUpdateUser, useUserInfo } from "../hooks/query/user.query";
 import { geocodeAddressAPI } from "../services/apis/address.api";
 
 import { joinAddress, joinAddressForGeocode } from "../utils/address.util";
-import { EMPTY_PERSONAL_INFO, EMPTY_PET_PREFERENCE } from "../types/profile.type";
+import { serverMessage } from "../utils/error.util";
+import { toPreferencePayload } from "../services/apis/user.api";
+import { EMPTY_PERSONAL_INFO } from "../types/profile.type";
 import type { PersonalInfoDraft, PetPreferenceDraft } from "../types/profile.type";
 
 import PersonalInfoFields from "../components/profile/personalInfoFields.component";
@@ -17,21 +19,32 @@ import PetPreferencesFields from "../components/profile/petPreferencesFields.com
 import { personalInfoSchema } from "../validators/profile.validator";
 
 export default function UserInformation() {
-    const { personalInfo, loading } = useUserInfo();
+    const { personalInfo, preferences, loading } = useUserInfo();
 
     if (loading) return <Box></Box>;
 
-    return <UserInformationForm initialPersonalInfo={personalInfo ?? EMPTY_PERSONAL_INFO} />;
+    return (
+        <UserInformationForm
+            initialPersonalInfo={personalInfo ?? EMPTY_PERSONAL_INFO}
+            initialPreferences={preferences ?? []}
+        />
+    );
 }
 
-function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: PersonalInfoDraft }) {
+function UserInformationForm({
+    initialPersonalInfo,
+    initialPreferences,
+}: {
+    initialPersonalInfo: PersonalInfoDraft;
+    initialPreferences: PetPreferenceDraft[];
+}) {
     const navigate = useNavigate();
 
     const [personalInfo, setPersonalInfo] = useState<PersonalInfoDraft>(initialPersonalInfo);
-    const [dogPreference, setDogPreference] = useState<PetPreferenceDraft>(EMPTY_PET_PREFERENCE);
-    const [catPreference, setCatPreference] = useState<PetPreferenceDraft>(EMPTY_PET_PREFERENCE);
+    const [preferences, setPreferences] = useState<PetPreferenceDraft[]>(initialPreferences);
     const [showIncompleteWarning, setShowIncompleteWarning] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
+    const [saveError, setSaveError] = useState("");
 
     const updateUserMutation = useUpdateUser();
     const updateNewUserStatusMutation = useUpdateNewUserStatus();
@@ -41,6 +54,8 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
             setShowIncompleteWarning(true);
             return;
         }
+        setSaveError("");
+        const onError = (error: unknown) => setSaveError(`Couldn't save your information: ${serverMessage(error)}`);
 
         const address = joinAddress(personalInfo);
 
@@ -60,21 +75,16 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
                 address,
                 addressLat: lat,
                 addressLong: long,
-                dogBreed: dogPreference.breed,
-                dogColor: dogPreference.color,
-                dogAgeGroup: dogPreference.ageGroup,
-                dogGender: dogPreference.gender,
-                catBreed: catPreference.breed,
-                catColor: catPreference.color,
-                catAgeGroup: catPreference.ageGroup,
-                catGender: catPreference.gender,
+                preferences: toPreferencePayload(preferences),
             },
             {
                 onSuccess: () => {
                     updateNewUserStatusMutation.mutate(undefined, {
                         onSuccess: () => navigate("/"),
+                        onError,
                     });
                 },
+                onError,
             }
         );
     };
@@ -84,7 +94,8 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
             <S2SPageTitle title="User Information" />
 
             <Flex justify="center" w="100%">
-                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="628px">
+                {/* Figma: 788px form (128px in from each side of the 1043px content) */}
+                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="788px">
                     <VStack gap="48px" align="stretch">
                         <PersonalInfoFields
                             value={personalInfo}
@@ -93,24 +104,20 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
                             }
                         />
 
-                        <PetPreferencesFields
-                            dog={dogPreference}
-                            cat={catPreference}
-                            onDogChange={(patch) =>
-                                setDogPreference((current) => ({ ...current, ...patch }))
-                            }
-                            onCatChange={(patch) =>
-                                setCatPreference((current) => ({ ...current, ...patch }))
-                            }
-                        />
+                        <PetPreferencesFields preferences={preferences} onChange={setPreferences} />
                     </VStack>
 
-                    <Flex justify="flex-end">
+                    <Flex justify="flex-end" align="center" gap="16px">
+                        {saveError && (
+                            <Text fontSize="14" color="red.500" textAlign="right">
+                                {saveError}
+                            </Text>
+                        )}
                         <S2SButton
                             text="Finish"
-                            width="134px"
-                            height="45px"
-                            fontSize="20px"
+                            width="140px"
+                            height="44px"
+                            fontSize="20"
                             loading={resolvingLocation || updateUserMutation.isPending || updateNewUserStatusMutation.isPending}
                             onClick={handleFinish}
                         />
@@ -128,10 +135,10 @@ function UserInformationForm({ initialPersonalInfo }: { initialPersonalInfo: Per
                     <Dialog.Positioner>
                         <Dialog.Content maxW="380px" borderRadius="30px" p="0">
                             <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
-                                <Text fontSize="20px" fontWeight="600" color="Grey" textAlign="center">
+                                <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                     Please fill in your information
                                 </Text>
-                                <Text fontSize="14px" color="GreyText" textAlign="center">
+                                <Text fontSize="14" color="GreyText" textAlign="center">
                                     All personal details, including your address, are required before you can continue.
                                 </Text>
                                 <S2SButton

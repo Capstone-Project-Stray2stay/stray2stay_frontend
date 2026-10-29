@@ -94,7 +94,7 @@ export default function Register() {
                             onChange={handleChange("ConfirmPassword")}
                         />
                         {error && (
-                            <Text color="red.500" fontSize="sm">
+                            <Text color="red.500" fontSize="14">
                                 {error}
                             </Text>
                         )}
@@ -103,12 +103,12 @@ export default function Register() {
                 </Box>
 
                 <Flex justify="center" align="center" gap={1}>
-                    <Text fontSize="sm" color="LightGrey">
+                    <Text fontSize="14" color="LightGrey">
                         Already have an account?{" "}
                     </Text>
                     <Link to="/login">
                         <Text
-                            fontSize="sm"
+                            fontSize="14"
                             color="BlueText"
                             fontWeight="medium"
                             _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}

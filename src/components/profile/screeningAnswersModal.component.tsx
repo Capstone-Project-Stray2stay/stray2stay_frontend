@@ -45,7 +45,7 @@ function AnswerRadioGroup({
                         color="BlueText"
                         _checked={{ bg: "transparent", borderColor: "BlueText", color: "BlueText" }}
                     />
-                    <RadioGroup.ItemText fontSize="16px" fontWeight="500" color="Grey">
+                    <RadioGroup.ItemText fontSize="16" fontWeight="500" color="Grey">
                         {option.label}
                     </RadioGroup.ItemText>
                 </RadioGroup.Item>
@@ -66,7 +66,7 @@ function TextAnswer({ value, full }: { value: string; full?: boolean }) {
             minH="36px"
             px="20px"
             py="10px"
-            fontSize="16px"
+            fontSize="16"
             color="Grey"
             _placeholder={{ color: "GreyMuted" }}
             bg="rgba(255,255,255,0.70)"
@@ -185,17 +185,17 @@ export default function ScreeningAnswersModal({
                             align="stretch"
                         >
                             <VStack gap="21px" maxW="626px" alignSelf="center">
-                                <Text fontSize="24px" fontWeight="600" color="Grey" textAlign="center">
+                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize="16px" fontWeight="500" color="GreyText" textAlign="center">
+                                <Text fontSize="16" fontWeight="500" color="GreyText" textAlign="center">
                                     {adopterName}&apos;s responses, shared to assist in the adoption
                                     approval process.
                                 </Text>
                             </VStack>
 
                             {answers === undefined ? (
-                                <Text fontSize="16px" color="GreyText" textAlign="center" py="40px">
+                                <Text fontSize="16" color="GreyText" textAlign="center" py="40px">
                                     No screening answers were submitted with this request.
                                 </Text>
                             ) : (
@@ -208,7 +208,7 @@ export default function ScreeningAnswersModal({
                                 >
                                     {SCREENING_SECTIONS.map((section) => (
                                         <VStack key={section.title} align="stretch" gap="20px">
-                                            <Text fontSize="16px" color="black">
+                                            <Text fontSize="16" color="black">
                                                 {section.title}
                                             </Text>
 
@@ -220,7 +220,7 @@ export default function ScreeningAnswersModal({
                                                         gap="12px"
                                                     >
                                                         {question.text && (
-                                                            <Text fontSize="16px" color="black">
+                                                            <Text fontSize="16" color="black">
                                                                 {question.number} {question.text}
                                                             </Text>
                                                         )}
@@ -236,7 +236,7 @@ export default function ScreeningAnswersModal({
 
                                     {answers.CustomAnswers && answers.CustomAnswers.length > 0 && (
                                         <VStack align="stretch" gap="20px">
-                                            <Text fontSize="16px" color="black">
+                                            <Text fontSize="16" color="black">
                                                 Additional Questions
                                             </Text>
                                             <VStack align="stretch" gap="25px" px="25px">
@@ -247,7 +247,7 @@ export default function ScreeningAnswersModal({
                                                         gap="12px"
                                                         w="100%"
                                                     >
-                                                        <Text fontSize="16px" color="black">
+                                                        <Text fontSize="16" color="black">
                                                             {answer.questionText}
                                                         </Text>
                                                         <CustomAnswerView answer={answer} />

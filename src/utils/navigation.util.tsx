@@ -40,17 +40,18 @@ export function NavItem({ icon, label, active = false, onClick }: {
             onClick={onClick}
             cursor="pointer"
             w="full"
-            px={{ base: 8, md: 10, lg: 5 }}
-            py={3}
-            gap={3}
+            h="52px"
+            px={{ base: 8, md: 10, lg: "22%" }}
+            gap="11px"
             position="relative"
-            bg={active ? "blue.50" : "transparent"}
-            color={active ? "Blue" : "Grey"}
-            _hover={{ bg: active ? "blue.50" : "gray.50" }}
+            borderRightRadius="5px"
+            bg={active ? "rgba(198, 231, 247, 0.25)" : "transparent"}
+            color={active ? "BlueText" : "Grey"}
+            _hover={{ bg: active ? "rgba(198, 231, 247, 0.25)" : "gray.50" }}
             transition="all 0.15s ease"
         >
-            <Icon as={icon} boxSize={5} />
-            <Text fontSize="md" fontWeight="medium">
+            <Icon as={icon} boxSize="18px" flexShrink={0} />
+            <Text fontSize="18" fontWeight="medium" whiteSpace="nowrap">
                 {label}
             </Text>
 
@@ -58,12 +59,11 @@ export function NavItem({ icon, label, active = false, onClick }: {
                 <Box
                     position="absolute"
                     right={0}
-                    top="50%"
-                    transform="translateY(-50%)"
-                    w="4px"
+                    top={0}
+                    w="5.37px"
                     h="100%"
-                    bg="Blue"
-                    borderRadius="full"
+                    bg="SkyBlue"
+                    borderRadius="25px"
                 />
             )}
         </HStack>

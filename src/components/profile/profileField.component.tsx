@@ -4,7 +4,7 @@ import { Flex, Text } from "@chakra-ui/react";
 export default function ProfileField({
     label,
     labelColor = "BlueText",
-    labelSize = "16px",
+    labelSize = "16",
     children,
 }: {
     label: string;

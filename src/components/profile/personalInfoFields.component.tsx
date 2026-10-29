@@ -28,7 +28,7 @@ function AddressSelect({
 }) {
     return (
         <Box flex="1 1 134px" minW="120px" maxW={{md: "180px"}}>
-            <ProfileField label={label} labelColor="GreyMuted" labelSize="14px">
+            <ProfileField label={label} labelColor="GreyMuted" labelSize="14">
                 <S2SDropDown
                     key={data.length === 0 ? "loading" : "loaded"}
                     {...detailDropDownStyle}
@@ -80,7 +80,7 @@ export default function PersonalInfoFields({
     return (
         <VStack align="stretch" gap="16px" w="100%" minW={0}>
             <Flex align="center" justify="space-between">
-                <Text fontSize={{base: "18px", md: "24px"}} fontWeight="600" color="Grey">
+                <Text fontSize={{base: "18", md: "24"}} fontWeight="600" color="Grey">
                     Personal Information
                 </Text>
                 {headerAction}
@@ -150,7 +150,7 @@ export default function PersonalInfoFields({
                             }}
                         />
                         <Box flex="1 1 134px" minW="120px" maxW={{md: "180px"}}>
-                            <ProfileField label="Street" labelColor="GreyMuted" labelSize="14px">
+                            <ProfileField label="Street" labelColor="GreyMuted" labelSize="14">
                                 <S2SInput
                                     {...detailInputStyle}
                                     value={value.street}

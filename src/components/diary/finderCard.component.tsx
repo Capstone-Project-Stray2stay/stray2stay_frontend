@@ -26,17 +26,17 @@ export default function FinderCard({ pet }: { pet: DiaryPet }) {
                 </Avatar.Root>
 
                 <VStack align="flex-start" gap={{ base: "5.73px", md: "7px" }} minW="0">
-                    <Text fontSize={{ base: "16px", md: "20px" }} fontWeight="600" color="Grey" truncate>
+                    <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey" truncate>
                         {pet.counterpartName}
                     </Text>
-                    <Text fontSize={{ base: "14px", md: "15px" }} fontWeight="500" color="GreyMuted">
+                    <Text fontSize={{ base: "14", md: "15" }} fontWeight="500" color="GreyMuted">
                         {pet.counterpartRole}
                     </Text>
                     {/* Plenty of accounts have never filled in a phone number. */}
                     {pet.counterpartPhone && (
                         <Flex align="center" gap="8px">
                             <Icon as={IoCall} boxSize={{ base: "11.45px", md: "14px" }} color="GreyText" />
-                            <Text fontSize={{ base: "14px", md: "15px" }} fontWeight="500" color="GreyMuted">
+                            <Text fontSize={{ base: "14", md: "15" }} fontWeight="500" color="GreyMuted">
                                 {pet.counterpartPhone}
                             </Text>
                         </Flex>

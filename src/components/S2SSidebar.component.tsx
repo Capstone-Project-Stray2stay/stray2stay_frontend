@@ -52,17 +52,20 @@ export default function S2SSidebar() {
             position="fixed"
             top={0}
             left={0}
-            borderRadius="0 30px 30px 0"
-            py={4}
+            borderRadius="0 20px 20px 0"
+            boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)"
+            pt="71px"
+            pb={4}
             overflow="hidden"
         >
-            <Flex p={4} align="center">
-                <Heading color="Grey" fontSize="lg">
-                    Stray2Stay
+            <Flex px="22%" align="center">
+                <Heading color="Grey" fontSize="20" fontWeight="600">
+                    Stray2stay
                 </Heading>
             </Flex>
 
-            <VStack gap={2} align="stretch" mt={4}>
+            {/* Figma: highlight rows sit edge to edge, 32px below the logo */}
+            <VStack gap={0} align="stretch" mt="32px">
                 {NAV_ITEMS.map((item) => (
                     <NavItem
                         key={item.key}
