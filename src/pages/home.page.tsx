@@ -17,7 +17,7 @@ const CARD_GRID = {
   columnGap: { base: 3, md: 5 },
   rowGap: { base: 3, md: "32px" },
 };
-
+ 
 export default function Home() {
   const navigate = useNavigate();
   const { recommendedPets, isLoading, isError } = useRandomPets();
@@ -29,6 +29,7 @@ export default function Home() {
   return (
     <Box width="100%">
       <Grid
+        position="relative"
         overflow="hidden"
         bgGradient="HomeHero"
         pb={{ base: "90px", md: "150px" }}
@@ -42,7 +43,7 @@ export default function Home() {
         rowGap={{ base: 6, lg: "17px" }}
         alignItems="center"
       >
-        <GridItem area="title">
+        <GridItem area="title" position="relative" zIndex={1}>
           <Text
             fontSize={{ base: "32", md: "56", lg: "60" }}
             color="Grey"
@@ -60,17 +61,8 @@ export default function Home() {
             Home.
           </Text>
         </GridItem>
-        <GridItem area="image" justifySelf={{ base: "end", lg: "center" }}>
+        <GridItem area="image" justifySelf={{ base: "end", lg: "center" }} position="relative" zIndex={1}>
           <Box position="relative" width={{ base: "140px", md: "250px", lg: "438px" }} maxW="100%">
-            <Image
-              src="/assets/images/cloud.png"
-              alt=""
-              position="absolute"
-              left={{ base: "90px", md: "175px", lg: "370px" }}
-              width={{ base: "80px", md: "150px", lg: "150px" }}
-              zIndex={0}
-              pointerEvents="none"
-            />
             <Image
               src="/assets/images/house.png"
               alt="House illustration"
@@ -80,7 +72,7 @@ export default function Home() {
             />
           </Box>
         </GridItem>
-        <GridItem area="Description">
+        <GridItem area="Description" position="relative" zIndex={1}>
           <Text
             color="GreyText"
             fontSize={{ base: "14", lg: "20" }}
@@ -90,7 +82,7 @@ export default function Home() {
             Every pet deserves a place to call home. Search, connect, and adopt all in one place.
           </Text>
         </GridItem>
-        <GridItem area="buttons" pt={{ lg: "13px" }}>
+        <GridItem area="buttons" pt={{ lg: "13px" }} position="relative" zIndex={1}>
           <Flex direction="row" wrap="wrap" gap={{ base: 2, sm: 3, lg: 5 }} align="center">
             <S2SButton
               text="Adopt a Pet"
@@ -116,9 +108,19 @@ export default function Home() {
           src="/assets/images/cloud.png"
           alt=""
           position="absolute"
-          top={{ base: "290px", md: "310px", lg: "250px" }}
-          left={{ base: "0px", md: "0px", lg: "12%" }}
-          width={{ base: "80px", md: "150px", lg: "150px" }}
+          top="0px"
+          right="0px"
+          width={{ base: "80px", md: "120px", lg: "135px" }}
+          zIndex={0}
+          pointerEvents="none"
+        />
+        <Image
+          src="/assets/images/cloud.png"
+          alt=""
+          position="absolute"
+          top={{ base: "230px", md: "240px", lg: "260px" }}
+          left={{ base: "16px", md: "0px", lg: "0px" }}
+          width={{ base: "60px", md: "100px", lg: "120px" }}
           zIndex={0}
           pointerEvents="none"
           transform="scaleX(-1)"
@@ -126,6 +128,8 @@ export default function Home() {
       </Grid>
 
       <Box
+        position="relative"
+        zIndex={1}
         mt={{ base: "-35px", md: "-85px" }}
         bg="LightBlue"
         px={{ base: "30px", md: "9%", xl: "18%" }}
@@ -246,45 +250,57 @@ export default function Home() {
           </Grid>
         )}
 
-        <Text mt={{ base: 12, lg: "112px" }} color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600">
-          What We Do ?
-        </Text>
-        <Flex direction={{ base: "column", lg: "row" }} align={{ base: "center", lg: "flex-start" }} gap={{ base: 6, lg: 0 }} pt={{ base: 6, lg: "32px" }}>
-          <Image
-            src="/assets/images/dog_high_five.png"
-            alt="Dog giving a high five"
-            w={{ base: "260px", md: "400px", lg: "556px" }}
-            maxW="100%"
-            aspectRatio={556 / 341}
-            objectFit="contain"
-            flexShrink={0}
-          />
-          <Text
-            maxW={{ lg: "481px" }}
-            color="GreyText"
-            fontSize={{ base: "14", md: "20" }}
-            lineHeight="1.2"
-            fontWeight="500"
-          >
-            We are a centralized pet adoption platform designed to make finding and adopting pets in Thailand easier, faster, and more reliable.
-            <Box as="br" />
-            <Box as="br" />
-            Our platform helps solve common problems in pet adoption, including scattered information across social media, difficulty finding suitable pets, and lack of organized pet data. By bringing everything into one place, users can search, post, and connect with confidence.
-            <Box as="br" />
-            <Box as="br" />
-            We also integrate AI-powered pet breed classification to help users identify pet breeds from uploaded images, improving pet discovery and supporting more accurate pet information.
-          </Text>
-        </Flex>
+          <Box as="section" aria-labelledby="what-we-do-title" mt={{ base: 12, lg: "112px" }} maxW="1180px" mx="auto">
+            <Text
+              id="what-we-do-title"
+              as="h2"
+              color="Grey"
+              fontSize={{ base: "28px", md: "30px", lg: "30px" }}
+              fontWeight="600"
+              lineHeight="1.2"
+            >
+              What We Do ?
+            </Text>
 
-        <Box maxW={{ lg: "999px" }} mx={{ lg: "auto" }} mt={{ base: 10, lg: "32px" }}>
-          <Text color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600">
-            Our Goals
-          </Text>
-          <Text mt={{ base: 5, lg: "30px" }} color="GreyText" fontSize={{ base: "14", md: "20" }} lineHeight="1.2" fontWeight="500">
-            Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
-          </Text>
+            <Grid
+              templateColumns={{ base: "1fr", lg: "minmax(0, 1fr) minmax(0, 1fr)" }}
+              gap={{ base: 5, md: 7, lg: 10 }}
+              mt={{ base: 5, md: 6 }}
+              alignItems="center"
+            >
+              <Flex minH={{ base: "210px", md: "280px", lg: "330px" }} align="center" justify="center">
+                <Image
+                  src="/assets/images/dog_high_five.png"
+                  alt="Dog giving a high five"
+                  w="100%"
+                  maxW={{ base: "350px", lg: "470px" }}
+                  objectFit="contain"
+                />
+              </Flex>
+
+              <Box maxW="440px">
+                <Text color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+                  We are a centralized pet adoption platform designed to make finding and adopting pets in Thailand easier, faster, and more reliable.
+                </Text>
+                <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+                  Our platform helps solve common problems in pet adoption, including scattered information across social media, difficulty finding suitable pets, and lack of organized pet data. By bringing everything into one place, users can search, post, and connect with confidence.
+                </Text>
+                <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+                  We also integrate AI-powered pet breed classification to help users identify pet breeds from uploaded images, improving pet discovery and supporting more accurate pet information.
+                </Text>
+              </Box>
+            </Grid>
+
+            <Box mt={{ base: 8, lg: 5 }} ml={{ base: 0, lg: "100px" }} maxW={{ lg: "860px" }}>
+              <Text as="h3" color="Grey" fontSize={{ base: "27px", md: "30px" }} fontWeight="600" lineHeight="1.2">
+                Our Goals
+              </Text>
+              <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+                Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
+              </Text>
+            </Box>
+          </Box>
         </Box>
-      </Box>
 
       <PhotoSearchModal
         isOpen={isPhotoSearchOpen}
