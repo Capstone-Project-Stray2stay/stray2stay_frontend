@@ -113,6 +113,13 @@ const config = defineConfig({
       fontFamily: "'Montserrat', sans-serif",
       overflowX: "hidden"
     },
+    body: {
+      md: {
+        zoom: "0.9",
+        width: "111.111vw",
+        minHeight: "111.111vh",
+      },
+    },
     "*": {
       WebkitTapHighlightColor: "transparent",
     },
