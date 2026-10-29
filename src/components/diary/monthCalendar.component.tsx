@@ -27,7 +27,7 @@ export default function MonthCalendar({
             borderRadius="16px"
         >
             <Flex justify="space-between" align="center">
-                <Text fontSize={{ base: "16px", md: "20px" }} fontWeight="600" color="Grey">
+                <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey">
                     {MONTHS_LONG[viewMonth.getMonth()]} {viewMonth.getFullYear()}
                 </Text>
                 <Flex gap="16px">
@@ -62,7 +62,7 @@ export default function MonthCalendar({
                         key={label}
                         w={{ base: "27.56px", md: "34px" }}
                         textAlign="center"
-                        fontSize={{ base: "12px", md: "14px" }}
+                        fontSize={{ base: "12", md: "14" }}
                         fontWeight="500"
                         color="GreyText"
                     >
@@ -100,7 +100,7 @@ export default function MonthCalendar({
                                     as="button"
                                     w={{ base: "27.56px", md: "34px" }}
                                     textAlign="center"
-                                    fontSize={{ base: "12px", md: "14px" }}
+                                    fontSize={{ base: "12", md: "14" }}
                                     fontWeight={selected ? "600" : "500"}
                                     color={selected ? "BlueText" : "Grey"}
                                     cursor="pointer"

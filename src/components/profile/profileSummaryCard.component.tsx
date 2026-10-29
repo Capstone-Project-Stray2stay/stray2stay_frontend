@@ -31,7 +31,7 @@ function MenuItem({
             _hover={{ color: "BlueText" }}
         >
             <Icon as={icon} boxSize="24px" />
-            <Text fontSize={{base: "16px", md: "18px"}} fontWeight="600" whiteSpace="nowrap">
+            <Text fontSize={{base: "16", md: "18"}} fontWeight="600" whiteSpace="nowrap">
                 {label}
             </Text>
         </Button>
@@ -72,7 +72,7 @@ export default function ProfileSummaryCard({
         >
             <Flex position="relative">
                 <Avatar.Root boxSize={{base: "80px", md: "162px"}}>
-                    <Avatar.Fallback name={name} fontSize={"36px"} />
+                    <Avatar.Fallback name={name} fontSize={"36"} />
                     <Avatar.Image src={imageURL} />
                 </Avatar.Root>
                 <input
@@ -102,7 +102,7 @@ export default function ProfileSummaryCard({
                 </IconButton>
             </Flex>
             <Box>
-                <Text fontSize={{base: "18px", md: "24px"}} fontWeight="600" color="Grey" textAlign={{base: "left", md: "center"}}>
+                <Text fontSize={{base: "18", md: "24"}} fontWeight="600" color="Grey" textAlign={{base: "left", md: "center"}}>
                     {name}
                 </Text>
 

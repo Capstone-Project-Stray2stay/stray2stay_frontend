@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Box, Drawer, Flex, Image, Portal, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { useMemo, useState } from "react";
+import { Box, Drawer, Flex, Grid, Image, Portal, Text, VStack } from "@chakra-ui/react";
 import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
 import { LuFilter } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,6 +25,19 @@ import PhotoSearchModal from "../components/home/photoSearchModal.component";
 import type { PhotoSearchResult } from "../components/home/photoSearchModal.component";
 
 const PAGE_SIZE = 16;
+
+// Figma filter controls: frosted white pill with a soft blue-grey shadow
+const FILTER_BG = "rgba(255, 255, 255, 0.80)";
+const FILTER_SHADOW = "0px 4px 20px rgba(201, 220, 225, 0.20)";
+
+// Figma: fixed 240px cards pushed to both edges, 32px between rows
+const CARD_GRID = {
+    templateColumns: { base: "repeat(2, auto)", lg: "repeat(4, 240px)" },
+    justifyContent: "space-between",
+    columnGap: { base: 3, md: 5 },
+    rowGap: { base: 3, md: "32px" },
+    mt: "64px",
+};
 
 export default function Adopt() {
     const navigate = useNavigate();
@@ -76,7 +89,12 @@ export default function Adopt() {
     };
 
     const debouncedKeyword = useDebouncedValue(keyword.trim(), 400);
-    useEffect(() => setPage(1), [debouncedKeyword]);
+    // Reset to page 1 during render (not in an effect) so the first query for a new keyword already asks for page 1
+    const [prevKeyword, setPrevKeyword] = useState(debouncedKeyword);
+    if (debouncedKeyword !== prevKeyword) {
+        setPrevKeyword(debouncedKeyword);
+        setPage(1);
+    }
 
     const { breedItems, loading: breedsLoading } = useAdoptBreeds(category);
     const breedOptions = useMemo(
@@ -130,12 +148,16 @@ export default function Adopt() {
 
     return (
         <Box width="100%" pb="64px" px={{ base: "24px", md: "9%" }}>
+            {/* The header spans the full width like every other page */}
             <S2SPageTitle title="Adopt a Pet" />
 
+            {/* Figma content is 1043px wide (1440px frame); past that, the space-between filter row and
+                card grid would keep spreading, so everything below the header is capped and centred */}
+            <Box maxW="1043px" mx="auto">
             <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: "64px" }}>
-                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "28px", md: "36px"}} />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "28px", md: "36px"}} />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/paw.png" alt="All" boxSize={{base: "28px", md: "36px"}} />} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/paw.png" alt="All" boxSize={{base: "28px", md: "40px"}} objectFit="contain" />} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
             </Flex>
 
             <Flex display={{ base: "flex", md: "none" }} gap="10px" mt="24px" align="center" justify="center" wrap="wrap">
@@ -162,62 +184,107 @@ export default function Adopt() {
                 <S2SIconButton icon={<LuFilter color="gray" />} ariaLabel="Filters" bgColor="White" onClick={() => setFilterDrawerOpen(true)} />
             </Flex>
 
-            <Flex display={{ base: "none", md: "flex" }} gap="18px" mt="32px" align="center" justify="center" wrap="wrap">
-                <Box flex={1} maxW="700px" display="flex" gap="8px">
+            <Flex display={{ base: "none", md: "flex" }} gap="18px" mt="32px" align="stretch" justify="center">
+                <Box flex={1} maxW="784px" display="flex">
                     <S2SInput
                         placeholder="Search by keyword ( e.g. black, orange )"
-                        endIcon={<IoSearchOutline size={20}/>}
+                        endIcon={<IoSearchOutline size={24} color="#7E7E7E" />}
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
+                        h="48px"
+                        ps="24px"
+                        pe="56px"
+                        fontSize="20"
+                        fontWeight="500"
+                        color="Grey"
+                        bg={FILTER_BG}
+                        borderColor="transparent"
+                        boxShadow="0px 3.46px 17.3px rgba(201, 220, 225, 0.20)"
+                        _placeholder={{ color: "GreyText" }}
                     />
                 </Box>
-                <S2SIconButton icon={<IoCameraOutline color="Grey" />} ariaLabel="Search by photo" bgColor="White" onClick={() => setPhotoSearchOpen(true)} />
+                <S2SIconButton
+                    icon={<IoCameraOutline size={26} />}
+                    ariaLabel="Search by photo"
+                    bgColor="White"
+                    iconColor="GreyText"
+                    boxSize="48px"
+                    onClick={() => setPhotoSearchOpen(true)}
+                />
             </Flex>
-            <Flex display={{ base: "none", md: "flex" }} justify="center">
-                <Flex justify="space-between" mt="32px" wrap="wrap" gap={4}>
-                    <S2SDropDown
-                        key={`breed-${category}-${breedsLoading ? "loading" : "loaded"}`}
-                        placeholder="Breed"
-                        width="190px"
-                        data={breedOptions}
-                        value={breed}
-                        onValueChange={handleBreedChange}
-                    />
-                    <S2SDropDown
-                        key={`color-${breed}-${colorsLoading ? "loading" : "loaded"}`}
-                        placeholder="Color"
-                        width="190px"
-                        data={colorOptions}
-                        value={color}
-                        onValueChange={handleColorChange}
-                        disabled={breed === ""}
-                    />
-                    <S2SDropDown
-                        placeholder="Gender"
-                        width="190px"
-                        data={genderOptions}
-                        value={gender}
-                        onValueChange={handleGenderChange}
-                    />
-                    <S2SDropDown
-                        placeholder="Age Group"
-                        width="190px"
-                        data={ageGroupOptions}
-                        value={ageGroup}
-                        onValueChange={handleAgeGroupChange}
-                    />
-                    <S2SDropDown
-                        key={`location-${provincesLoading ? "loading" : "loaded"}`}
-                        placeholder="Location"
-                        width="190px"
-                        data={locationOptions}
-                        value={location}
-                        onValueChange={handleLocationChange}
-                    />
-                </Flex>
+            <Flex display={{ base: "none", md: "flex" }} justify="space-between" mt="32px" wrap="wrap" gap={4}>
+                <S2SDropDown
+                    key={`breed-${category}-${breedsLoading ? "loading" : "loaded"}`}
+                    placeholder="Breed"
+                    width="190px"
+                    height="40px"
+                    fontSize="20"
+                    bg={FILTER_BG}
+                    borderColor="transparent"
+                    boxShadow={FILTER_SHADOW}
+                    placeholderColor="GreyText"
+                    data={breedOptions}
+                    value={breed}
+                    onValueChange={handleBreedChange}
+                />
+                <S2SDropDown
+                    key={`color-${breed}-${colorsLoading ? "loading" : "loaded"}`}
+                    placeholder="Color"
+                    width="190px"
+                    height="40px"
+                    fontSize="20"
+                    bg={FILTER_BG}
+                    borderColor="transparent"
+                    boxShadow={FILTER_SHADOW}
+                    placeholderColor="GreyText"
+                    data={colorOptions}
+                    value={color}
+                    onValueChange={handleColorChange}
+                    disabled={breed === ""}
+                />
+                <S2SDropDown
+                    placeholder="Gender"
+                    width="190px"
+                    height="40px"
+                    fontSize="20"
+                    bg={FILTER_BG}
+                    borderColor="transparent"
+                    boxShadow={FILTER_SHADOW}
+                    placeholderColor="GreyText"
+                    data={genderOptions}
+                    value={gender}
+                    onValueChange={handleGenderChange}
+                />
+                <S2SDropDown
+                    placeholder="Age Group"
+                    width="190px"
+                    height="40px"
+                    fontSize="20"
+                    bg={FILTER_BG}
+                    borderColor="transparent"
+                    boxShadow={FILTER_SHADOW}
+                    placeholderColor="GreyText"
+                    data={ageGroupOptions}
+                    value={ageGroup}
+                    onValueChange={handleAgeGroupChange}
+                />
+                <S2SDropDown
+                    key={`location-${provincesLoading ? "loading" : "loaded"}`}
+                    placeholder="Location"
+                    width="190px"
+                    height="40px"
+                    fontSize="20"
+                    bg={FILTER_BG}
+                    borderColor="transparent"
+                    boxShadow={FILTER_SHADOW}
+                    placeholderColor="GreyText"
+                    data={locationOptions}
+                    value={location}
+                    onValueChange={handleLocationChange}
+                />
             </Flex>
-            <Flex display={{ base: "none", md: "flex" }} justify="flex-end" mt="32px">
-                <S2SButton text="Clear" bgColor="Blue" onClick={resetFilters} />
+            <Flex display={{ base: "none", md: "flex" }} justify="flex-end" mt="16px">
+                <S2SButton text="Clear" bgColor="Blue" width="120px" height="48px" fontSize="20" onClick={resetFilters} />
             </Flex>
 
             <Drawer.Root placement="bottom" open={filterDrawerOpen} onOpenChange={(e) => setFilterDrawerOpen(e.open)}>
@@ -226,7 +293,7 @@ export default function Adopt() {
                     <Drawer.Positioner>
                         <Drawer.Content maxH="85vh" borderTopLeftRadius="24px" borderTopRightRadius="24px" overflow="hidden" p="10px">
                             <Flex width="100%" justify="space-between" align="center" pt={6} px={6}>
-                                <Text fontSize="20px" fontWeight="600" color="Grey">Filters</Text>
+                                <Text fontSize="20" fontWeight="600" color="Grey">Filters</Text>
                                 <Drawer.CloseTrigger/>
                             </Flex>
                             <Drawer.Body overflowY="auto">
@@ -287,20 +354,20 @@ export default function Adopt() {
             <Box maxW="100%">
                 {isError ? (
                     <Flex minH="300px" align="center" justify="center">
-                        <Text color="Grey" fontSize="md">Unable to load pets right now.</Text>
+                        <Text color="Grey" fontSize="16">Unable to load pets right now.</Text>
                     </Flex>
                 ) : isLoading ? (
-                    <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }} mt="64px">
+                    <Grid {...CARD_GRID}>
                         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
                             <S2SPetCardSkeleton key={i} width={{base: "169px", md: "240px"}} height={{ base: "230px", md: "309px" }} />
                         ))}
-                    </SimpleGrid>
+                    </Grid>
                 ) : pets.length === 0 ? (
                     <Flex minH="300px" align="center" justify="center">
-                        <Text color="Grey" fontSize="md">No pets match these filters.</Text>
+                        <Text color="Grey" fontSize="16">No pets match these filters.</Text>
                     </Flex>
                 ) : (
-                    <SimpleGrid columns={{ base: 2, lg: 4 }} gap={{ base: 3, md: 5 }} mt="64px">
+                    <Grid {...CARD_GRID}>
                         {pets.map((p, i) => (
                             <S2SPetCard
                                 key={p.pid}
@@ -316,13 +383,14 @@ export default function Adopt() {
                                 onClick={() => navigate(`/pet-profile/${p.pid}`)}
                             />
                         ))}
-                    </SimpleGrid>
+                    </Grid>
                 )}
             </Box>
 
-            <Flex justify="center" mt="32px">
+            <Flex justify="center" mt={{ base: "32px", md: "64px" }}>
                 <S2SPagination page={page} totalPages={totalPages} onPageChange={setPage} />
             </Flex>
+            </Box>
 
             <PhotoSearchModal
                 isOpen={photoSearchOpen}

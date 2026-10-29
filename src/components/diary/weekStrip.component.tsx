@@ -22,7 +22,7 @@ export default function WeekStrip({
         >
             <Text
                 display={{ base: "block", md: "none" }}
-                fontSize="16px"
+                fontSize="16"
                 fontWeight="600"
                 color="Grey"
             >
@@ -30,7 +30,7 @@ export default function WeekStrip({
             </Text>
             <Text
                 display={{ base: "none", md: "block" }}
-                fontSize="24px"
+                fontSize="24"
                 fontWeight="600"
                 color="Grey"
                 pt="4px"
@@ -52,7 +52,7 @@ export default function WeekStrip({
                             onClick={() => onSelect(day)}
                         >
                             <Text
-                                fontSize={{ base: "13.75px", md: "17.14px" }}
+                                fontSize={{ base: "13.75", md: "17.14" }}
                                 fontWeight="500"
                                 color="BlueText"
                             >
@@ -69,7 +69,7 @@ export default function WeekStrip({
                                 transition="background 0.15s ease"
                             >
                                 <Text
-                                    fontSize={{ base: "13.75px", md: "17.14px" }}
+                                    fontSize={{ base: "13.75", md: "17.14" }}
                                     fontWeight="500"
                                     color="GreyText"
                                 >

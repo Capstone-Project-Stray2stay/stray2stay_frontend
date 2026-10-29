@@ -176,7 +176,7 @@ export default function Step3Details({
                             onClick={() => setIsAddingPersonality(true)}
                         >
                             <Icon as={IoAdd} boxSize={{ base: "7.22px", md: "10.5px" }} color="GreyText" />
-                            <Text fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="GreyText">
+                            <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="GreyText">
                                 Add
                             </Text>
                         </Button>
@@ -198,7 +198,7 @@ export default function Step3Details({
                             gap={{ base: "8.24px", md: "9px" }}
                             flexShrink={0}
                         >
-                            <Text fontSize={{ base: "16px", md: "18px" }} fontWeight="500" color="Grey">
+                            <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey">
                                 Vaccinations
                             </Text>
                             <Icon
@@ -231,7 +231,7 @@ export default function Step3Details({
                         <Text
                             w={{ base: "auto", md: "180px" }}
                             flexShrink={0}
-                            fontSize={{ base: "16px", md: "18px" }}
+                            fontSize={{ base: "16", md: "18" }}
                             fontWeight="500"
                             color="Grey"
                         >
@@ -268,7 +268,7 @@ export default function Step3Details({
                         <Text
                             w={{ base: "auto", md: "180px" }}
                             flexShrink={0}
-                            fontSize={{ base: "16px", md: "18px" }}
+                            fontSize={{ base: "16", md: "18" }}
                             fontWeight="500"
                             color="Grey"
                         >
@@ -340,7 +340,7 @@ export default function Step3Details({
                     bg="rgba(255,255,255,0.70)"
                     borderWidth="1px"
                     borderColor="BlueText"
-                    fontSize={{ base: "14px", md: "16px" }}
+                    fontSize={{ base: "14", md: "16" }}
                     color="Grey"
                     resize="none"
                     value={draft.note}

@@ -22,6 +22,9 @@ export default function S2SDropDown({
     fontSize,
     borderColor,
     bg="white",
+    boxShadow,
+    placeholderColor,
+    clearable = false,
 }: S2SDropDownType) {
     const { contains } = useFilter({ sensitivity: "base" })
     const items = useMemo(
@@ -51,6 +54,8 @@ export default function S2SDropDown({
             openOnClick
             disabled={disabled}
             width={width}
+            // Figma open state: the list hangs straight off the control
+            positioning={{ gutter: 0 }}
             {...controlProps}
         >
             <Combobox.Control>
@@ -61,20 +66,46 @@ export default function S2SDropDown({
                     fontSize={fontSize}
                     borderColor={borderColor}
                     bg={bg}
+                    boxShadow={boxShadow}
+                    transition="background 0.15s ease, border-radius 0.15s ease"
+                    _placeholder={placeholderColor ? { color: placeholderColor } : undefined}
+                    _hover={{ bg: "White_hover" }}
+                    _active={{ bg: "White_active" }}
+                    _open={{ bg: "white", borderTopRadius: "10px", borderBottomRadius: "0" }}
                     focusRingColor="BlueText"
                     _focus={{ borderColor: "Blue" }}
-                    _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed" }}
+                    _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed", bg }}
                 />
                 <Combobox.IndicatorGroup>
-                    <Combobox.Trigger />
+                    {clearable && value && !disabled && (
+                        <Combobox.ClearTrigger aria-label="Clear" color="GreyText" />
+                    )}
+                    <Combobox.Trigger color="GreyText" />
                 </Combobox.IndicatorGroup>
             </Combobox.Control>
             <Portal>
                 <Combobox.Positioner>
-                    <Combobox.Content>
-                        <Combobox.Empty>No items found</Combobox.Empty>
+                    <Combobox.Content
+                        bg="white"
+                        borderTopRadius="0"
+                        borderBottomRadius="10px"
+                        boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)"
+                        maxH="376px"
+                        py="12px"
+                    >
+                        <Combobox.Empty px="25px" color="GreyText" fontSize={fontSize}>No items found</Combobox.Empty>
                         {collection.items.map((item) => (
-                            <Combobox.Item item={item} key={item.value}>
+                            <Combobox.Item
+                                item={item}
+                                key={item.value}
+                                px="25px"
+                                py="9.5px"
+                                rounded="0"
+                                color="GreyText"
+                                fontSize={fontSize}
+                                fontWeight="500"
+                                _highlighted={{ bg: "White_hover" }}
+                            >
                                 <HStack gap={2}>
                                     {item.image && (
                                         <Image src={item.image} alt="" boxSize="36px" borderRadius="5px" objectFit="cover" flexShrink={0} />

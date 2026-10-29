@@ -1,7 +1,7 @@
-import { Avatar, Button, Flex, Icon, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Flex, Icon, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { IoFemale, IoMale } from "react-icons/io5";
 
-import { S2SCardShell } from "../S2S.components";
+import { S2SButton, S2SCardShell } from "../S2S.components";
 
 import { formatAgeGroup, formatGender } from "../../utils/petOptions.util";
 import type { DiaryPet } from "../../types/diary.type";
@@ -9,7 +9,7 @@ import type { DiaryPet } from "../../types/diary.type";
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <VStack align="flex-start" gap={{ base: "5px", md: "2px" }}>
-            <Text fontSize="14px" fontWeight="500" color="GreyMuted">
+            <Text fontSize="14" fontWeight="500" color="GreyMuted">
                 {label}
             </Text>
             {children}
@@ -19,7 +19,7 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 
 function Value({ children }: { children: React.ReactNode }) {
     return (
-        <Text fontSize={{ base: "15px", md: "16px" }} fontWeight="500" color="Grey">
+        <Text fontSize={{ base: "15", md: "16" }} fontWeight="500" color="Grey">
             {children}
         </Text>
     );
@@ -51,24 +51,11 @@ export default function PetSummaryCard({
                 </Avatar.Root>
 
                 <VStack align="flex-start" gap={{ base: "11px", md: "10px" }}>
-                    <Text fontSize={{ base: "16px", md: "20px" }} fontWeight="600" color="Grey">
+                    <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey">
                         {pet.petName}
                     </Text>
-                    <Button
-                        variant="plain"
-                        onClick={onChangeClick}
-                        h="auto"
-                        bg="Cream"
-                        borderRadius={{ base: "16.51px", md: "30.44px" }}
-                        px={{ base: "12px", md: "16px" }}
-                        py={{ base: "3.75px", md: "6.92px" }}
-                        transition="filter 0.15s ease"
-                        _hover={{ filter: "brightness(0.96)" }}
-                    >
-                        <Text fontSize={{ base: "14px", md: "15px" }} fontWeight="500" color="GreyText">
-                            Change
-                        </Text>
-                    </Button>
+                    {/* Figma: the "xs" Yellow button from the button sheet */}
+                    <S2SButton text="Change" bgColor="Cream" size="xs" onClick={onChangeClick} />
                 </VStack>
             </Flex>
 

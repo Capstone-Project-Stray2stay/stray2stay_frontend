@@ -17,8 +17,9 @@ export default function Step1Species({
                     <Image
                         src="/assets/icons/dog.png"
                         alt="Dog"
-                        w={{ base: "33px", md: "47px" }}
-                        h={{ base: "29px", md: "41px" }}
+                        w={{ base: "33px", md: "44px" }}
+                        h={{ base: "29px", md: "40px" }}
+                        objectFit="contain"
                     />
                 }
                 label="Dog"
@@ -30,7 +31,9 @@ export default function Step1Species({
                     <Image
                         src="/assets/icons/cat.png"
                         alt="Cat"
-                        boxSize={{ base: "35px", md: "50px" }}
+                        w={{ base: "35px", md: "44px" }}
+                        h={{ base: "35px", md: "40px" }}
+                        objectFit="contain"
                     />
                 }
                 label="Cat"

@@ -8,6 +8,17 @@ import {
     useMarkNotificationRead,
     useNotifications,
 } from "../hooks/query/pet.query"
+import type { NotificationResponse } from "../services/apis/notification.api"
+
+// A new request goes to the pet's owner, so it opens that pet's row under My Rehoming;
+// the selected / not-selected updates go to adopters, so they open My Adoptions.
+function notificationTarget(notification: NotificationResponse) {
+    const params = new URLSearchParams({
+        tab: notification.type === "ADOPTION_REQUESTED" ? "rehoming" : "adoptions",
+    })
+    if (notification.petId) params.set("pet", String(notification.petId))
+    return `/profile?${params}`
+}
 
 function formatNotificationDate(value: string) {
     const date = new Date(value)
@@ -47,7 +58,7 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                     color="white"
                     align="center"
                     justify="center"
-                    fontSize="10px"
+                    fontSize="10"
                     fontWeight="bold"
                     pointerEvents="none"
                 >
@@ -90,7 +101,7 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                     {isLoading ? (
                         <Flex justify="center" py="8"><Spinner color="Blue" /></Flex>
                     ) : notifications.length === 0 ? (
-                        <Text px="4" py="8" textAlign="center" color="GreyMuted" fontSize="sm">
+                        <Text px="4" py="8" textAlign="center" color="GreyMuted" fontSize="14">
                             You have no notifications.
                         </Text>
                     ) : (
@@ -103,20 +114,20 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                                     bg={notification.isRead ? "white" : "LightYellow"}
                                     borderBottomWidth="1px"
                                     borderColor="gray.100"
-                                    cursor={notification.isRead ? "default" : "pointer"}
+                                    cursor="pointer"
                                     onClick={() => {
                                         if (!notification.isRead) markReadMutation.mutate(notification.id)
-                                        navigate("/profile")
+                                        navigate(notificationTarget(notification))
                                         setOpen(false)
                                     }}
                                 >
-                                    <Text fontSize="sm" fontWeight="semibold" color="Grey">
+                                    <Text fontSize="14" fontWeight="semibold" color="Grey">
                                         {notification.title}
                                     </Text>
-                                    <Text mt="1" fontSize="sm" color="GreyText">
+                                    <Text mt="1" fontSize="14" color="GreyText">
                                         {notification.message}
                                     </Text>
-                                    <Text mt="2" fontSize="xs" color="GreyMuted">
+                                    <Text mt="2" fontSize="12" color="GreyMuted">
                                         {formatNotificationDate(notification.createdAt)}
                                     </Text>
                                 </Box>

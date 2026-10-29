@@ -44,7 +44,7 @@ export default function ListTabs({
                         >
                             <Text
                                 px={{ base: "8px", md: "12px" }}
-                                fontSize={{ base: "16px", md: "24px" }}
+                                fontSize={{ base: "16", md: "24" }}
                                 fontWeight="600"
                                 color={active ? "BlueText" : "Grey"}
                                 whiteSpace="nowrap"

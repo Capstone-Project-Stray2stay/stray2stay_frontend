@@ -184,7 +184,7 @@ export default function CameraCaptureModal({
                             align="stretch"
                         >
                             <Text
-                                fontSize={{ base: "18px", md: "22px" }}
+                                fontSize={{ base: "18", md: "22" }}
                                 fontWeight="600"
                                 color="Grey"
                                 textAlign="center"
@@ -234,7 +234,7 @@ export default function CameraCaptureModal({
                                                 align="center"
                                                 justify="center"
                                             >
-                                                <Text fontSize="14px" color="White">
+                                                <Text fontSize="14" color="White">
                                                     Starting the camera…
                                                 </Text>
                                             </Flex>
@@ -248,7 +248,7 @@ export default function CameraCaptureModal({
                                                 px="24px"
                                             >
                                                 <Text
-                                                    fontSize="14px"
+                                                    fontSize="14"
                                                     color="White"
                                                     textAlign="center"
                                                 >
@@ -284,14 +284,14 @@ export default function CameraCaptureModal({
                                         variant="outline"
                                         width={{ base: "130px", md: "160px" }}
                                         height={{ base: "36px", md: "44px" }}
-                                        fontSize={{ base: "14px", md: "18px" }}
+                                        fontSize={{ base: "14", md: "18" }}
                                         onClick={() => setShot(null)}
                                     />
                                     <S2SButton
                                         text="Use Photo"
                                         width={{ base: "130px", md: "160px" }}
                                         height={{ base: "36px", md: "44px" }}
-                                        fontSize={{ base: "14px", md: "18px" }}
+                                        fontSize={{ base: "14", md: "18" }}
                                         onClick={keepShot}
                                     />
                                 </Flex>
@@ -303,7 +303,7 @@ export default function CameraCaptureModal({
                                             variant="outline"
                                             width={{ base: "180px", md: "200px" }}
                                             height={{ base: "36px", md: "44px" }}
-                                            fontSize={{ base: "14px", md: "18px" }}
+                                            fontSize={{ base: "14", md: "18" }}
                                             onClick={() => fallbackInputRef.current?.click()}
                                         />
                                     )}
@@ -312,7 +312,7 @@ export default function CameraCaptureModal({
                                         text="Capture"
                                         width={{ base: "160px", md: "190px" }}
                                         height={{ base: "36px", md: "44px" }}
-                                        fontSize={{ base: "14px", md: "18px" }}
+                                        fontSize={{ base: "14", md: "18" }}
                                         disabled={!stream}
                                         onClick={capture}
                                     />

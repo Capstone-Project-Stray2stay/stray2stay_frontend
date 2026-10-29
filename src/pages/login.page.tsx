@@ -69,7 +69,7 @@ export default function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        {error && <Text color="red.500" fontSize="sm">
+                        {error && <Text color="red.500" fontSize="14">
                             {error}
                         </Text>}
                         <S2SButton type="submit" text="Log in" bgColor="Blue" width="full" loading={isPending} />
@@ -77,11 +77,11 @@ export default function Login() {
                 </Box>
 
                 <Flex justify="center" align="center" mb={6} gap={1}>
-                    <Text fontSize="sm" color="LightGrey">
+                    <Text fontSize="14" color="LightGrey">
                         Don't have an account?{" "}
                     </Text>
                     <Link to="/register">
-                        <Text fontSize="sm" color="BlueText" fontWeight="medium" _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}>
+                        <Text fontSize="14" color="BlueText" fontWeight="medium" _hover={{ textDecoration: "underline", textUnderlineOffset: "2px" }}>
                             Register
                         </Text>
                     </Link>
@@ -89,7 +89,7 @@ export default function Login() {
 
                 <HStack mb={6}>
                     <Separator flex="1" />
-                    <Text fontSize="sm" color="Grey" whiteSpace="nowrap">
+                    <Text fontSize="14" color="Grey" whiteSpace="nowrap">
                         or continue with Google
                     </Text>
                     <Separator flex="1" />

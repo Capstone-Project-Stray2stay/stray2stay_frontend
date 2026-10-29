@@ -1,5 +1,5 @@
-import { Accordion, Span } from "@chakra-ui/react"
-import { FaAngleDown } from "react-icons/fa6";
+import { Accordion, Icon, Span } from "@chakra-ui/react"
+import { LuChevronDown } from "react-icons/lu";
 
 import type { S2SAccordionType } from "../types/component.type"
 
@@ -19,14 +19,14 @@ export default function S2SAccordion({
     const itemValue: string = value ?? title
 
     return (
-        <Accordion.Root collapsible width={width} bg="white" borderRadius="25px" overflow="hidden">
+        <Accordion.Root collapsible width={width} bg="rgba(255, 255, 255, 0.70)" borderRadius="24px" overflow="hidden">
             <Accordion.Item value={itemValue} borderWidth="0">
-                <Accordion.ItemTrigger py={py} px={px}>
+                <Accordion.ItemTrigger py={py} px={px} cursor="pointer">
                     <Span flex="1" color="Grey" fontWeight="semibold" fontSize={fontSize}>
                         {title}
                     </Span>
                     <Accordion.ItemIndicator>
-                        <FaAngleDown color="Grey" />
+                        <Icon as={LuChevronDown} boxSize="24px" color="Grey" />
                     </Accordion.ItemIndicator>
                 </Accordion.ItemTrigger>
                 <Accordion.ItemContent px={px} color={contentColor} fontSize={contentFontSize}>

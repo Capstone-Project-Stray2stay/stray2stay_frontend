@@ -22,7 +22,7 @@ export default function S2SCheckbox({ label, checked, onChange }: S2SCheckboxTyp
             >
                 <Checkbox.Indicator />
             </Checkbox.Control>
-            <Checkbox.Label fontSize={{ base: "14px", md: "16px" }} fontWeight="500" color="Grey">
+            <Checkbox.Label fontSize={{ base: "14", md: "16" }} fontWeight="500" color="Grey">
                 {label}
             </Checkbox.Label>
         </Checkbox.Root>

@@ -12,53 +12,61 @@ import {
     Text,
     VStack,
 } from "@chakra-ui/react";
-import { IoCameraOutline, IoClose } from "react-icons/io5";
-import { RiImageAiLine } from "react-icons/ri";
+import { IoCameraOutline, IoClose, IoImages } from "react-icons/io5";
 
 import { S2SButton } from "../../components/S2S.components";
 import { useBreeds, useClassifyPet } from "../../hooks/query/pet.query";
 import CameraCaptureModal from "../../components/rehome/cameraCaptureModal.component";
 import { MAX_AI_PHOTOS, type PetType } from "../../types/rehome.type";
 
-const SPECIES: { value: PetType; label: string; icon: string; iconSize: { w: string; h: string } }[] = [
-    { value: "dog", label: "Dog", icon: "/assets/icons/dog.png", iconSize: { w: "26px", h: "22px" } },
-    { value: "cat", label: "Cat", icon: "/assets/icons/cat.png", iconSize: { w: "28px", h: "28px" } },
+const SPECIES: { value: PetType; label: string; icon: string }[] = [
+    { value: "dog", label: "Dog", icon: "/assets/icons/dog.png" },
+    { value: "cat", label: "Cat", icon: "/assets/icons/cat.png" },
 ];
 
 function SpeciesPill({
     label,
     icon,
-    iconSize,
     selected,
     onClick,
 }: {
     label: string;
     icon: string;
-    iconSize: { w: string; h: string };
     selected: boolean;
     onClick: () => void;
 }) {
     return (
         <Flex
             as="button"
+            position="relative"
             align="center"
-            gap="12px"
+            justify="center"
             w={{ base: "100%", md: "192px" }}
-            h="40px"
-            pl="0"
-            pr="16px"
+            h="44px"
+            pl="48px"
+            pr="20px"
             rounded="full"
             borderWidth="1px"
             borderColor="Blue"
             bg={selected ? "LightBlue" : "transparent"}
+            // Figma "Hover" variant: --blue (#C6E7F7) at 30%
+            _hover={selected ? undefined : { bg: "rgba(198, 231, 247, 0.30)" }}
             transition="background 0.15s ease"
             onClick={onClick}
             aria-pressed={selected}
         >
-            <Circle size="38px" bg={selected ? "Yellow" : "Cream"} flexShrink={0} transition="background 0.15s ease">
-                <Image src={icon} alt={label} w={iconSize.w} h={iconSize.h} />
+            {/* The icon sits on top of the pill's left edge, covering the border */}
+            <Circle
+                size="44px"
+                position="absolute"
+                left="-1px"
+                top="-1px"
+                bg={selected ? "Yellow" : "Cream"}
+                transition="background 0.15s ease"
+            >
+                <Image src={icon} alt="" w="29.33px" h="26.67px" objectFit="contain" />
             </Circle>
-            <Text fontSize="16px" fontWeight="600" color="Grey">
+            <Text fontSize="18" fontWeight="600" color="Grey">
                 {label}
             </Text>
         </Flex>
@@ -160,7 +168,7 @@ export default function PhotoSearchModal({
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
                     <Dialog.Content
-                        maxW={{ base: "340px", md: "603px" }}
+                        maxW={{ base: "340px", md: "568px" }}
                         borderRadius="24px"
                         p="0"
                         position="relative"
@@ -170,17 +178,17 @@ export default function PhotoSearchModal({
                             aria-label="Close"
                             onClick={onClose}
                             position="absolute"
-                            top="20px"
-                            right="20px"
-                            boxSize="23.58px"
+                            top={{ base: "24px", md: "33px" }}
+                            right={{ base: "24px", md: "32px" }}
+                            boxSize="28px"
                             minW="unset"
                             p="0"
                             rounded="full"
-                            bg="#EDEDED"
+                            bg="#EBEBEB"
                             _hover={{ bg: "#e0e0e0" }}
                             zIndex={1}
                         >
-                            <Icon as={IoClose} boxSize="11px" color="GreyText" />
+                            <Icon as={IoClose} boxSize="14px" color="GreyText" />
                         </IconButton>
 
                         <VStack
@@ -189,7 +197,7 @@ export default function PhotoSearchModal({
                             gap="24px"
                             align="stretch"
                         >
-                            <Text fontSize="24px" fontWeight="600" color="Grey" textAlign="center">
+                            <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
                                 Select
                             </Text>
 
@@ -203,7 +211,6 @@ export default function PhotoSearchModal({
                                         key={option.value}
                                         label={option.label}
                                         icon={option.icon}
-                                        iconSize={option.iconSize}
                                         selected={species === option.value}
                                         onClick={() => {
                                             setError("");
@@ -216,9 +223,8 @@ export default function PhotoSearchModal({
                             <Box
                                 w="100%"
                                 minH={{ base: "200px", md: "225px" }}
-                                bg="rgba(255,255,255,0.60)"
-                                borderRadius="19.65px"
-                                borderWidth="1.38px"
+                                borderRadius="24px"
+                                borderWidth="1.5px"
                                 borderStyle="dashed"
                                 borderColor={isDragging ? "BlueText" : "Blue"}
                                 transition="border-color 0.15s ease"
@@ -248,11 +254,11 @@ export default function PhotoSearchModal({
                                     }}
                                 />
 
-                                <VStack gap="16.85px" py="32px" px="16px">
-                                    <Icon as={RiImageAiLine} w="62.56px" h="57.42px" color="SkyBlue" />
+                                <VStack gap="16px" py="32px" px="16px">
+                                    <Icon as={IoImages} w="68.33px" h="64.92px" color="SkyBlue" />
 
-                                    <VStack gap="12.48px" w="100%">
-                                        <Text fontSize="18px" fontWeight="600" color="Blue" textAlign="center">
+                                    <VStack gap="12px" w="100%">
+                                        <Text fontSize={{ base: "18", md: "20" }} fontWeight="600" color="Blue" textAlign="center">
                                             Drag and Drop Photos here
                                         </Text>
 
@@ -268,9 +274,9 @@ export default function PhotoSearchModal({
                                             <S2SButton
                                                 text="Upload Photo"
                                                 variant="outline"
-                                                width="154px"
-                                                height="32px"
-                                                fontSize="14px"
+                                                width="170px"
+                                                height="38px"
+                                                fontSize="18"
                                                 disabled={isFull}
                                                 onClick={() => inputRef.current?.click()}
                                             />
@@ -278,9 +284,9 @@ export default function PhotoSearchModal({
                                                 icon={<Icon as={IoCameraOutline} boxSize="16px" />}
                                                 text="Take Photo"
                                                 variant="outline"
-                                                width="154px"
-                                                height="32px"
-                                                fontSize="14px"
+                                                width="170px"
+                                                height="38px"
+                                                fontSize="18"
                                                 disabled={isFull}
                                                 onClick={() => setIsCameraOpen(true)}
                                             />
@@ -325,7 +331,7 @@ export default function PhotoSearchModal({
                             )}
 
                             {error && (
-                                <Text fontSize="14px" color="red.500" textAlign="center">
+                                <Text fontSize="14" color="red.500" textAlign="center">
                                     {error}
                                 </Text>
                             )}
@@ -333,9 +339,9 @@ export default function PhotoSearchModal({
                             <Flex justify="center">
                                 <S2SButton
                                     text="Finish"
-                                    width="158px"
-                                    height="45px"
-                                    fontSize="20px"
+                                    width="160px"
+                                    height="48px"
+                                    fontSize="20"
                                     loading={classify.isPending}
                                     onClick={finish}
                                 />

@@ -53,7 +53,7 @@ export default function S2SNavbar() {
 
     return (
         <Flex display={{ base: "flex", lg: "none" }} width="100%" justifyContent="space-between" alignItems="center" px={8} py={4}>
-            <Text fontWeight={"semibold"} color="Grey" fontSize={"20px"}>Stray2Stay</Text>
+            <Text fontWeight={"semibold"} color="Grey" fontSize={"20"}>Stray2Stay</Text>
             <Drawer.Root placement="start" size="full" open={open} onOpenChange={(e) => setOpen(e.open)}>
                 <Drawer.Trigger asChild p={0}>
                     <Hamburger direction="right" size={20} toggled={open} toggle={setOpen} color="Grey" />

@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { getUserInfoAPI, updateUserAPI, updateUserImageAPI } from "../../services/apis/user.api"
-import type { UpdateUserPayload } from "../../services/apis/user.api"
+import type { UpdateUserPayload, UserInfoData } from "../../services/apis/user.api"
 import { splitAddress } from "../../utils/address.util"
-import type { PersonalInfoDraft, PetPreferenceDraft } from "../../types/profile.type"
+import { emptyPetPreference, type PersonalInfoDraft, type PetPreferenceDraft } from "../../types/profile.type"
 
 export function useUpdateUser() {
     return useMutation({
@@ -44,25 +44,17 @@ export function useUserInfo(options?: { enabled?: boolean }) {
         }
         : undefined
 
-    const dogPreference: PetPreferenceDraft | undefined = data
-        ? {
-            breed: data.DogBreed ?? "",
-            color: data.DogColor ?? "",
-            ageGroup: data.DogAgeGroup ?? "",
-            gender: data.DogGender ?? "",
-        }
-        : undefined
-
-    const catPreference: PetPreferenceDraft | undefined = data
-        ? {
-            breed: data.CatBreed ?? "",
-            color: data.CatColor ?? "",
-            ageGroup: data.CatAgeGroup ?? "",
-            gender: data.CatGender ?? "",
-        }
+    const preferences: PetPreferenceDraft[] | undefined = data
+        ? ((data as UserInfoData).Preferences ?? []).map((p) => ({
+            ...emptyPetPreference(p.petType === "DOG" ? "dog" : "cat"),
+            breed: p.breed ?? "",
+            color: p.color ?? "",
+            ageGroup: p.ageGroup ?? "",
+            gender: p.gender ?? "",
+        }))
         : undefined
 
     const imageURL: string | null = data?.CoverImage ?? null
 
-    return { personalInfo, dogPreference, catPreference, imageURL, loading: isLoading }
+    return { personalInfo, preferences, imageURL, loading: isLoading }
 }

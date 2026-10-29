@@ -1,4 +1,15 @@
 import axiosInstance from "../axios/axiosInstance";
+import type { PetPreferenceDraft } from "../../types/profile.type";
+
+/** Matches domain.UserPreference — one Users_Preferences row. */
+export interface UserPreferencePayload {
+    petType: "DOG" | "CAT";
+    breed: string;
+    color: string;
+    ageGroup: string;
+    gender: string;
+}
+
 export interface UpdateUserPayload {
     firstName: string;
     lastName: string;
@@ -6,14 +17,21 @@ export interface UpdateUserPayload {
     address: string;
     addressLat: number;
     addressLong: number;
-    dogBreed: string;
-    dogColor: string;
-    dogAgeGroup: string;
-    dogGender: string;
-    catBreed: string;
-    catColor: string;
-    catAgeGroup: string;
-    catGender: string;
+    /** The full set — the server replaces the user's preferences with exactly these. */
+    preferences: UserPreferencePayload[];
+}
+
+/** Cards left completely blank aren't worth a row, so they're dropped on save. */
+export function toPreferencePayload(preferences: PetPreferenceDraft[]): UserPreferencePayload[] {
+    return preferences
+        .filter((p) => p.breed || p.color || p.ageGroup || p.gender)
+        .map((p) => ({
+            petType: p.species === "dog" ? "DOG" : "CAT",
+            breed: p.breed,
+            color: p.color,
+            ageGroup: p.ageGroup,
+            gender: p.gender,
+        }));
 }
 
 export async function updateUserAPI(payload: UpdateUserPayload) {
@@ -30,14 +48,8 @@ export interface UserInfoData {
     Phone: string;
     Address: string;
     CoverImage: string | null;
-    DogBreed: string;
-    DogColor: string;
-    DogAgeGroup: string;
-    DogGender: string;
-    CatBreed: string;
-    CatColor: string;
-    CatAgeGroup: string;
-    CatGender: string;
+    /** Key matches domain.UserInfo's untagged Go field name. */
+    Preferences: UserPreferencePayload[] | null;
 }
 
 export async function getUserInfoAPI() {

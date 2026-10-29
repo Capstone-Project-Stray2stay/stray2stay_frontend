@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Flex, Spinner, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Flex, Image, Spinner, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
 import { isAxiosError } from "axios";
 
 import { S2SPageTitle, S2SButton } from "../components/S2S.components";
@@ -120,12 +120,12 @@ export default function Diary() {
             <Box width="100%" px={{ base: "30px", md: "9%" }}>
                 <S2SPageTitle title="Pet Diary" />
                 <VStack gap="16px" py="120px">
-                    <Text fontSize="18px" fontWeight="600" color="Grey" textAlign="center">
+                    <Text fontSize="18" fontWeight="600" color="Grey" textAlign="center">
                         {petsError
                             ? "Couldn't load your diaries."
                             : "You don't have a pet diary yet."}
                     </Text>
-                    <Text fontSize="16px" fontWeight="500" color="GreyMuted" textAlign="center">
+                    <Text fontSize="16" fontWeight="500" color="GreyMuted" textAlign="center">
                         {petsError
                             ? "Please try again in a moment."
                             : "A diary opens once an adoption is accepted."}
@@ -176,31 +176,38 @@ export default function Diary() {
 
     const finishButton = (
         <Flex justify="flex-end" w={isDesktop ? "auto" : "100%"}>
+            {/* Figma "Large Short": 120px min width, 48px tall */}
             <S2SButton
                 text="Finish"
-                width={{ base: "133px", md: "115px" }}
-                height={{ base: "42px", md: "45px" }}
-                fontSize={{ base: "16px", md: "20px" }}
+                width={{ base: "133px", md: "120px" }}
+                height={{ base: "42px", md: "48px" }}
+                fontSize={{ base: "16", md: "20" }}
                 onClick={() => navigate("/")}
             />
         </Flex>
     );
 
-    // TODO: swap for the exported Figma illustration.
+    // Figma: the lying-down dog sticker with two cream sparkles around it (279×189 on desktop)
     const illustration = (
-        <Flex
+        <Box
+            position="relative"
             alignSelf={isDesktop ? "auto" : "center"}
             w={isDesktop ? "279px" : "219px"}
             h={isDesktop ? "189px" : "148px"}
-            align="center"
-            justify="center"
-            bg="rgba(255,255,255,0.45)"
-            borderRadius="16px"
+            pointerEvents="none"
+            aria-hidden="true"
         >
-            <Text fontSize="14px" fontWeight="500" color="GreyMuted">
-                Illustration
-            </Text>
-        </Flex>
+            <Image
+                src="/assets/images/diary_dog.png"
+                alt=""
+                position="absolute"
+                right="0"
+                bottom="0"
+                w="86%"
+            />
+            <Image src="/assets/icons/star.svg" alt="" position="absolute" left="0" top="36%" w="14%" />
+            <Image src="/assets/icons/star.svg" alt="" position="absolute" right="20%" top="4%" w="9%" />
+        </Box>
     );
 
     return (

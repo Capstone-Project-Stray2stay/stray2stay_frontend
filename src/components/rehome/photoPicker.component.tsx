@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Box, Flex, Icon, IconButton, Image, Text, VStack } from "@chakra-ui/react";
 import { IoBulbOutline, IoCameraOutline, IoClose } from "react-icons/io5";
-import { RiImageAiLine } from "react-icons/ri";
+import { RiImageAiFill } from "react-icons/ri";
 import heic2any from "heic2any";
 
 import { S2SButton } from "../S2S.components";
@@ -91,17 +91,17 @@ export default function PhotoPicker({
     // The design puts this inside the dashed zone on desktop but below it on
     // mobile, so it is rendered in both places and revealed by breakpoint.
     const tip = (
-        <Flex align={{ base: "flex-start", md: "center" }} gap={{ base: "6px", md: "3.51px" }}>
+        <Flex align={{ base: "flex-start", md: "center" }} gap={{ base: "6px", md: "4px" }}>
             <Icon
                 as={IoBulbOutline}
-                boxSize={{ base: "21px", md: "19.32px" }}
+                boxSize={{ base: "21px", md: "24px" }}
                 flexShrink={0}
-                color="GreyMuted"
+                color="GreyInfo"
             />
             <Text
-                fontSize={{ base: "12px", md: "16px" }}
-                fontWeight={{ base: "500", md: "600" }}
-                color="GreyMuted"
+                fontSize={{ base: "12", md: "18" }}
+                fontWeight="500"
+                color="GreyInfo"
                 textAlign={{ base: "left", md: "center" }}
             >
                 Tip: Upload clear face and full-body shots for best results.
@@ -121,7 +121,7 @@ export default function PhotoPicker({
                     align="center"
                     justify="center"
                     px={{ base: "16px", md: "32px" }}
-                    bg="rgba(255,255,255,0.70)"
+                    bg="white"
                     borderRadius={{ base: "35.77px", md: "74.66px" }}
                     _after={{
                         content: '""',
@@ -131,13 +131,13 @@ export default function PhotoPicker({
                         borderLeft: { base: "9px solid transparent", md: "14px solid transparent" },
                         borderRight: { base: "9px solid transparent", md: "14px solid transparent" },
                         borderTop: {
-                            base: "12px solid rgba(255,255,255,0.70)",
-                            md: "18px solid rgba(255,255,255,0.70)",
+                            base: "12px solid white",
+                            md: "18px solid white",
                         },
                     }}
                 >
                     <Text
-                        fontSize={{ base: "10px", md: "18px" }}
+                        fontSize={{ base: "10", md: "20" }}
                         fontWeight={{ base: "500", md: "600" }}
                         color="GreyText"
                         textAlign="center"
@@ -148,11 +148,10 @@ export default function PhotoPicker({
             )}
 
             <Box
-                mt={showAiHint ? { base: "16px", md: "24px" } : "0"}
-                minH={{ base: "212px", md: "339px" }}
-                bg="rgba(255,255,255,0.60)"
-                borderRadius={{ base: "16.27px", md: "21.96px" }}
-                borderWidth={{ base: "1.30px", md: "1.76px" }}
+                mt={showAiHint ? { base: "16px", md: "30px" } : "0"}
+                bg="rgba(255,255,255,0.70)"
+                borderRadius={{ base: "16.27px", md: "24px" }}
+                borderWidth={{ base: "1.30px", md: "1.5px" }}
                 borderStyle="dashed"
                 borderColor={isDragging ? "BlueText" : "Blue"}
                 transition="border-color 0.15s ease"
@@ -182,36 +181,37 @@ export default function PhotoPicker({
                     }}
                 />
 
+                {/* Figma: 32px vertical padding, 16px under the icon, 12px between the rest */}
                 <VStack
-                    gap={{ base: "14.97px", md: "20.20px" }}
-                    py={{ base: "32px", md: "60px" }}
+                    gap={{ base: "14.97px", md: "12px" }}
+                    py="32px"
                     px={{ base: "16px", md: "24px" }}
                 >
-                    <VStack gap={{ base: "7px", md: "23.72px" }}>
+                    <VStack gap={{ base: "7px", md: "16px" }}>
                         <Icon
-                            as={RiImageAiLine}
-                            w={{ base: "61.19px", md: "82.57px" }}
-                            h={{ base: "55.98px", md: "75.54px" }}
+                            as={RiImageAiFill}
+                            w={{ base: "61.19px", md: "82px" }}
+                            h={{ base: "55.98px", md: "82px" }}
                             color="SkyBlue"
                         />
 
-                        <VStack gap={{ base: "13.02px", md: "17.57px" }}>
-                            <Box textAlign="center">
+                        <VStack gap={{ base: "13.02px", md: "12px" }}>
+                            <VStack gap={{ base: 0, md: "8px" }} textAlign="center">
                                 <Text
-                                    fontSize={{ base: "14px", md: "20px" }}
+                                    fontSize={{ base: "14", md: "20" }}
                                     fontWeight={{ base: "500", md: "600" }}
                                     color="Blue"
                                 >
                                     Drag and Drop Photos here
                                 </Text>
                                 <Text
-                                    fontSize={{ base: "12px", md: "16px" }}
+                                    fontSize={{ base: "12", md: "18" }}
                                     fontWeight="500"
                                     color="Blue"
                                 >
                                     ( Max {MAX_PHOTOS} Photos )
                                 </Text>
-                            </Box>
+                            </VStack>
 
                             {/* Stops the click reaching the zone's own handler,
                                 which would open the file dialog a second time. */}
@@ -221,12 +221,13 @@ export default function PhotoPicker({
                                 gap={{ base: "10px", md: "16px" }}
                                 onClick={(e) => e.stopPropagation()}
                             >
+                                {/* Figma "Small" Line button */}
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width={{ base: "160.78px", md: "216.95px" }}
-                                    height={{ base: "27.99px", md: "37.77px" }}
-                                    fontSize={{ base: "14px", md: "18px" }}
+                                    width={{ base: "160.78px", md: "170px" }}
+                                    height={{ base: "27.99px", md: "38px" }}
+                                    fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => inputRef.current?.click()}
                                 />
@@ -234,9 +235,9 @@ export default function PhotoPicker({
                                     icon={<Icon as={IoCameraOutline} boxSize={{ base: "16px", md: "20px" }} />}
                                     text="Take Photo"
                                     variant="outline"
-                                    width={{ base: "160.78px", md: "216.95px" }}
-                                    height={{ base: "27.99px", md: "37.77px" }}
-                                    fontSize={{ base: "14px", md: "18px" }}
+                                    width={{ base: "160.78px", md: "170px" }}
+                                    height={{ base: "27.99px", md: "38px" }}
+                                    fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => setIsCameraOpen(true)}
                                 />
@@ -255,7 +256,7 @@ export default function PhotoPicker({
             )}
 
             {photos.length > 0 && (
-                <Flex gap={{ base: "15.47px", md: "18px" }} wrap="wrap" mt={{ base: "16px", md: "24px" }}>
+                <Flex gap={{ base: "15.47px", md: "18px" }} wrap="wrap" mt={{ base: "16px", md: "32px" }}>
                     {previews.map((preview, i) => (
                         <Box key={preview.src} position="relative">
                             <Image
@@ -279,7 +280,7 @@ export default function PhotoPicker({
                                 borderRadius="full"
                                 onClick={() => removeAt(i)}
                             >
-                                <Icon as={IoClose} boxSize={{ base: "8px", md: "9px" }} color="GreyText" />
+                                <Icon as={IoClose} boxSize={{ base: "8px", md: "9px" }} color="GreyMuted" />
                             </IconButton>
                         </Box>
                     ))}
@@ -287,7 +288,7 @@ export default function PhotoPicker({
             )}
 
             {error && (
-                <Text mt="8px" fontSize="14px" color="red.500">
+                <Text mt="8px" fontSize="14" color="red.500">
                     {error}
                 </Text>
             )}

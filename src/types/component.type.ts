@@ -16,12 +16,16 @@ export interface S2SAccordionType {
     contentColor?: string
 }
 
+export type S2SButtonSize = "lg" | "lgShort" | "md" | "sm" | "xs"
+
 export interface S2SButtonType {
     icon?: React.ReactNode
     type?: "button" | "submit" | "reset"
     text: string
     bgColor?: string
     variant?: "solid" | "outline"
+    /** Figma button sizes (Large, Large Short, Medium, Small, xs); width/height/fontSize still override */
+    size?: S2SButtonSize
     height?: ResponsiveSpace
     fontSize?: ResponsiveSpace
     width?: ResponsiveSpace
@@ -54,6 +58,10 @@ export interface S2SDropDownType {
     fontSize?: ResponsiveSpace
     borderColor?: string
     bg?: string
+    boxShadow?: string
+    placeholderColor?: string
+    /** Shows a ✕ next to the chevron once a value is picked, so the field can be emptied again */
+    clearable?: boolean
 }
 
 export interface S2SCheckboxType {
@@ -67,6 +75,7 @@ export interface S2SIconButtonType {
     ariaLabel?: string
     bgColor?: string
     iconColor?: string
+    boxSize?: ResponsiveSpace
     onClick?: () => void
 }
 

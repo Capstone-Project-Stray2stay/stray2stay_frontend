@@ -7,12 +7,12 @@ export default function S2SPetCardSkeleton({ width, height }: S2SPetCardSkeleton
         <Box
             w={width}
             h={height}
-            rounded="30px"
+            rounded={{ base: "12px", md: "24px" }}
             overflow="hidden"
             bgColor="White"
-            boxShadow="md"
+            boxShadow="0px 4.43px 20.15px rgba(0, 0, 0, 0.03)"
         >
-            <Skeleton w="full" h="203px" />
+            <Skeleton w="full" h="203px" rounded={{ base: "12px", md: "24px" }} />
             <Flex justify="space-between" align="center" px={4} py={"5px"}>
                 <Skeleton h="18px" w="100px" />
                 <SkeletonCircle size="24px" />

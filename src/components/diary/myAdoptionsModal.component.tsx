@@ -1,6 +1,6 @@
-import { Avatar, Box, Button, Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Box, Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
 
-import { S2SDialogCloseButton } from "../S2S.components";
+import { S2SButton, S2SDialogCloseButton } from "../S2S.components";
 import type { DiaryPet } from "../../types/diary.type";
 
 export default function MyAdoptionsModal({
@@ -21,18 +21,18 @@ export default function MyAdoptionsModal({
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
-                    <Dialog.Content maxW="451px" borderRadius="50px" p="0" position="relative">
-                        <S2SDialogCloseButton onClick={onClose} boxSize="23.58px" iconBoxSize="12px" />
+                    <Dialog.Content maxW={{ base: "calc(100vw - 32px)", md: "421px" }} borderRadius="24px" p="0" position="relative">
+                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" boxSize="28px" iconBoxSize="14px" />
 
-                        <VStack pt="46px" pb="48px" px="64px" gap="24px" align="stretch" maxH="70vh" overflowY="auto">
-                            <Text fontSize="24px" fontWeight="600" color="Grey" textAlign="center">
+                        <VStack p="32px" gap="16px" align="stretch" maxH="70vh" overflowY="auto">
+                            <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
                                 My Adoptions
                             </Text>
 
                             <Box h="2px" bg="SkyBlue" borderRadius="full" />
 
                             {pets.length === 0 && (
-                                <Text fontSize="16px" fontWeight="500" color="GreyMuted" textAlign="center">
+                                <Text fontSize="16" fontWeight="500" color="GreyMuted" textAlign="center">
                                     No adopted pets yet.
                                 </Text>
                             )}
@@ -47,39 +47,36 @@ export default function MyAdoptionsModal({
                                                 <Avatar.Image src={pet.petImageAddress[0]} />
                                             </Avatar.Root>
                                             <VStack align="flex-start" gap="2px" minW="0">
-                                                <Text fontSize="20px" fontWeight="600" color="Grey" truncate>
+                                                <Text fontSize="20" fontWeight="500" color="Grey" truncate>
                                                     {pet.petName}
                                                 </Text>
                                                 {/* Pets the user rehomed appear here too, but their
                                                     diary is read-only — say so before they open it. */}
                                                 {!pet.canWrite && (
-                                                    <Text fontSize="14px" fontWeight="500" color="GreyMuted">
+                                                    <Text fontSize="14" fontWeight="500" color="GreyMuted">
                                                         View only
                                                     </Text>
                                                 )}
                                             </VStack>
                                         </Flex>
 
-                                        <Button
-                                            variant="plain"
-                                            w="100px"
-                                            h="23px"
-                                            flexShrink={0}
-                                            borderRadius="30.44px"
-                                            bg={isSelected ? "Cream" : "transparent"}
-                                            borderWidth={isSelected ? "0" : "1px"}
-                                            borderColor="Cream"
-                                            disabled={isSelected}
-                                            _disabled={{ opacity: 1, cursor: "default" }}
-                                            onClick={() => {
-                                                onSelect(pet.pid);
-                                                onClose();
-                                            }}
-                                        >
-                                            <Text fontSize="15px" fontWeight="500" color="GreyText">
-                                                {isSelected ? "Selected" : "Change to"}
-                                            </Text>
-                                        </Button>
+                                        {/* Figma "Small" buttons: Yellow for the current pet, Line to switch */}
+                                        <Box flexShrink={0}>
+                                            {isSelected ? (
+                                                <S2SButton text="Selected" bgColor="Cream" size="sm" />
+                                            ) : (
+                                                <S2SButton
+                                                    text="Change to"
+                                                    variant="outline"
+                                                    bgColor="BlueText"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        onSelect(pet.pid);
+                                                        onClose();
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
                                     </Flex>
                                 );
                             })}

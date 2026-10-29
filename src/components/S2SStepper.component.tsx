@@ -19,7 +19,6 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
             {steps.map((label, i) => {
                 const step = i + 1;
                 const isDone = step <= current;
-                const isCurrent = step === current;
 
                 return (
                     <Fragment key={label}>
@@ -41,15 +40,15 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
                             flexShrink={0}
                         >
                             <Circle
-                                size={{ base: "33.85px", md: isCurrent ? "51.92px" : "48px" }}
+                                size={{ base: "33.85px", md: "48px" }}
                                 borderWidth={{ base: "1.01px", md: "1.55px" }}
-                                borderColor="YellowBorder"
+                                borderColor="Orange"
                                 bg={isDone ? "Cream" : "White"}
                                 boxShadow={CIRCLE_SHADOW}
                                 transition="all 0.15s ease"
                             >
                                 <Text
-                                    fontSize={{ base: "14px", md: "20px" }}
+                                    fontSize={{ base: "14", md: "20" }}
                                     fontWeight="600"
                                     color="Grey"
                                 >
@@ -57,7 +56,7 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
                                 </Text>
                             </Circle>
                             <Text
-                                fontSize={{ base: "12px", md: "18px" }}
+                                fontSize={{ base: "12", md: "18" }}
                                 fontWeight="500"
                                 color="Grey"
                                 whiteSpace="nowrap"
