@@ -70,9 +70,10 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                 <Box
                     position="absolute"
                     top="calc(100% + 10px)"
-                    right="0"
+                    right={{ base: "50vw", lg: "0" }}
+                    transform={{ base: "translateX(50%)", lg: "none" }}
                     zIndex="popover"
-                    w={{ base: "min( calc(100vw - 32px), 360px)", lg: "360px" }}
+                    w={{ base: "min(calc(100vw - 32px), 360px)", lg: "360px" }}
                     maxH="min(70vh, 520px)"
                     overflowY="auto"
                     bg="white"
