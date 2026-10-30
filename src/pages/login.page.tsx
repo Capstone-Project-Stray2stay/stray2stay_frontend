@@ -52,7 +52,7 @@ export default function Login() {
     return (
         <Box w="100%" h="100vh" bgGradient="BlueYellow">
             <Box maxW="sm" mx="auto" pt={20} px="25px">
-                <Heading mb={6} size="lg" color="Grey">
+                <Heading mb={6} fontSize="16px" color="Grey">
                     Log in
                 </Heading>
                 <Box as="form" onSubmit={(e) => handleSubmit(e as unknown as FormEvent<HTMLFormElement>)}>

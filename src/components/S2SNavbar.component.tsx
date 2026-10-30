@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Flex, VStack, Drawer, Portal, Text, Heading } from "@chakra-ui/react"
+import { Flex, VStack, Drawer, Portal, Image } from "@chakra-ui/react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Turn as Hamburger } from 'hamburger-react'
 
@@ -53,7 +53,7 @@ export default function S2SNavbar() {
 
     return (
         <Flex display={{ base: "flex", lg: "none" }} width="100%" justifyContent="space-between" alignItems="center" px={8} py={4}>
-            <Text fontWeight={"semibold"} color="Grey" fontSize={"20"}>Stray2Stay</Text>
+            <Image src="/favicon.png" alt="Stray2Stay" w="90px" objectFit="contain" />
             <Drawer.Root placement="start" size="full" open={open} onOpenChange={(e) => setOpen(e.open)}>
                 <Drawer.Trigger asChild p={0}>
                     <Hamburger direction="right" size={20} toggled={open} toggle={setOpen} color="Grey" />
@@ -68,7 +68,7 @@ export default function S2SNavbar() {
                                     </Drawer.CloseTrigger>
                                 </Flex>
                                 <Flex pt={4} px={8} alignItems="center" justifyContent="space-between" gap={2} color="Grey">
-                                    <Heading as="h1">Stray2Stay</Heading>
+                                    <Image src="/favicon.png" alt="Stray2Stay" w="120px" objectFit="contain" />
                                     <Flex alignItems="center" gap={4}>
                                         <S2SAvatar />
                                     </Flex>

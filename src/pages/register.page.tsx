@@ -59,7 +59,7 @@ export default function Register() {
         <Box w="100%" h="100vh" bgGradient="BlueYellow">
 
             <Box maxW="sm" mx="auto" pt={20} px="25px">
-                <Heading mb={6} size="lg" color="Grey">
+                <Heading mb={6} fontSize="16px" color="Grey">
                     Sign up
                 </Heading>
 

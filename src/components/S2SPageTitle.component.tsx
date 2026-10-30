@@ -7,7 +7,7 @@ import type { S2SPageTitleType } from "../types/component.type"
 export default function S2SPageTitle({ title }: S2SPageTitleType) {
     return (
         <Flex alignItems="center" justifyContent="space-between" gap={2} mb={4}>
-            <Heading as="h1" fontSize={{ base: "20", md: "32" }} color="Grey" fontWeight="semibold">
+            <Heading as="h1" fontSize={{ base: "18px", md: "30px" }} color="Grey" fontWeight="semibold">
                 {title}
             </Heading>
             <Flex display={{ base: "none", md: "flex" }}>
