@@ -10,10 +10,10 @@ export default function NotFound() {
     <Box w="100%" h="100vh" bgGradient="BlueYellow">
       <Flex w="100%" h="100%" align="center" justify="center" px="25px">
         <VStack gap={4} textAlign="center">
-          <Heading size="6xl" color="Blue">
+          <Heading fontSize="58px" color="Blue">
             404
           </Heading>
-          <Heading size="lg" color="Grey">
+          <Heading fontSize="16px" color="Grey">
             Page Not Found
           </Heading>
           <Text color="LightGrey" mb={2}>

@@ -1,8 +1,8 @@
 import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
-// Desktop font-size adjustments; mobile retains the original token sizes.
-const px = (size: number) => ({ value: `var(--font-size-${size}, ${size}px)` });
-const rem = (size: number) => ({ value: `var(--font-size-${size}, ${size / 16}rem)` });
+// Typography tokens shrink text by 1px; page-title headings are reduced by 2px.
+const px = (size: number) => ({ value: `var(--font-size-${size}, ${size - 1}px)` });
+const rem = (size: number) => ({ value: `var(--font-size-${size}, ${(size - 1) / 16}rem)` });
 
 const config = defineConfig({
   theme: {
@@ -111,14 +111,8 @@ const config = defineConfig({
   globalCss: {
     "html, body": {
       fontFamily: "'Montserrat', sans-serif",
+      fontSize: "15px",
       overflowX: "hidden"
-    },
-    body: {
-      md: {
-        zoom: "0.9",
-        width: "111.111vw",
-        minHeight: "111.111vh",
-      },
     },
     "*": {
       WebkitTapHighlightColor: "transparent",

@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, VStack } from "@chakra-ui/react"
+import { Box, Flex, Image, VStack } from "@chakra-ui/react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch } from "../hooks/redux"
 import { setAuth } from "../store/slices/authSlices"
@@ -58,10 +58,8 @@ export default function S2SSidebar() {
             pb={4}
             overflow="hidden"
         >
-            <Flex px="22%" align="center">
-                <Heading color="Grey" fontSize="20" fontWeight="600">
-                    Stray2stay
-                </Heading>
+            <Flex px="8%" align="center" justify="center">
+                <Image src="/favicon.png" alt="Stray2Stay" w="100%" maxW="120px" objectFit="contain" />
             </Flex>
 
             {/* Figma: highlight rows sit edge to edge, 32px below the logo */}

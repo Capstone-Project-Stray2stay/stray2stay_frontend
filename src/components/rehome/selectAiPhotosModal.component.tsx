@@ -54,7 +54,7 @@ export default function SelectAiPhotosModal({
     return (
         <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onClose()} placement="center">
             <Portal>
-                <Dialog.Backdrop bg="blackAlpha.400" />
+                <Dialog.Backdrop bg="blackAlpha.400" backdropFilter="blur(4px)" />
                 <Dialog.Positioner>
                     <Dialog.Content
                         maxW={{ base: "335px", md: "573px" }}

@@ -7,7 +7,7 @@ import { useNewUserStatus } from "../hooks/query/auth.query";
 export default function MainLayout() {
   const { userStatus } = useNewUserStatus();
   return (
-    <Box minH={{ base: "100vh", md: "111.111vh" }} width="100%" maxW={{ base: "100vw", md: "111.111vw" }} overflowX="hidden" bgGradient="PageBackground">
+    <Box minH="100vh" width="100%" maxW="100vw" overflowX="hidden" bgGradient="PageBackground">
       <ScrollRestoration />
       <S2SNavbar />
       <Box minH="100vh" >

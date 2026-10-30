@@ -180,7 +180,6 @@ export default function Home() {
             </Text>
             <Text mt={{ base: 4, lg: "21px" }} color="GreyText" fontSize={{ base: "14", md: "20" }} fontWeight={500}>
               Share a photo of the pet you're looking for.
-              <Box as="br" />
               We'll find them for you!
             </Text>
             <Box mt={{ base: 6, lg: "32px" }}>
@@ -199,7 +198,7 @@ export default function Home() {
       </Box>
 
       {/* Recommended + What We Do share one continuous gradient in Figma */}
-      <Box
+      <Box position="relative" zIndex={2}
         mt={{ base: "-20px", md: "-40px", lg: "-50px" }}
         bgGradient="HomeContent"
         borderTopLeftRadius={{ base: "32px", md: "52px", lg: "80px" }}
