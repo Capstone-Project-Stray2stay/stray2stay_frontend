@@ -278,6 +278,7 @@ export default function Step3Details({
                             <Flex
                                 direction={{ base: "column", md: "row" }}
                                 align={{ base: "flex-end", md: "center" }}
+                                justify={{ base: "flex-start", md: "flex-end" }}
                                 gap="20px"
                             >
                                 <Box w={{ base: "100%", md: "250px" }}>
