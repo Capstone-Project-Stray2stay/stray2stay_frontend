@@ -130,7 +130,7 @@ export default function Diary() {
                             ? "Please try again in a moment."
                             : "A diary opens once an adoption is accepted."}
                     </Text>
-                    <S2SButton text="Find a pet" width="160px" height="45px" onClick={() => navigate("/adopt")} />
+                    <S2SButton text="Find a pet" width="160px" height="45px" fontSize={{ base: "18", md: "20" }} onClick={() => navigate("/adopt")} />
                 </VStack>
             </Box>
         );
