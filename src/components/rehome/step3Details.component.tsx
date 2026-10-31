@@ -278,22 +278,23 @@ export default function Step3Details({
                             <Flex
                                 direction={{ base: "column", md: "row" }}
                                 align={{ base: "flex-end", md: "center" }}
-                                gap={{ base: "11.90px", md: "13px" }}
+                                gap="20px"
                             >
-                                <S2SInput
-                                    {...detailInputStyle}
-                                    w={{ base: "100%", md: "250px" }}
-                                    borderRadius={{ base: "120.86px", md: "132px" }}
-                                    placeholder="e.g. Disabilities , Chronic"
-                                    value={specialCareDraft}
-                                    onChange={(e) => setSpecialCareDraft(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            e.preventDefault();
-                                            addSpecialCare();
-                                        }
-                                    }}
-                                />
+                                <Box w={{ base: "100%", md: "250px" }}>
+                                    <S2SInput
+                                        {...detailInputStyle}
+                                        borderRadius={{ base: "120.86px", md: "132px" }}
+                                        placeholder="e.g. Disabilities , Chronic"
+                                        value={specialCareDraft}
+                                        onChange={(e) => setSpecialCareDraft(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                addSpecialCare();
+                                            }
+                                        }}
+                                    />
+                                </Box>
                                 <IconButton
                                     aria-label="Add special care"
                                     boxSize={{ base: "27.47px", md: "30px" }}
