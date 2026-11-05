@@ -181,7 +181,7 @@ function RehomingRow({
         <VStack ref={rowRef} align="stretch" gap="16px" w="100%">
             <Flex justify="space-between" align="center" gap="16px" w="100%">
                 <Flex align="center" gap={{ base: "16px", md: "24px" }} minW={0}>
-                    <Avatar.Root boxSize={{ base: "60px", md: "85px" }} flexShrink={0}>
+                    <Avatar.Root boxSize={{ base: "52px", md: "85px" }} flexShrink={0}>
                         <Avatar.Fallback name={pet.name} />
                         <Avatar.Image src={pet.imageURL} />
                     </Avatar.Root>
@@ -203,7 +203,7 @@ function RehomingRow({
                     </VStack>
                 </Flex>
 
-                <Flex align="center" gap={{ base: "12px", md: "24px" }} flexShrink={0}>
+                <Flex align="center" gap={{ base: "6px", md: "24px" }} flexShrink={0}>
                     <Flex align="center" gap={{ base: "8px", md: "12px" }}>
                         {isAdopted ? (
                             <RoundIconButton

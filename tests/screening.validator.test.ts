@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { OTHER_OPTION, type CustomScreeningQuestionDraft } from "../src/types/profile.type";
 import { screeningAnswersSchema, screeningMissingNumbers } from "../src/validators/screening.validator";
 import { screeningQuestionsError } from "../src/validators/screeningQuestions.validator";
