@@ -1,6 +1,22 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This template provides a minimal setup to get React working with Vite and some ESLint rules.
+
+## Tests
+
+Run frontend validation tests from this directory:
+
+```sh
+bun run test
+```
+
+Run Go backend tests from the project root:
+
+```sh
+cd stray2stay_backend && go test ./...
+```
+
+Frontend tests cover authentication, pet registration, and adoption screening validation. Backend tests exercise user authentication HTTP handlers with an isolated service fake.
 
 Currently, two official plugins are available:
 
