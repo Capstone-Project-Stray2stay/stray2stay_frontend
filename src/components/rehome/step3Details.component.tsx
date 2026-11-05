@@ -136,7 +136,7 @@ export default function Step3Details({
             </DetailSection>
 
             <DetailSection title="Pet's Personality" required>
-                <Flex wrap="wrap" gap={{ base: "6.97px", md: "12px" }} align="center">
+                <Flex wrap="wrap" justify="flex-end" gap={{ base: "6.97px", md: "12px" }} align="center">
                     {personalityChips.map((text) => (
                         <S2SChip
                             key={text}
@@ -311,7 +311,7 @@ export default function Step3Details({
                             </Flex>
 
                             {draft.specialCare.length > 0 && (
-                                <Flex wrap="wrap" gap="12px">
+                                <Flex wrap="wrap" justify="flex-start" flexDirection="row-reverse" gap="12px">
                                     {draft.specialCare.map((item) => (
                                         <S2SChip
                                             key={item}
