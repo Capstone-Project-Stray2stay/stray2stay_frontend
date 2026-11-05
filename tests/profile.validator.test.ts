@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { personalInfoSchema } from "../src/validators/profile.validator";
 
 const validProfile = {

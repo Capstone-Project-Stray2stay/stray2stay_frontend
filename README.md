@@ -4,7 +4,7 @@ This template provides a minimal setup to get React working with Vite and some E
 
 ## Tests
 
-Run frontend validation tests from this directory:
+Run frontend validation tests with Vitest from this directory:
 
 ```sh
 bun run test

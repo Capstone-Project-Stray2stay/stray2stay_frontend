@@ -15,7 +15,7 @@ export default function RoundIconButton({
     return (
         <IconButton
             aria-label={ariaLabel}
-            boxSize="38px"
+            boxSize={{base: "30px", md: "38px"}}
             minW="unset"
             p="0"
             rounded="full"

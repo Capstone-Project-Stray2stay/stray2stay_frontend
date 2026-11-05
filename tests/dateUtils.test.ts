@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { addMonths, buildMonthGrid, fromDateKey, toDateKey, visibleRange, weekOf } from "../src/utils/dateUtils";
 
 describe("diary date utilities", () => {

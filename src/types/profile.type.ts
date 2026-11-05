@@ -66,7 +66,21 @@ export interface ScreeningAnswers {
 export interface ScreeningAnswersWithCustom extends ScreeningAnswers {
     /** Key matches domain.ScreeningAnswer's untagged Go field name. */
     CustomAnswers?: CustomAnswerResponse[];
+    /**
+     * AI briefing of this form, generated after the request was submitted.
+     * Empty until aiSummaryStatus is "READY". These two carry json tags on
+     * the Go side, hence the camelCase among the untagged fields above.
+     */
+    aiSummary?: string;
+    aiSummaryStatus?: AiSummaryStatus;
 }
+
+/**
+ * PENDING covers both "not generated yet" and "a transient failure will be
+ * retried", so the UI treats it as in-progress. FAILED is terminal until
+ * someone resets it.
+ */
+export type AiSummaryStatus = "PENDING" | "READY" | "FAILED";
 
 export type CustomQuestionType = "CHECKLIST" | "MULTIPLE_CHOICE" | "ESSAY" | "IMAGE";
 

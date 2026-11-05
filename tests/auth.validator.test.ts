@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { loginSchema, registerSchema } from "../src/validators/auth.validator";
 
 describe("loginSchema", () => {

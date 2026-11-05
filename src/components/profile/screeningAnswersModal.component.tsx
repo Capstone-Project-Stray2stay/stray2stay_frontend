@@ -1,9 +1,14 @@
-import { Box, Dialog, Image, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { Box, Dialog, HStack, Icon, Image, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { LuSparkles } from "react-icons/lu";
 
 import { S2SDialogCloseButton } from "../S2S.components";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
-import type { CustomAnswerResponse, ScreeningAnswersWithCustom } from "../../types/profile.type";
+import type {
+    AiSummaryStatus,
+    CustomAnswerResponse,
+    ScreeningAnswersWithCustom,
+} from "../../types/profile.type";
 
 function AnswerRadioGroup({
     value,
@@ -122,6 +127,103 @@ function Answer({
     );
 }
 
+/**
+ * Marks the panel as machine-written at a glance, so it is never mistaken
+ * for something the adopter or the platform wrote.
+ */
+const AI_GRADIENT =
+    "linear-gradient(45deg, #FFAFBD, #FFD3A5, #FFE29A, #B5EAD7, #A8D8F0, #C7B9F5)";
+
+function AiBadge() {
+    return (
+        <HStack
+            gap="5px"
+            px="10px"
+            py="3px"
+            borderRadius="999px"
+            bgImage={AI_GRADIENT}
+            color="Grey"
+            flexShrink={0}
+        >
+            <Icon as={LuSparkles} boxSize="13px" aria-hidden />
+            <Text fontSize="12" fontWeight="700" letterSpacing="0.6px" lineHeight="1.4">
+                AI
+            </Text>
+        </HStack>
+    );
+}
+
+/**
+ * The AI briefing of this adopter's form, shown above the answers so the
+ * owner gets the gist before scrolling.
+ *
+ * The gradient border and badge are not decoration: this sits in front of
+ * someone deciding who gets to adopt a pet, so it has to be obvious at a
+ * glance that a machine wrote it and that a summary can omit or soften
+ * something the form itself says. The answers below it stay the record.
+ */
+function AiSummaryPanel({
+    summary,
+    status,
+}: {
+    summary: string | undefined;
+    status: AiSummaryStatus | undefined;
+}) {
+    const text = summary?.trim();
+
+    // An older backend sends neither field; render nothing rather than an
+    // empty box that looks broken.
+    if (!text && status === undefined) {
+        return null;
+    }
+
+    const pending = !text && status !== "FAILED";
+
+    return (
+        // The gradient lives on an outer wrapper used as a 2px frame: a
+        // border cannot itself take a gradient, and painting one behind a
+        // translucent panel would tint the text area too.
+        <Box borderRadius="26px" p="2px" bgImage={AI_GRADIENT} flexShrink={0}>
+            <Box
+                bg="white"
+                borderRadius="24px"
+                px={{ base: "18px", md: "26px" }}
+                py="18px"
+            >
+                {/* A summary is normally a few lines, but it is capped at 2000
+                    characters server-side. Bound it so a long one scrolls
+                    rather than squeezing the answers out of view. */}
+                <VStack align="stretch" gap="10px" overflowY="auto">
+                    <HStack gap="10px">
+                        <AiBadge />
+                        <Text fontSize="16" fontWeight="600" color="Grey">
+                            Summary
+                        </Text>
+                    </HStack>
+
+                    {text ? (
+                        <>
+                            <Text fontSize="16" fontWeight="500" color="Grey" whiteSpace="pre-wrap">
+                                {text}
+                            </Text>
+                            <Text fontSize="14" fontWeight="500" color="GreyText">
+                                Written by AI from the answers below. Please read the full form
+                                before deciding.
+                            </Text>
+                        </>
+                    ) : (
+                        <Text fontSize="16" fontWeight="500" color="GreyText">
+                            {pending
+                                ? "The summary is still being written. Reopen this form in a moment to see it."
+                                : "A summary could not be generated for this request."}
+                        </Text>
+                    )}
+                </VStack>
+            </Box>
+        </Box>
+    );
+}
+
 function CustomAnswerView({ answer }: { answer: CustomAnswerResponse }) {
     if (answer.questionType === "ESSAY") {
         return <TextAnswer value={String(answer.value ?? "")} full />;
@@ -169,7 +271,8 @@ export default function ScreeningAnswersModal({
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
                     <Dialog.Content
-                        maxW="915px"
+                        maxW={{base: "90vw", lg: "60vw"}}
+                        maxH="90vh"
                         borderRadius="50px"
                         p="0"
                         position="relative"
@@ -177,22 +280,31 @@ export default function ScreeningAnswersModal({
                     >
                         <S2SDialogCloseButton onClick={onClose} zIndex={1} />
 
+                        {/* Dialog.Content is a flex column with a maxH, so this
+                            fills it and clips; the answers below take whatever
+                            height is left. Sizing any part of this in vh would
+                            double-count the header and summary and spill past
+                            the rounded corners. */}
                         <VStack
-                            pt="53px"
+                            pt={{base: "80px", md: "53px"}}
                             pb="40px"
                             px={{ base: "24px", md: "54px" }}
                             gap="30px"
                             align="stretch"
+                            flex="1"
+                            minH="0"
+                            overflow="hidden"
                         >
-                            <VStack gap="21px" maxW="626px" alignSelf="center">
-                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
+                            <VStack gap="21px" maxW="626px" alignSelf="center" flexShrink={0}>
+                                <Text fontSize={{base: "20", md: "24"}} fontWeight="600" color="Grey" textAlign="center">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize="16" fontWeight="500" color="GreyText" textAlign="center">
+                                <Text fontSize={{base: "14", md: "16"}} fontWeight="500" color="GreyText" textAlign="center">
                                     {adopterName}&apos;s responses, shared to assist in the adoption
                                     approval process.
                                 </Text>
                             </VStack>
+
 
                             {answers === undefined ? (
                                 <Text fontSize="16" color="GreyText" textAlign="center" py="40px">
@@ -202,10 +314,15 @@ export default function ScreeningAnswersModal({
                                 <VStack
                                     align="stretch"
                                     gap="30px"
-                                    maxH="55vh"
+                                    flex="1"
+                                    minH="0"
                                     overflowY="auto"
                                     pr="8px"
                                 >
+                                    <AiSummaryPanel
+                                        summary={answers.aiSummary}
+                                        status={answers.aiSummaryStatus}
+                                    />
                                     {SCREENING_SECTIONS.map((section) => (
                                         <VStack key={section.title} align="stretch" gap="20px">
                                             <Text fontSize="16" color="black">
