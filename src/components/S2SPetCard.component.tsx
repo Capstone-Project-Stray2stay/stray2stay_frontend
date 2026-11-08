@@ -6,6 +6,9 @@ import type { S2SPetCardType } from "../types/component.type"
 export default function S2SPetCard({ rank, width, height, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
     return (
         <Box
+            // Stable hook for the Playwright suite: card content repeats across results,
+            // so counting them needs something that isn't copy.
+            data-testid="pet-card"
             w={width}
             h={height}
             rounded={{base: "12px",md: "24px"}}
