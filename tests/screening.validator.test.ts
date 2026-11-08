@@ -30,10 +30,12 @@ const question = (overrides: Partial<CustomScreeningQuestionDraft>): CustomScree
 });
 
 describe("screeningAnswersSchema", () => {
+    // UT-FE-SCRN-01
     it("accepts false answers and zero-based choices", () => {
         expect(screeningAnswersSchema.safeParse(validAnswers).success).toBe(true);
     });
 
+    // UT-FE-SCRN-01
     it("rejects unanswered required fields and identifies the form question number", () => {
         const result = screeningAnswersSchema.safeParse({ ...validAnswers, Q1_1: null, Q1_3: "   " });
         expect(result.success).toBe(false);
@@ -44,11 +46,13 @@ describe("screeningAnswersSchema", () => {
 });
 
 describe("screeningQuestionsError", () => {
+    // UT-FE-SCRN-02
     it("requires prompt text except for image questions", () => {
         expect(screeningQuestionsError([question({ questionText: "  " })])).toBe("Question 1 needs question text.");
         expect(screeningQuestionsError([question({ questionType: "IMAGE", questionText: "", questionOptions: ["photo.jpg"] })])).toBe("");
     });
 
+    // UT-FE-SCRN-03
     it("requires two non-empty multiple-choice options while counting Other as an option", () => {
         expect(screeningQuestionsError([question({ questionType: "MULTIPLE_CHOICE", questionOptions: [OTHER_OPTION] })]))
             .toBe("Question 1 needs at least 2 options.");
@@ -58,6 +62,7 @@ describe("screeningQuestionsError", () => {
             .toBe("");
     });
 
+    // UT-FE-SCRN-02
     it("requires at least one image for an image question", () => {
         expect(screeningQuestionsError([question({ questionType: "IMAGE", questionText: "", questionOptions: [] })]))
             .toBe("Question 1 needs at least one photo.");

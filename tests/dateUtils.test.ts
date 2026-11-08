@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { addMonths, buildMonthGrid, fromDateKey, toDateKey, visibleRange, weekOf } from "../src/utils/dateUtils";
 
 describe("diary date utilities", () => {
+    // UT-FE-DATE-01
     it("parses only real YYYY-MM-DD calendar dates, including leap day", () => {
         expect(toDateKey(fromDateKey("2024-02-29")!)).toBe("2024-02-29");
         expect(fromDateKey("2023-02-29")).toBeNull();
@@ -10,6 +11,7 @@ describe("diary date utilities", () => {
         expect(fromDateKey("2024-02-09T00:00:00")).toBeNull();
     });
 
+    // UT-FE-DATE-02
     it("builds a Sunday-to-Saturday week across month boundaries", () => {
         const week = weekOf(new Date(2024, 2, 1));
         expect(week.map(toDateKey)).toEqual([
@@ -18,6 +20,7 @@ describe("diary date utilities", () => {
         ]);
     });
 
+    // UT-FE-DATE-02
     it("pads leap-year February into complete seven-day calendar rows", () => {
         const grid = buildMonthGrid(2024, 1);
         expect(grid).toHaveLength(5);
@@ -30,11 +33,13 @@ describe("diary date utilities", () => {
         expect(grid[4]!.slice(5)).toEqual([null, null]);
     });
 
+    // UT-FE-DATE-03
     it("pins month navigation to day one instead of overflowing month ends", () => {
         expect(toDateKey(addMonths(new Date(2024, 0, 31), 1))).toBe("2024-02-01");
         expect(toDateKey(addMonths(new Date(2024, 2, 31), -1))).toBe("2024-02-01");
     });
 
+    // UT-FE-DATE-03
     it("fetches both the displayed month and the selected week's overhanging days", () => {
         const march = new Date(2024, 2, 15);
         expect(visibleRange(march, new Date(2024, 2, 31))).toEqual(["2024-03-01", "2024-04-06"]);

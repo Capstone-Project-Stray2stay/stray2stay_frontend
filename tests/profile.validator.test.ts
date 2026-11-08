@@ -14,6 +14,7 @@ const validProfile = {
 };
 
 describe("personalInfoSchema", () => {
+    // UT-FE-PROF-01
     it("accepts complete contact details and trims user-entered text", () => {
         const result = personalInfoSchema.safeParse(validProfile);
         expect(result.success).toBe(true);
@@ -27,6 +28,7 @@ describe("personalInfoSchema", () => {
         }
     });
 
+    // UT-FE-PROF-01
     it("rejects whitespace-only required fields and phone values outside the allowed format/length", () => {
         expect(personalInfoSchema.safeParse({ ...validProfile, firstName: "   " }).success).toBe(false);
         expect(personalInfoSchema.safeParse({ ...validProfile, district: "  " }).success).toBe(false);

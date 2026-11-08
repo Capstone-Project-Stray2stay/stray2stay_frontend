@@ -24,11 +24,13 @@ const validPet = {
 };
 
 describe("petDetailsSchema", () => {
+    // UT-FE-PET-01
     it("accepts a complete dog or cat listing, including a false sterilized value", () => {
         expect(petDetailsSchema.safeParse(validPet).success).toBe(true);
         expect(petDetailsSchema.safeParse({ ...validPet, petType: "cat" }).success).toBe(true);
     });
 
+    // UT-FE-PET-01
     it("rejects unsupported species and non-blank detail/location fields", () => {
         const unsupportedSpecies = { ...validPet, petType: "rabbit" } as unknown as typeof validPet;
         expect(petDetailsSchema.safeParse(unsupportedSpecies).success).toBe(false);
@@ -39,6 +41,7 @@ describe("petDetailsSchema", () => {
         }).success).toBe(false);
     });
 
+    // UT-FE-PET-02
     it("reports missing labels once in schema order for the registration form", () => {
         const result = petDetailsSchema.safeParse({
             ...validPet,
