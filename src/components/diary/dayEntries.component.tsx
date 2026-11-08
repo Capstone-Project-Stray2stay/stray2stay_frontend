@@ -32,6 +32,11 @@ const PHOTO_PROPS = {
     alignSelf: { base: "stretch", md: "flex-end" },
 } as const;
 
+// Figma's drop zone dashes are 12px on / 8px off, which a CSS `dashed` border can't do.
+// The rect's 3px stroke is centred on the edge, so 1.5px of it shows. `color` is URL-encoded.
+const dashedBorder = (color: string, radius: number) =>
+    `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3e%3crect width='100%25' height='100%25' fill='none' rx='${radius}' ry='${radius}' stroke='${color}' stroke-width='3' stroke-dasharray='12 8'/%3e%3c/svg%3e")`;
+
 function EntryView({ entry }: { entry: DiaryEntry }) {
     return (
         <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
@@ -121,12 +126,12 @@ function EntryEditor({
                     w="100%"
                     py={{ base: "24px", md: "32px" }}
                     px="16px"
-                    bg="rgba(255,255,255,0.60)"
                     borderRadius={{ base: "11.62px", md: "24px" }}
-                    borderWidth="1.5px"
-                    borderStyle="dashed"
-                    borderColor={isDragging ? "BlueText" : "Blue"}
-                    transition="border-color 0.15s ease"
+                    // Blue / BlueText theme colours, inlined because the SVG can't read tokens
+                    backgroundImage={{
+                        base: dashedBorder(isDragging ? "%2385BFE2" : "%2387CFF0", 11.62),
+                        md: dashedBorder(isDragging ? "%2385BFE2" : "%2387CFF0", 24),
+                    }}
                     cursor="pointer"
                     onClick={() => inputRef.current?.click()}
                     onDragOver={(e) => {
@@ -299,8 +304,9 @@ export default function DayEntries({
                 flexShrink={0}
             />
 
-            <VStack flex="1" align="stretch" gap={{ base: "18.60px", md: "24px" }} minW="0">
-                <Flex display={{ base: "none", md: "flex" }} justify="flex-end">
+            <VStack flex="1" align="stretch" gap={{ base: "18.60px", md: "16px" }} minW="0">
+                {/* Figma keeps this 24px pencil row even when the pencil is hidden */}
+                <Flex display={{ base: "none", md: "flex" }} justify="flex-end" align="center" minH="24px">
                     {editPencil}
                 </Flex>
 

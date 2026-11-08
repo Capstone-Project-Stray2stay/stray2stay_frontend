@@ -30,12 +30,14 @@ export default function MonthCalendar({
                 <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey">
                     {MONTHS_LONG[viewMonth.getMonth()]} {viewMonth.getFullYear()}
                 </Text>
-                <Flex gap="16px">
+                {/* Lucide's chevron fills only the middle half of its box, so the 28px boxes
+                    give Figma's 16px-tall glyphs; the negative margin re-aligns the right edge */}
+                <Flex gap={{ base: "16px", md: "10px" }} mr={{ md: "-10px" }}>
                     <IconButton
                         aria-label="Previous month"
                         variant="plain"
                         minW="unset"
-                        boxSize={{ base: "13.20px", md: "16.28px" }}
+                        boxSize={{ base: "13.20px", md: "28px" }}
                         p="0"
                         color="GreyText"
                         onClick={() => onMonthChange(-1)}
@@ -46,7 +48,7 @@ export default function MonthCalendar({
                         aria-label="Next month"
                         variant="plain"
                         minW="unset"
-                        boxSize={{ base: "13.20px", md: "16.28px" }}
+                        boxSize={{ base: "13.20px", md: "28px" }}
                         p="0"
                         color="GreyText"
                         onClick={() => onMonthChange(1)}
@@ -71,6 +73,9 @@ export default function MonthCalendar({
                 ))}
             </Flex>
 
+            {/* Figma: date rows sit 41px apart (27px highlight bar + 14px); the -5px cancels the
+                first row's padding so the weekday header keeps its 24px gap on desktop */}
+            <VStack align="stretch" gap={{ base: "15.40px", md: "14px" }} mt={{ md: "-5px" }}>
             {rows.map((row, rowIndex) => {
                 const holdsSelection = row.some((day) => day && isSameDay(day, selectedDate));
 
@@ -113,6 +118,7 @@ export default function MonthCalendar({
                     </Flex>
                 );
             })}
+            </VStack>
         </VStack>
     );
 }
