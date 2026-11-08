@@ -70,7 +70,7 @@ export default function S2SNavbar() {
                                 <Flex pt={4} px={8} alignItems="center" justifyContent="space-between" gap={2} color="Grey">
                                     <Image src="/favicon.png" alt="Stray2Stay" w="120px" objectFit="contain" />
                                     <Flex alignItems="center" gap={4}>
-                                        <S2SAvatar />
+                                        <S2SAvatar onNavigate={() => setOpen(false)} />
                                     </Flex>
                                 </Flex>
                             <Drawer.Header>
