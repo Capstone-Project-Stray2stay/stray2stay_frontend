@@ -42,6 +42,7 @@ export default function PetSummaryCard({
             pl={{ base: "26px", md: "32px" }}
             gap={{ base: "9px", md: "32px" }}
             align={{ base: "stretch", md: "flex-start" }}
+            justify={{ md: "center" }}
             wrap={{ md: "wrap" }}
         >
             <Flex gap={{ base: "20px", md: "24px" }} align="center">
@@ -59,13 +60,11 @@ export default function PetSummaryCard({
                 </VStack>
             </Flex>
 
+            {/* Figma: the second column starts 119px in on both rows */}
             <SimpleGrid
-                columns={2}
-                columnGap={{ base: "27.12px", md: "32px" }}
+                templateColumns={{ base: "repeat(2, minmax(0, 1fr))", md: "89px max-content" }}
+                columnGap={{ base: "27.12px", md: "30px" }}
                 rowGap="8px"
-                flex={{ md: "1" }}
-                maxW={{ md: "460px" }}
-                minW={{ md: "274px" }}
             >
                 <Detail label="Age Group">
                     <Value>{formatAgeGroup(pet.petAgeGroup)}</Value>

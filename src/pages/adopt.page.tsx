@@ -226,6 +226,7 @@ export default function Adopt() {
                     data={breedOptions}
                     value={breed}
                     onValueChange={handleBreedChange}
+                    clearable
                 />
                 <S2SDropDown
                     key={`color-${breed}-${colorsLoading ? "loading" : "loaded"}`}
@@ -241,6 +242,7 @@ export default function Adopt() {
                     value={color}
                     onValueChange={handleColorChange}
                     disabled={breed === ""}
+                    clearable
                 />
                 <S2SDropDown
                     placeholder="Gender"
@@ -254,6 +256,7 @@ export default function Adopt() {
                     data={genderOptions}
                     value={gender}
                     onValueChange={handleGenderChange}
+                    clearable
                 />
                 <S2SDropDown
                     placeholder="Age Group"
@@ -267,6 +270,7 @@ export default function Adopt() {
                     data={ageGroupOptions}
                     value={ageGroup}
                     onValueChange={handleAgeGroupChange}
+                    clearable
                 />
                 <S2SDropDown
                     key={`location-${provincesLoading ? "loading" : "loaded"}`}
@@ -281,6 +285,7 @@ export default function Adopt() {
                     data={locationOptions}
                     value={location}
                     onValueChange={handleLocationChange}
+                    clearable
                 />
             </Flex>
             <Flex display={{ base: "none", md: "flex" }} justify="flex-end" mt="16px">
@@ -305,6 +310,7 @@ export default function Adopt() {
                                         data={breedOptions}
                                         value={breed}
                                         onValueChange={handleBreedChange}
+                                        clearable
                                     />
                                     <S2SDropDown
                                         key={`color-drawer-${breed}-${colorsLoading ? "loading" : "loaded"}`}
@@ -314,6 +320,7 @@ export default function Adopt() {
                                         value={color}
                                         onValueChange={handleColorChange}
                                         disabled={breed === ""}
+                                        clearable
                                     />
                                     <S2SDropDown
                                         placeholder="Gender"
@@ -321,6 +328,7 @@ export default function Adopt() {
                                         data={genderOptions}
                                         value={gender}
                                         onValueChange={handleGenderChange}
+                                        clearable
                                     />
                                     <S2SDropDown
                                         placeholder="Age Group"
@@ -328,6 +336,7 @@ export default function Adopt() {
                                         data={ageGroupOptions}
                                         value={ageGroup}
                                         onValueChange={handleAgeGroupChange}
+                                        clearable
                                     />
                                     <S2SDropDown
                                         key={`location-drawer-${provincesLoading ? "loading" : "loaded"}`}
@@ -336,6 +345,7 @@ export default function Adopt() {
                                         data={locationOptions}
                                         value={location}
                                         onValueChange={handleLocationChange}
+                                        clearable
                                     />
                                 </VStack>
                             </Drawer.Body>

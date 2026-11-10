@@ -17,7 +17,40 @@ const CARD_GRID = {
   columnGap: { base: 3, md: 5 },
   rowGap: { base: 3, md: "32px" },
 };
- 
+
+// Height of the layout's S2SFooter (20px padding top/bottom + one line of 12px/14px text)
+const FOOTER_OVERLAP = { base: "-57px", md: "-60px" };
+
+const GOALS = [
+  {
+    title: "Easier to find",
+    description: "Improve pet adoption accessibility in Thailand with one platform and centralized data, so adopters find suitable pets more easily.",
+    bg: "PaleYellow",
+  },
+  {
+    title: "Safe, caring homes",
+    description: "Help more pets find suitable homes while reducing the effort of searching across social media posts.",
+    bg: "White",
+    icon: { src: "/assets/icons/goal_caring_home.png", size: "120px" },
+  },
+  {
+    title: "Smarter with AI",
+    description: "Use AI breed classification from uploaded images to improve discovery and pet information.",
+    bg: "PaleYellow",
+    icon: { src: "/assets/icons/goal_ai.png", size: "110px" },
+  },
+];
+
+// Figma: the "Easier to find" icon is a magnifier with a paw sitting inside the lens
+function SearchPawIcon() {
+  return (
+    <Box position="relative" w="112px" h="112px">
+      <Image src="/assets/icons/goal_search.png" alt="" w="110px" h="110px" />
+      <Image src="/assets/icons/paw_blue.svg" alt="" position="absolute" left="19px" top="19px" w="48px" h="48px" />
+    </Box>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const { recommendedPets, isLoading, isError } = useRandomPets();
@@ -28,20 +61,23 @@ export default function Home() {
 
   return (
     <Box width="100%">
+      {/* hero + photo search share one box so the clouds can straddle the arc between them */}
+      <Box position="relative" overflow="hidden">
       <Grid
         position="relative"
         overflow="hidden"
         bgGradient="HomeHero"
-        pb={{ base: "90px", md: "150px" }}
+        pt={{ lg: "48px" }}
+        pb={{ base: "90px", md: "150px", lg: "175px" }}
         px={{ base: "30px", md: "9%"}}
         templateAreas={{
           base: `"title image" "Description Description" "buttons buttons"`,
           lg: `"title image" "Description image" "buttons image"`,
         }}
-        templateColumns={{ base: "1fr auto", md: "1fr 200px", lg: "1fr 438px" }}
-        columnGap={{ base: 4, lg: 10 }}
+        templateColumns={{ base: "1fr auto", md: "1fr 250px", lg: "1fr 380px", xl: "1fr 510px" }}
+        columnGap={{ base: 4, lg: 10, xl: 0 }}
         rowGap={{ base: 6, lg: "17px" }}
-        alignItems="center"
+        alignItems={{ base: "center", lg: "end" }}
       >
         <GridItem area="title" position="relative" zIndex={1}>
           <Text
@@ -61,14 +97,24 @@ export default function Home() {
             Home.
           </Text>
         </GridItem>
-        <GridItem area="image" justifySelf={{ base: "end", lg: "center" }} position="relative" zIndex={1}>
-          <Box position="relative" width={{ base: "140px", md: "250px", lg: "438px" }} maxW="100%">
+        <GridItem area="image" justifySelf="end" position="relative" zIndex={1}>
+          {/* Figma frame is 510x302; offsets are % of it so both drawings scale together */}
+          <Box position="relative" width={{ base: "140px", md: "250px", lg: "380px", xl: "510px" }} maxW="100%" aspectRatio="510 / 302">
             <Image
-              src="/assets/images/house.png"
-              alt="House illustration"
-              width="100%"
-              position="relative"
-              zIndex={1}
+              src="/assets/images/home_house.png"
+              alt="Dog house illustration"
+              position="absolute"
+              left="3.3%"
+              top="6.3%"
+              width="78.8%"
+            />
+            <Image
+              src="/assets/images/home_cat_dog.png"
+              alt="Cat and dog illustration"
+              position="absolute"
+              left="47.6%"
+              top="44.7%"
+              width="44.7%"
             />
           </Box>
         </GridItem>
@@ -104,71 +150,70 @@ export default function Home() {
             />
           </Flex>
         </GridItem>
-        <Image
-          src="/assets/images/cloud.png"
-          alt=""
-          position="absolute"
-          top="0px"
-          right="0px"
-          width={{ base: "80px", md: "120px", lg: "135px" }}
-          zIndex={0}
-          pointerEvents="none"
-        />
-        <Image
-          src="/assets/images/cloud.png"
-          alt=""
-          position="absolute"
-          top={{ base: "230px", md: "240px", lg: "260px" }}
-          left={{ base: "16px", md: "0px", lg: "0px" }}
-          width={{ base: "60px", md: "100px", lg: "120px" }}
-          zIndex={0}
-          pointerEvents="none"
-          transform="scaleX(-1)"
-        />
       </Grid>
+
+      <Image
+        src="/assets/images/cloud.png"
+        alt=""
+        position="absolute"
+        top={{ base: "0px", md: "40px", lg: "80px" }}
+        right={{ base: "-10px", lg: "-35px" }}
+        width={{ base: "80px", md: "140px", lg: "210px" }}
+        zIndex={0}
+        pointerEvents="none"
+      />
+      {/* sits in front of the arc; translucent so it picks up the blue below the arc as in Figma */}
+      <Image
+        src="/assets/images/cloud.png"
+        alt=""
+        position="absolute"
+        top={{ base: "230px", md: "240px", lg: "406px" }}
+        left={{ base: "0px", lg: "-12px" }}
+        width={{ base: "60px", md: "120px", lg: "180px" }}
+        opacity={0.7}
+        zIndex={2}
+        pointerEvents="none"
+        transform="scaleX(-1)"
+      />
 
       <Box
         position="relative"
         zIndex={1}
-        mt={{ base: "-35px", md: "-85px" }}
-        bg="LightBlue"
-        px={{ base: "30px", md: "9%", xl: "18%" }}
-        pb={{ base: "60px", md: "100px" }}
-        borderTopLeftRadius={{ base: "40% 40px", md: "50% 70px", lg: "65% 120px" }}
-        borderTopRightRadius={{ base: "40% 40px", md: "50% 70px", lg: "65% 120px" }}
-        borderBottomLeftRadius="0px"
-        borderBottomRightRadius="0px"
+        mt={{ base: "-35px", md: "-85px", lg: "-100px" }}
+        bgGradient="HomeWave"
+        px={{ base: "30px", md: "9%" }}
+        pb={{ base: "60px", md: "100px", lg: "149px" }}
+        // Figma's arc is a slice of a much wider ellipse: flat near the middle, ~80px drop at the edges
+        clipPath={{
+          base: "ellipse(600px 400px at 50% 400px)",
+          md: "ellipse(1000px 600px at 50% 600px)",
+          lg: "ellipse(1500px 865px at 50% 865px)",
+        }}
       >
         <Flex
           maxW="1300px"
           direction="row"
           align="center"
           justify="center"
-          gap={{ base: 4, md: 10 }}
+          gap={{ base: 4, md: 10, xl: "112px" }}
           zIndex={1}
-          pt={"50px"}
+          pt={{ base: "50px", lg: "77px" }}
         >
-          <Box position="relative" flexShrink={0} width={{ base: "140px", md: "300px", lg: "424px" }} maxW="100%">
-            {/* yellow sun glow behind the illustration */}
-            <Box
-              position="absolute"
-              top="12%"
-              left="28%"
-              w="73%"
-              aspectRatio={1}
-              bg="GlowYellow"
-              borderRadius="full"
-              filter="blur(44.59px)"
-              pointerEvents="none"
-            />
+          <Flex
+            flexShrink={0}
+            width={{ base: "140px", md: "260px", xl: "308px" }}
+            maxW="100%"
+            aspectRatio="308 / 320"
+            align="center"
+            justify="center"
+          >
             <Image
-              src="/assets/images/people_with_dog.png"
-              alt="Person walking dog"
-              width="100%"
-              position="relative"
+              src="/assets/images/home_girl_with_pets.png"
+              alt="Girl hugging a cat and a dog"
+              width="94.5%"
             />
-          </Box>
-          <Box flex="1" minW={0} maxW={{ lg: "440px" }}>
+          </Flex>
+          <Box flex="1" minW={0} maxW={{ lg: "440px" }} pt={{ xl: "24px" }}>
             <Text
               fontSize={{ base: "20", md: "32", lg: "40" }}
               color="Grey"
@@ -196,18 +241,21 @@ export default function Home() {
           </Box>
         </Flex>
       </Box>
+      </Box>
 
-      {/* Recommended + What We Do share one continuous gradient in Figma */}
+      {/* Recommended + What We Do share one continuous gradient in Figma. It runs on under
+          the layout footer (negative mb = footer height) so the copyright sits on it too */}
       <Box position="relative" zIndex={2}
-        mt={{ base: "-20px", md: "-40px", lg: "-50px" }}
+        mt={{ base: "-20px", md: "-40px", lg: "-80px" }}
+        mb={FOOTER_OVERLAP}
         bgGradient="HomeContent"
         borderTopLeftRadius={{ base: "32px", md: "52px", lg: "80px" }}
         borderTopRightRadius={{ base: "32px", md: "52px", lg: "80px" }}
         borderBottomLeftRadius="0"
         borderBottomRightRadius="0"
         px={{ base: "24px", md: "9%" }}
-        pt={{ base: 12, lg: "80px" }}
-        pb={{ base: "30px", md: "56px" }}
+        pt={{ base: 12, lg: "59px" }}
+        pb={{ base: "87px", md: "136px", lg: "168px" }}
       >
         <Text color="Grey" fontSize={{ base: "22", md: "32" }} fontWeight="600" pb={{ base: 6, lg: "32px" }}>
           Recommended
@@ -249,7 +297,7 @@ export default function Home() {
           </Grid>
         )}
 
-          <Box as="section" aria-labelledby="what-we-do-title" mt={{ base: 12, lg: "112px" }} maxW="1180px" mx="auto">
+          <Box as="section" aria-labelledby="what-we-do-title" mt={{ base: 12, lg: "128px" }}>
             <Text
               id="what-we-do-title"
               as="h2"
@@ -260,43 +308,60 @@ export default function Home() {
             >
               What We Do ?
             </Text>
+            <Text mt={{ base: 4, md: "24px" }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+              We are a centralized pet adoption platform in Thailand. Our mission is to make finding and adopting pets easier, faster, and more reliable, by bringing scattered posts and pet data into one place, with AI breed classification to help identify pets from photos.
+            </Text>
+            <Flex mt={{ base: 6, md: "32px" }} justify="center" gap={{ base: 10, md: "144px" }}>
+              {[
+                { value: "45", label: "Dog breeds classified" },
+                { value: "19", label: "Cat breeds classified" },
+              ].map((stat) => (
+                <Flex key={stat.label} direction="column" align="center" gap="8px">
+                  <Text color="Grey" fontSize={{ base: "28px", md: "36px" }} fontWeight="600">
+                    {stat.value}
+                  </Text>
+                  <Text color="GreyText" fontSize={{ base: "15px", md: "20px" }} fontWeight="500" textAlign="center">
+                    {stat.label}
+                  </Text>
+                </Flex>
+              ))}
+            </Flex>
 
-            <Grid
-              templateColumns={{ base: "1fr", lg: "minmax(0, 1fr) minmax(0, 1fr)" }}
-              gap={{ base: 5, md: 7, lg: 10 }}
-              mt={{ base: 5, md: 6 }}
-              alignItems="center"
-            >
-              <Flex minH={{ base: "210px", md: "280px", lg: "330px" }} align="center" justify="center">
-                <Image
-                  src="/assets/images/dog_high_five.png"
-                  alt="Dog giving a high five"
-                  w="100%"
-                  maxW={{ base: "350px", lg: "470px" }}
-                  objectFit="contain"
-                />
-              </Flex>
-
-              <Box maxW="440px">
-                <Text color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
-                  We are a centralized pet adoption platform designed to make finding and adopting pets in Thailand easier, faster, and more reliable.
-                </Text>
-                <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
-                  Our platform helps solve common problems in pet adoption, including scattered information across social media, difficulty finding suitable pets, and lack of organized pet data. By bringing everything into one place, users can search, post, and connect with confidence.
-                </Text>
-                <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
-                  We also integrate AI-powered pet breed classification to help users identify pet breeds from uploaded images, improving pet discovery and supporting more accurate pet information.
-                </Text>
-              </Box>
-            </Grid>
-
-            <Box mt={{ base: 8, lg: 5 }} ml={{ base: 0, lg: "100px" }} maxW={{ lg: "860px" }}>
+            <Box mt={{ base: 12, lg: "80px" }}>
               <Text as="h3" color="Grey" fontSize={{ base: "27px", md: "30px" }} fontWeight="600" lineHeight="1.2">
                 Our Goals
               </Text>
-              <Text mt={{ base: 4, md: 5 }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
-                Our goal is to improve pet adoption accessibility in Thailand by creating a centralized platform that helps adopters find suitable pets more easily and efficiently. We aim to reduce the difficulty of searching for pets across scattered social media posts and unorganized sources while helping more pets find safe, caring, and suitable homes. Through technology, centralized data management, and AI-powered pet breed classification, we strive to make the adoption process more convenient, reliable, and accessible for both pet owners and adopters.
+              <Text mt={{ base: 4, md: "24px" }} color="GreyText" fontSize={{ base: "15px", md: "17px" }} lineHeight="1.3">
+                We want more pets to find safe, caring, and suitable homes. By combining technology with centralized data, we make it easier for adopters to find the right pet and for pet owners to reach people who are ready to adopt.
               </Text>
+              <Grid mt={{ base: 6, md: "32px" }} templateColumns={{ base: "1fr", lg: "repeat(3, minmax(0, 1fr))" }} gap={{ base: 5, md: "32px" }}>
+                {GOALS.map((goal) => (
+                  <Flex
+                    key={goal.title}
+                    direction="column"
+                    align="center"
+                    gap="12px"
+                    p="24px"
+                    bg={goal.bg}
+                    borderRadius="16px"
+                    boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)"
+                  >
+                    <Flex h="150px" align="center">
+                      {goal.icon ? (
+                        <Image src={goal.icon.src} alt="" w={goal.icon.size} h={goal.icon.size} />
+                      ) : (
+                        <SearchPawIcon />
+                      )}
+                    </Flex>
+                    <Text color="Grey" fontSize={{ base: "20px", md: "24px" }} fontWeight="600" textAlign="center">
+                      {goal.title}
+                    </Text>
+                    <Text color="GreyText" fontSize={{ base: "15px", md: "18px" }} letterSpacing="0.54px" textAlign="center">
+                      {goal.description}
+                    </Text>
+                  </Flex>
+                ))}
+              </Grid>
             </Box>
           </Box>
         </Box>
