@@ -3,7 +3,7 @@ import { IoFemale, IoMale } from "react-icons/io5";
 
 import { S2SButton, S2SCardShell } from "../S2S.components";
 
-import { formatAgeGroup, formatGender } from "../../utils/petOptions.util";
+import { formatAgeGroup, formatGender, GENDER_COLORS } from "../../utils/petOptions.util";
 import type { DiaryPet } from "../../types/diary.type";
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
@@ -83,7 +83,7 @@ export default function PetSummaryCard({
                         <Icon
                             as={formatGender(pet.petGender) === "Female" ? IoFemale : IoMale}
                             boxSize={{ base: "17px", md: "16px" }}
-                            color={formatGender(pet.petGender) === "Female" ? "pink.400" : "blue.400"}
+                            color={formatGender(pet.petGender) === "Female" ? GENDER_COLORS.female : GENDER_COLORS.male}
                         />
                         <Value>{formatGender(pet.petGender)}</Value>
                     </Flex>
