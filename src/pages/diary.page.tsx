@@ -187,27 +187,19 @@ export default function Diary() {
         </Flex>
     );
 
-    // Figma: the lying-down dog sticker with two cream sparkles around it (279×189 on desktop)
+    // Figma: the cat and dog drawing, 305px wide, centred in a 346×260 frame under the calendar
     const illustration = (
-        <Box
-            position="relative"
-            alignSelf={isDesktop ? "auto" : "center"}
-            w={isDesktop ? "279px" : "219px"}
-            h={isDesktop ? "189px" : "148px"}
+        <Flex
+            alignSelf="center"
+            w={isDesktop ? "346px" : "219px"}
+            h={isDesktop ? "260px" : "165px"}
+            align="center"
+            justify="center"
             pointerEvents="none"
             aria-hidden="true"
         >
-            <Image
-                src="/assets/images/diary_dog.png"
-                alt=""
-                position="absolute"
-                right="0"
-                bottom="0"
-                w="86%"
-            />
-            <Image src="/assets/icons/star.svg" alt="" position="absolute" left="0" top="36%" w="14%" />
-            <Image src="/assets/icons/star.svg" alt="" position="absolute" right="20%" top="4%" w="9%" />
-        </Box>
+            <Image src="/assets/images/diary_cat_dog.png" alt="" w={isDesktop ? "305px" : "100%"} maxH="100%" objectFit="contain" />
+        </Flex>
     );
 
     return (
@@ -216,7 +208,8 @@ export default function Diary() {
 
             {isDesktop ? (
                 <Flex mt="64px" gap="40px" align="flex-start">
-                    <VStack flex="1" minW="0" maxW="602px" align="stretch" gap="32px">
+                    {/* Figma: fixed 602px diary column; the finder/calendar column takes the rest */}
+                    <VStack flex="0 1 602px" minW="0" align="stretch" gap="32px">
                         {petCard}
                         <VStack align="stretch" gap="16px">
                             {weekStrip}
@@ -227,8 +220,10 @@ export default function Diary() {
 
                     <VStack flex="1" minW="0" align="center" gap="32px">
                         {finderCard}
-                        {monthCalendar}
-                        {illustration}
+                        <VStack w="100%" align="center" gap="8px">
+                            {monthCalendar}
+                            {illustration}
+                        </VStack>
                     </VStack>
                 </Flex>
             ) : (

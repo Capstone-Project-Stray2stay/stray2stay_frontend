@@ -31,6 +31,8 @@ const config = defineConfig({
         Orange: { value: "#FFC777" },
         GreyInfo: { value: "#969696" },
         GlowYellow: { value: "rgba(255, 235, 186, 0.67)" },
+        // Figma home "Our Goals" card fill
+        PaleYellow: { value: "#FFF6DE" },
         // Figma --Green on the profile "Accept" button; brighter than the older Green token
         AcceptGreen: { value: "#5DB993" },
         // S2SButton / S2SIconButton look up `${bgColor}_hover` and `${bgColor}_active` (Figma button sheet)
@@ -63,7 +65,11 @@ const config = defineConfig({
           value: "linear-gradient(180deg, #E6FAFF 0%, #FFFBF1 100%)",
         },
         HomeContent: {
-          value: "linear-gradient(180deg, #FFEEC1 0%, #EFFCFF 50%, #E7FAFF 100%)",
+          value: "linear-gradient(180deg, #FFF3D5 0%, #EFFCFF 50%, #E7FAFF 100%)",
+        },
+        // Home "Find your match" band under the arc (sampled from the Figma render; not in the CSS export)
+        HomeWave: {
+          value: "linear-gradient(180deg, #D2F3FC 0%, #E3F9FE 100%)",
         },
       },
       fonts: {
