@@ -30,8 +30,8 @@ function AddressSelect({
     disabled?: boolean;
 }) {
     return (
-        <Box minW={0}>
-            <ProfileField label={label} labelColor="GreyMuted" labelSize="14">
+        <Box minW={0} pt={"0px"}>
+            <ProfileField label={label} labelColor="GreyText" labelSize="14">
                 <S2SDropDown
                     key={data.length === 0 ? "loading" : "loaded"}
                     {...ADDRESS_DROPDOWN}
@@ -117,7 +117,7 @@ export default function PersonalInfoFields({
                     />
                 </ProfileField>
 
-                <ProfileField label="Address">
+                <ProfileField label="Address" gap="0px">
                     <Grid templateColumns={{ base: "1fr 1fr", md: "repeat(4, 1fr)" }} gap="12px" w="100%">
                         <AddressSelect
                             label="State"
@@ -152,7 +152,7 @@ export default function PersonalInfoFields({
                             }}
                         />
                         <Box minW={0}>
-                            <ProfileField label="Street" labelColor="GreyMuted" labelSize="14">
+                            <ProfileField label="Street" labelColor="GreyText" labelSize="14">
                                 <S2SInput
                                     {...detailInputStyle}
                                     value={value.street}

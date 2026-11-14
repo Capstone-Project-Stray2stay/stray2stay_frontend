@@ -63,10 +63,10 @@ export default function SelectAiPhotosModal({
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={onClose} top="33px" right="32px" boxSize="28px" />
+                        <S2SDialogCloseButton onClick={onClose} top="33px" right="32px" />
 
                         <VStack p={{ base: "24px", md: "32px" }} gap="32px" align="stretch">
-                            <Text fontSize={{ base: "20", md: "24" }} fontWeight="600" color="Grey" textAlign="center">
+                            <Text fontSize={{ base: "20", md: "24" }} fontWeight="600" color="Grey" textAlign="center" pt={"10px"}>
                                 Select photo for AI
                             </Text>
 

@@ -164,8 +164,8 @@ export default function Adopt() {
             <Box maxW="1043px" mx="auto">
             <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: 0 }}>
                 {/* Original icon sizes: dog/cat 44px (28 on mobile); the Figma paw is drawn at a 45px frame so its art matches the old 40px paw.png */}
-                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" pt="1px" boxSize={{base: "28px", md: "46px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" pt="1px" boxSize={{base: "28px", md: "46px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
                                 <S2SPetIconButton icon={<Box as="span" display="flex" color="Grey" boxSize={{base: "32px", md: "45px"}}><PawIcon size="100%" /></Box>} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
             </Flex>
 
@@ -206,7 +206,7 @@ export default function Adopt() {
                         ps="24px"
                         pe="56px"
                         fontSize="16"
-                        fontWeight="500"
+                        fontWeight="400"
                         color="Grey"
                         bg={FILTER_BG}
                         borderColor="transparent"
@@ -338,7 +338,7 @@ export default function Adopt() {
                     mt="16px"
                     textAlign="center"
                     color="#FF5151"
-                    fontSize="18"
+                    fontSize="md"
                     fontWeight="400"
                     letterSpacing="0.54px"
                     lineHeight="normal"
@@ -350,7 +350,7 @@ export default function Adopt() {
             <Flex display={{ base: "none", md: "flex" }} justify="flex-end" mt="16px">
                 {/* Figma "LargeShort": 16/12 padding, 120 min width, 20/600. Height pinned to 48 (12 + 24 text line + 12)
                     because Chakra's tighter button line height would render it at 44, as on the PDPA buttons */}
-                <S2SButton text="Clear" bgColor="Blue" size="lgShort" height="48px" onClick={resetFilters} />
+                <S2SButton text="Clear" bgColor="Blue" size="sm" onClick={resetFilters} />
             </Flex>
 
             <Drawer.Root placement="bottom" open={filterDrawerOpen} onOpenChange={(e) => setFilterDrawerOpen(e.open)}>

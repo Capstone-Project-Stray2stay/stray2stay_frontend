@@ -81,6 +81,7 @@ export default function S2SDropDown({
                         roundedRight={isSplit ? "0" : undefined}
                         h={height}
                         fontSize={fontSize}
+                        fontWeight="400"
                         // Figma: text, 12px gap, 20px chevron, then the edge padding. Chakra's own reserve
                         // (~56px) left a 20px gap and clipped values early.
                         pe="calc(var(--combobox-input-padding-x) + 32px)"
@@ -136,7 +137,7 @@ export default function S2SDropDown({
                         _hover={{ bg: "White_hover" }}
                         _active={{ bg: "White_active" }}
                     >
-                        <CloseIcon />
+                        <CloseIcon size={"9px"}/>
                     </Combobox.ClearTrigger>
                 )}
             </Combobox.Control>
@@ -155,7 +156,7 @@ export default function S2SDropDown({
                         // Scrollbar look comes from the site-wide style in theme.tsx; here the track just
                         // stops 16px short so the thumb clears the list's rounded corners
                         css={{ "&::-webkit-scrollbar-track": { marginBlock: "16px" } }}
-                        py="16px"
+                        py="7px"
                         px={paddingX ?? "12px"}
                         display="flex"
                         flexDirection="column"
@@ -171,13 +172,13 @@ export default function S2SDropDown({
                                 mx="-8px"
                                 px="8px"
                                 // Figma: text rows are 40 (4px top/bottom); photo rows are just the 36px photo
-                                py={item.image ? "0" : "4px"}
+                                py={item.image ? "2" : "4px"}
                                 minH={item.image ? "36px" : "40px"}
                                 flexShrink={0}
                                 rounded="8px"
                                 color="GreyText"
                                 fontSize={{ base: "14", md: "16" }}
-                                fontWeight="500"
+                                fontWeight="400"
                                 lineHeight="normal"
                                 _hover={{ bg: "White_active" }}
                                 _highlighted={{ bg: "White_active" }}

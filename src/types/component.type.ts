@@ -123,6 +123,7 @@ export interface S2SPetIconButtonType {
     label: string
     selected?: boolean
     onClick?: () => void
+    pt?: string
 }
 
 export interface S2SStepperType {
@@ -145,8 +146,6 @@ export interface S2SDialogCloseButtonType {
     onClick: () => void
     top?: ResponsiveSpace
     right?: ResponsiveSpace
-    boxSize?: ResponsiveSpace
-    iconBoxSize?: ResponsiveSpace
     zIndex?: number
     /** Place in normal layout flow instead of absolutely in the dialog's corner */
     inline?: boolean

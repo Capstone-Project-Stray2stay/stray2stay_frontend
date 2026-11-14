@@ -1,5 +1,5 @@
 import { Pagination, ButtonGroup, Box } from "@chakra-ui/react";
-import { LuChevronRight } from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 import type { S2SPaginationType } from "../types/component.type";
 
@@ -28,6 +28,18 @@ export default function S2SPagination({ page, totalPages, onPageChange }: S2SPag
             onPageChange={(details) => onPageChange(details.page)}
         >
             <ButtonGroup gap="6px" variant="ghost">
+                <Pagination.PrevTrigger asChild>
+                    <Box
+                        as="button"
+                        {...cellStyle}
+                        color="GreyText"
+                        _hover={{ bg: "Blue", color: "white" }}
+                        _disabled={{ opacity: 0.4, cursor: "not-allowed", bg: "transparent", color: "GreyText" }}
+                    >
+                        <LuChevronLeft size={20} />
+                    </Box>
+                </Pagination.PrevTrigger>
+
                 <Pagination.Items
                     render={(item) => {
                         const isCurrent = item.value === page;

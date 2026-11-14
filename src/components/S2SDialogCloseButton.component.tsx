@@ -3,14 +3,14 @@ import { IconButton } from "@chakra-ui/react";
 import type { S2SDialogCloseButtonType } from "../types/component.type";
 import CloseIcon from "./icons/closeIcon.component";
 
-// 28px #EBEBEB circle with the Figma ✕ ("Vector.svg") in #7E7E7E, drawn at the old ✕ size by default
+// Fixed 36px #EBEBEB circle with the Figma ✕ ("Vector.svg") in #7E7E7E — same size everywhere
+const BOX_SIZE = "36px";
+const ICON_BOX_SIZE = "12px";
+
 export default function S2SDialogCloseButton({
     onClick,
     top = "32px",
     right = "32px",
-    boxSize = "28px",
-    // Old IoClose at 14px drew a ~7.4px glyph; this padding-free ✕ matches it at 7.4px
-    iconBoxSize = "7.4px",
     zIndex,
     inline = false,
 }: S2SDialogCloseButtonType) {
@@ -23,7 +23,7 @@ export default function S2SDialogCloseButton({
             top={inline ? undefined : top}
             right={inline ? undefined : right}
             flexShrink={0}
-            boxSize={boxSize}
+            boxSize={BOX_SIZE}
             minW="unset"
             p="0"
             rounded="full"
@@ -31,7 +31,7 @@ export default function S2SDialogCloseButton({
             _hover={{ bg: "#e0e0e0" }}
             color="GreyText"
             // Chakra's IconButton sizes its svg itself; pin it to the Figma ✕
-            css={{ "& svg": { width: iconBoxSize, height: iconBoxSize } }}
+            css={{ "& svg": { width: ICON_BOX_SIZE, height: ICON_BOX_SIZE } }}
             zIndex={zIndex}
         >
             <CloseIcon />

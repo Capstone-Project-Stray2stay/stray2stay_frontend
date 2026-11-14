@@ -280,7 +280,7 @@ export default function ScreeningAnswersModal({
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" boxSize="28px" zIndex={1} />
+                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" zIndex={1} />
 
                         {/* Dialog.Content is a flex column with a maxH, so this
                             fills it and clips; the answers below take whatever

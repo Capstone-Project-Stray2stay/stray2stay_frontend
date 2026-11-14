@@ -92,9 +92,6 @@ export default function Rehome() {
                     goNext();
                 },
                 onError: () => {
-                    setClassifyError(
-                        "Couldn't detect the breed — you can pick it manually in the next step.",
-                    );
                     patchDraft({ aiPhotos: images, detectedBreed: null });
                     setIsPhotoModalOpen(false);
                     goNext();
