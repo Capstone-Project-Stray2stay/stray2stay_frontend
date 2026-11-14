@@ -188,7 +188,7 @@ function RemoveOptionButton({ label, onClick }: { label: string; onClick: () => 
             color="GreyMuted"
             _hover={{ color: "GreyText" }}
             // Figma ✕ glyph at the old size (LuX 12px drew a 6px glyph)
-            css={{ "& svg": { width: "6px", height: "6px" } }}
+            css={{ "& svg": { width: "10px", height: "10px" } }}
             onClick={onClick}
         >
             <CloseIcon />
@@ -355,14 +355,14 @@ function ImageGrid({ urls, onRemove }: { urls: string[]; onRemove?: (url: string
                             top="8px"
                             right="8px"
                             // 80% white circle at the old 23.58px size, Figma ✕ at the old ~6.4px glyph size
-                            boxSize="23.58px"
+                            boxSize="30px"
                             minW="unset"
                             p="0"
                             rounded="full"
                             bg="rgba(255,255,255,0.80)"
                             _hover={{ bg: "rgba(255,255,255,0.80)" }}
                             color="GreyText"
-                            css={{ "& svg": { width: "6.4px", height: "6.4px" } }}
+                            css={{ "& svg": { width: "12px", height: "12px" } }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(url);
@@ -626,8 +626,8 @@ export default function ScreeningQuestionsBuilder({
                 questionType === "IMAGE"
                     ? photos
                     : questionType === "MULTIPLE_CHOICE" || questionType === "CHECKLIST"
-                      ? ["Option 1"]
-                      : [],
+                        ? ["Option 1"]
+                        : [],
             questionImages: questionType === "IMAGE" ? [] : photos,
         });
     };
@@ -674,7 +674,7 @@ export default function ScreeningQuestionsBuilder({
     return (
         <VStack ref={containerRef} align="stretch" gap="24px" w="100%">
             {questions.length === 0 && (
-                <Text fontSize="14" color="GreyText">
+                <Text fontSize="md" color="GreyText">
                     No additional questions yet.
                 </Text>
             )}
@@ -787,12 +787,12 @@ export default function ScreeningQuestionsBuilder({
 
                                     {(question.questionType === "CHECKLIST" ||
                                         question.questionType === "MULTIPLE_CHOICE") && (
-                                        <OptionsEditor
-                                            options={question.questionOptions}
-                                            shape={question.questionType === "CHECKLIST" ? "checkbox" : "radio"}
-                                            onChange={(questionOptions) => updateAt(index, { questionOptions })}
-                                        />
-                                    )}
+                                            <OptionsEditor
+                                                options={question.questionOptions}
+                                                shape={question.questionType === "CHECKLIST" ? "checkbox" : "radio"}
+                                                onChange={(questionOptions) => updateAt(index, { questionOptions })}
+                                            />
+                                        )}
 
                                     <Flex justify="space-between" align="center">
                                         {/* Mobile has no drag, so it keeps the move arrows */}

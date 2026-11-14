@@ -30,8 +30,8 @@ export default function UserInformation() {
     const initialPreferences = preferences?.length
         ? preferences
         : userStatus
-          ? [emptyPetPreference("dog"), emptyPetPreference("cat")]
-          : [];
+            ? [emptyPetPreference("dog"), emptyPetPreference("cat")]
+            : [];
 
     return (
         <UserInformationForm
@@ -120,7 +120,7 @@ function UserInformationForm({
     };
 
     return (
-        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%"}}>
+        <Box width="100%" pb="64px" px={{ base: "30px", md: "9%" }}>
             <S2SPageTitle title="User Information" />
 
             <Dialog.Root
@@ -151,17 +151,17 @@ function UserInformationForm({
                         >
                             <VStack align="stretch" gap={5} p={{ base: 6, md: 9 }}>
                                 <VStack align="center" gap={2}>
-                                    <Dialog.Title fontSize={{ base: "22px", md: "26px" }} color="Grey" textAlign="center">
+                                    <Dialog.Title fontSize={{ base: "22px", md: "24px" }} color="Grey" textAlign="center">
                                         Personal Data Protection Notice
                                     </Dialog.Title>
-                                    <Text fontSize="sm" color="GreyText" textAlign="center">
+                                    <Text fontSize="md" color="GreyText" textAlign="center">
                                         Please review how Stray2Stay uses your personal data before continuing.
                                     </Text>
                                 </VStack>
 
                                 <Box h="1px" bg="SkyBlue" />
 
-                                <VStack align="stretch" gap={4} color="GreyText" fontSize="sm" lineHeight="1.7">
+                                <VStack align="stretch" gap={4} color="GreyText" fontSize="md" lineHeight="1.7">
                                     <Text>
                                         We collect the information you provide, such as your name, email address,
                                         phone number, home address, and pet preferences. We use it to create and
@@ -183,16 +183,12 @@ function UserInformationForm({
                                     </Text>
                                 </VStack>
 
-                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={3} justify="center">
+                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={7} justify="center">
                                     <S2SButton
                                         text="Decline and log out"
                                         variant="outline"
                                         bgColor="BlueText"
                                         size="lgShort"
-                                        // Figma: 12 + 24 (20px text line) + 12
-                                        height="48px"
-                                        // Original button text size (Chakra's default), not the LargeShort 20
-                                        fontSize="sm"
                                         disabled={isDecliningConsent}
                                         loading={isDecliningConsent}
                                         onClick={handleDeclineConsent}
@@ -201,8 +197,6 @@ function UserInformationForm({
                                         text="Accept and continue"
                                         bgColor="Blue"
                                         size="lgShort"
-                                        height="48px"
-                                        fontSize="sm"
                                         disabled={isDecliningConsent}
                                         onClick={() => setShowPdpaNotice(false)}
                                     />
@@ -273,6 +267,7 @@ function UserInformationForm({
                                         text="Got it"
                                         bgColor="Blue"
                                         width="140px"
+                                        fontSize={"md"}
                                         onClick={() => setShowIncompleteWarning(false)}
                                     />
                                 </Flex>

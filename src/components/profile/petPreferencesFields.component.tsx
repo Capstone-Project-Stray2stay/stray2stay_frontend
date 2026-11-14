@@ -55,7 +55,7 @@ function PreferenceCard({
             {/* The species circle sits over the left end of the light-blue pill */}
             <Flex h="44px" align="center" position="relative" bg="rgba(198, 231, 247, 0.30)" borderRadius="32px" pl="56px" pr="8px">
                 <Circle size="44px" bg="Cream" position="absolute" left="0" top="0">
-                    <Image src={SPECIES_ICON[value.species]} alt="" w="29.33px" h="26.67px" objectFit="contain" />
+                    <Image src={SPECIES_ICON[value.species]} alt="" w="32px" h="32px" objectFit="contain" />
                 </Circle>
                 <Text flex="1" fontSize="18" fontWeight="600" color="Grey">
                     {label}
@@ -70,7 +70,7 @@ function PreferenceCard({
                         _hover={{ bg: "#e0e0e0" }}
                         onClick={onRemove}
                     >
-                        <Icon as={IoClose} boxSize="14px" color="GreyText" />
+                        <Icon as={IoClose} boxSize="20px" color="GreyText" />
                     </IconButton>
                 )}
             </Flex>

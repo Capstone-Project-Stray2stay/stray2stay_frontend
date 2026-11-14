@@ -22,7 +22,7 @@ export default function MyAdoptionsModal({
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
                     <Dialog.Content maxW={{ base: "calc(100vw - 32px)", md: "421px" }} borderRadius="24px" p="0" position="relative">
-                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" boxSize="28px" />
+                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" />
 
                         {/* Figma Frame 563: 421 wide, 32 padding, 16 between title, divider and rows, Auto line height.
                             The 28px title line keeps the ✕ (28px, 32px down) level with the title. */}

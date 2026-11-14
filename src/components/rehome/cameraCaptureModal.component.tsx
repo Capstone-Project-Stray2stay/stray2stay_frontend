@@ -184,11 +184,12 @@ export default function CameraCaptureModal({
                             align="stretch"
                         >
                             <Text
-                                                                fontSize={{ base: "18", md: "22" }}
+                                fontSize={{ base: "18", md: "22" }}
                                 fontWeight="600"
                                 color="Grey"
                                 textAlign="center"
                                 lineHeight={{ md: "28px" }}
+                                pt={"9px"}
                             >
                                 {shot ? "Use this photo?" : "Take a Photo"}
                             </Text>
@@ -297,7 +298,7 @@ export default function CameraCaptureModal({
                                     />
                                 </Flex>
                             ) : (
-                                <Flex gap="12px" justify="center" wrap="wrap">
+                                <Flex gap="20px" justify="center" wrap="wrap">
                                     {error && (
                                         <S2SButton
                                             text="Use device camera"
@@ -309,8 +310,9 @@ export default function CameraCaptureModal({
                                         />
                                     )}
                                     <S2SButton
-                                        icon={ai ? <AICameraIcon size="20px" /> : <Icon as={IoCameraOutline} boxSize="20px" />}
+                                        icon={ai ? <Box as="span" display="flex" boxSize={{ base: "16px", md: "22px" }} css={{ "& svg": { width: "100%", height: "100%" } }}><AICameraIcon /></Box>: <Icon as={IoCameraOutline} boxSize="20px" />}
                                         text="Capture"
+                                        gap="0px"
                                         width={{ base: "160px", md: "190px" }}
                                         height={{ base: "36px", md: "44px" }}
                                         fontSize={{ base: "14", md: "18" }}
