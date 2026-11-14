@@ -71,7 +71,7 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                 <Box
                     position="absolute"
                     top="calc(100% + 10px)"
-                    right="-14px"
+                    right="0"
                     zIndex="popover"
                     w={{ base: "min(calc(100vw - 64px), 300px)", lg: "360px" }}
                     maxW={{ base: "calc(100vw - 64px)", lg: "360px" }}
