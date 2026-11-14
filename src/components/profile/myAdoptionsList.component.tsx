@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Dialog, Flex, Icon, Portal, Text, VStack } from "@chakra-ui/react";
-import { LuBookOpen, LuPhone, LuTrash2 } from "react-icons/lu";
+import { LuBook, LuPhone, LuTrash2 } from "react-icons/lu";
 
 import { S2SButton } from "../S2S.components";
 import { useCancelAdoptionRequest } from "../../hooks/query/pet.query";
@@ -37,7 +37,7 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
             <Flex align="center" gap="16px">
                 {pet.status === "success" && (
                     <RoundIconButton
-                        icon={LuBookOpen}
+                        icon={LuBook}
                         ariaLabel={`Open ${pet.name}'s diary`}
                         color="BlueText"
                         onClick={() => navigate("/diary")}

@@ -148,17 +148,15 @@ function SpeciesColumn({
                 />
             ))}
             {!disabled && (
-                // Figma: "Add Dog" sits on the left, "Add Cat" on the right
-                <Flex justify={species === "dog" ? "flex-start" : { base: "flex-start", md: "flex-end" }}>
-                    <S2SButton
-                        text={species === "dog" ? "Add Dog" : "Add Cat"}
-                        variant="outline"
-                        bgColor="BlueText"
-                        size="lg"
-                        icon={<LuPlus />}
-                        onClick={() => onChange([...preferences, emptyPetPreference(species)])}
-                    />
-                </Flex>
+                <S2SButton
+                    text={species === "dog" ? "Add Dog" : "Add Cat"}
+                    variant="outline"
+                    bgColor="BlueText"
+                    size="lg"
+                    width="100%"
+                    icon={<LuPlus />}
+                    onClick={() => onChange([...preferences, emptyPetPreference(species)])}
+                />
             )}
         </VStack>
     );
