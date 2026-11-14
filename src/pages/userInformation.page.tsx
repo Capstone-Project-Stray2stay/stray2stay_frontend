@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
 
@@ -62,6 +62,7 @@ function UserInformationForm({
     const [isDecliningConsent, setIsDecliningConsent] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const pdpaContentRef = useRef<HTMLDivElement>(null);
 
     const updateUserMutation = useUpdateUser();
     const updateNewUserStatusMutation = useUpdateNewUserStatus();
@@ -128,12 +129,18 @@ function UserInformationForm({
                 closeOnEscape={false}
                 closeOnInteractOutside={false}
                 placement="center"
+                // Focus the card itself on open; otherwise the first button (Decline) gets a focus ring
+                initialFocusEl={() => pdpaContentRef.current}
             >
                 <Portal>
                     <Dialog.Backdrop bg="blackAlpha.500" />
                     <Dialog.Positioner px={4}>
+                        {/* Figma PDPA notice: 750px card, 32px padding and 32px gaps, 24px radius.
+                            Text boxes are Figma "auto" line height, hence lineHeight="normal". */}
                         <Dialog.Content
-                            maxW="560px"
+                            ref={pdpaContentRef}
+                            outline="none"
+                            maxW="750px"
                             maxH="90vh"
                             overflowY="auto"
                             borderRadius={{ base: "24px", md: "32px" }}
@@ -180,16 +187,19 @@ function UserInformationForm({
                                     <S2SButton
                                         text="Decline and log out"
                                         variant="outline"
-                                        width={{ base: "full", sm: "170px" }}
-                                        height="44px"
+                                        bgColor="BlueText"
+                                        size="lgShort"
+                                        // Figma: 12 + 24 (20px text line) + 12
+                                        height="48px"
                                         disabled={isDecliningConsent}
                                         loading={isDecliningConsent}
                                         onClick={handleDeclineConsent}
                                     />
                                     <S2SButton
                                         text="Accept and continue"
-                                        width={{ base: "full", sm: "190px" }}
-                                        height="44px"
+                                        bgColor="Blue"
+                                        size="lgShort"
+                                        height="48px"
                                         disabled={isDecliningConsent}
                                         onClick={() => setShowPdpaNotice(false)}
                                     />
@@ -202,7 +212,7 @@ function UserInformationForm({
 
             <Flex justify="center" w="100%">
                 {/* Figma: 788px form (128px in from each side of the 1043px content) */}
-                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="788px">
+                <VStack mt={{ base: "64px", md: 0 }} gap="80px" align="stretch" w="100%" maxW="788px">
                     <VStack gap="48px" align="stretch">
                         <PersonalInfoFields
                             value={personalInfo}

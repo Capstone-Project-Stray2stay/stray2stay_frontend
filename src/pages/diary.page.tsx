@@ -207,7 +207,7 @@ export default function Diary() {
             <S2SPageTitle title="Pet Diary" />
 
             {isDesktop ? (
-                <Flex mt="64px" gap="40px" align="flex-start">
+                <Flex gap="40px" align="flex-start">
                     {/* Figma: fixed 602px diary column; the finder/calendar column takes the rest */}
                     <VStack flex="0 1 602px" minW="0" align="stretch" gap="32px">
                         {petCard}

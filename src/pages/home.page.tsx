@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Box, Flex, Grid, GridItem, Image, Text, useBreakpointValue } from "@chakra-ui/react";
-import { FaCamera, FaHouse, FaPaw } from "react-icons/fa6";
+import { FaHouse } from "react-icons/fa6";
+import PawIcon from "../components/icons/pawIcon.component";
 import { useNavigate } from "react-router-dom";
 import { S2SButton, S2SPetCard, S2SPetCardSkeleton } from "../components/S2S.components";
 import { useRandomPets } from "../hooks/query/pet.query";
 import { formatGender } from "../utils/petOptions.util";
 import { districtState } from "../utils/address.util";
 import PhotoSearchModal from "../components/home/photoSearchModal.component";
+import AICameraIcon from "../components/icons/aiCameraIcon.component";
 
 // Figma: fixed 240px cards pushed to both edges, 32px between rows. Capped at the design's
 // 1043px content width so wide screens don't spread the cards; left-aligned under the heading
@@ -98,23 +100,15 @@ export default function Home() {
           </Text>
         </GridItem>
         <GridItem area="image" justifySelf="end" position="relative" zIndex={1}>
-          {/* Figma frame is 510x302; offsets are % of it so both drawings scale together */}
+          {/* Figma frame is 510x302; offsets are % of it so the drawing scales with the frame */}
           <Box position="relative" width={{ base: "140px", md: "250px", lg: "380px", xl: "510px" }} maxW="100%" aspectRatio="510 / 302">
             <Image
-              src="/assets/images/home_house.png"
-              alt="Dog house illustration"
+              src="/assets/images/home_house_cat_dog.png"
+              alt="Dog house with a cat and a dog"
               position="absolute"
               left="3.3%"
               top="6.3%"
-              width="78.8%"
-            />
-            <Image
-              src="/assets/images/home_cat_dog.png"
-              alt="Cat and dog illustration"
-              position="absolute"
-              left="47.6%"
-              top="44.7%"
-              width="44.7%"
+              width="89%"
             />
           </Box>
         </GridItem>
@@ -133,7 +127,8 @@ export default function Home() {
             <S2SButton
               text="Adopt a Pet"
               bgColor="Orange"
-              icon={<FaPaw />}
+              // 1.2em keeps the paw art the same width the old full-bleed FaPaw had (art is 40/48 of the frame)
+              icon={<PawIcon size="1.2em" />}
               width={{ base: "48%", lg: "200px" }}
               height={{ lg: "48px" }}
               fontSize={{ lg: "20" }}
@@ -231,10 +226,10 @@ export default function Home() {
               <S2SButton
                 text="Upload Photo"
                 bgColor="Blue"
-                icon={<FaCamera />}
+                icon={<AICameraIcon />}
+                // Figma "Large" button: 24/12 padding, 8 gap, 24px icon, 20/600 text
+                size="lg"
                 width="full"
-                height={{ lg: "48px" }}
-                fontSize={{ lg: "20" }}
                 onClick={() => setIsPhotoSearchOpen(true)}
               />
             </Box>
@@ -316,8 +311,10 @@ export default function Home() {
                 { value: "45", label: "Dog breeds classified" },
                 { value: "19", label: "Cat breeds classified" },
               ].map((stat) => (
-                <Flex key={stat.label} direction="column" align="center" gap="8px">
-                  <Text color="Grey" fontSize={{ base: "28px", md: "36px" }} fontWeight="600">
+                <Flex key={stat.label} direction="column" align="center" gap="4px" lineHeight="normal">
+                  {/* Figma "auto" line height (Chakra's 1.5 would pad the 4px gap by ~10px).
+                      Number: Figma 27 minus the team's 1px; no "27" theme token, so set directly. */}
+                  <Text color="Grey" fontSize="26px" fontWeight="600">
                     {stat.value}
                   </Text>
                   <Text color="GreyText" fontSize={{ base: "15px", md: "20px" }} fontWeight="500" textAlign="center">

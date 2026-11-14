@@ -5,16 +5,17 @@ import {
     Circle,
     Dialog,
     Flex,
-    Icon,
     IconButton,
     Image,
     Portal,
     Text,
     VStack,
 } from "@chakra-ui/react";
-import { IoCameraOutline, IoClose, IoImages } from "react-icons/io5";
 
 import { S2SButton } from "../../components/S2S.components";
+import AICameraIcon from "../icons/aiCameraIcon.component";
+import CloseIcon from "../icons/closeIcon.component";
+import ImagesIcon from "../icons/imagesIcon.component";
 import { useBreeds, useClassifyPet } from "../../hooks/query/pet.query";
 import CameraCaptureModal from "../../components/rehome/cameraCaptureModal.component";
 import { MAX_AI_PHOTOS, type PetType } from "../../types/rehome.type";
@@ -48,9 +49,10 @@ function SpeciesPill({
             rounded="full"
             borderWidth="1px"
             borderColor="Blue"
-            bg={selected ? "LightBlue" : "transparent"}
-            // Figma "Hover" variant: --blue (#C6E7F7) at 30%
-            _hover={selected ? undefined : { bg: "rgba(198, 231, 247, 0.30)" }}
+            // Figma "Hover" variant: --blue (#C6E7F7) at 30%. Once picked, the pill keeps that blue
+            // (plus the darker icon circle) so the choice stays visible
+            bg={selected ? "SkyBlueHover" : "transparent"}
+            _hover={{ bg: "SkyBlueHover" }}
             transition="background 0.15s ease"
             onClick={onClick}
             aria-pressed={selected}
@@ -61,10 +63,12 @@ function SpeciesPill({
                 position="absolute"
                 left="-1px"
                 top="-1px"
-                bg={selected ? "Yellow" : "Cream"}
+                // Figma yellow button sheet: default #FFEEC1 (Cream), pressed #F7E1A7 (Cream_active) for selected
+                bg={selected ? "Cream_active" : "Cream"}
                 transition="background 0.15s ease"
             >
-                <Image src={icon} alt="" w="29.33px" h="26.67px" objectFit="contain" />
+                {/* Figma: 32px icon frame centred in the 44px circle */}
+                <Image src={icon} alt="" boxSize="32px" objectFit="contain" />
             </Circle>
             <Text fontSize="18" fontWeight="600" color="Grey">
                 {label}
@@ -174,32 +178,38 @@ export default function PhotoSearchModal({
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <IconButton
-                            aria-label="Close"
-                            onClick={onClose}
-                            position="absolute"
-                            top={{ base: "24px", md: "33px" }}
-                            right={{ base: "24px", md: "32px" }}
-                            boxSize="28px"
-                            minW="unset"
-                            p="0"
-                            rounded="full"
-                            bg="#EBEBEB"
-                            _hover={{ bg: "#e0e0e0" }}
-                            zIndex={1}
-                        >
-                            <Icon as={IoClose} boxSize="14px" color="GreyText" />
-                        </IconButton>
-
                         <VStack
                             px={{ base: "24px", md: "80px" }}
                             py="32px"
                             gap="24px"
                             align="stretch"
                         >
-                            <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
-                                Select
-                            </Text>
+                            <Box position="relative">
+                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
+                                    Select
+                                </Text>
+                                {/* Vertically centred on the title; 32px from the dialog's right edge on desktop */}
+                                <IconButton
+                                    aria-label="Close"
+                                    onClick={onClose}
+                                    position="absolute"
+                                    top="50%"
+                                    transform="translateY(-50%)"
+                                    right={{ base: "0", md: "-48px" }}
+                                    boxSize="28px"
+                                    minW="unset"
+                                    p="0"
+                                    rounded="full"
+                                    bg="#EBEBEB"
+                                    _hover={{ bg: "#e0e0e0" }}
+                                    color="GreyText"
+                                    // Chakra's IconButton forces svg to its own size; Figma's ✕ is 12px
+                                    css={{ "& svg": { width: "12px", height: "12px" } }}
+                                >
+                                    {/* Figma "Frame 551": 28px #EBEBEB circle, 12px #7E7E7E ✕ */}
+                                    <CloseIcon />
+                                </IconButton>
+                            </Box>
 
                             <Flex
                                 direction={{ base: "column", md: "row" }}
@@ -223,11 +233,10 @@ export default function PhotoSearchModal({
                             <Box
                                 w="100%"
                                 minH={{ base: "200px", md: "225px" }}
+                                position="relative"
                                 borderRadius="24px"
-                                borderWidth="1.5px"
-                                borderStyle="dashed"
-                                borderColor={isDragging ? "BlueText" : "Blue"}
-                                transition="border-color 0.15s ease"
+                                color={isDragging ? "BlueText" : "Blue"}
+                                transition="color 0.15s ease"
                                 cursor={isFull ? "default" : "pointer"}
                                 onClick={() => !isFull && inputRef.current?.click()}
                                 onDragOver={(e) => {
@@ -241,6 +250,30 @@ export default function PhotoSearchModal({
                                     addFiles(e.dataTransfer.files);
                                 }}
                             >
+                                {/* Figma stroke: 2px, centre-aligned, dash 10 / gap 10, round caps.
+                                    CSS dashed borders can't set dash length, so it's drawn as an SVG rect;
+                                    overflow visible lets the centred stroke sit 1px outside like Figma. */}
+                                <Box
+                                    as="svg"
+                                    position="absolute"
+                                    inset="0"
+                                    w="100%"
+                                    h="100%"
+                                    overflow="visible"
+                                    pointerEvents="none"
+                                    aria-hidden="true"
+                                >
+                                    <rect
+                                        width="100%"
+                                        height="100%"
+                                        rx="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeDasharray="10 10"
+                                        strokeLinecap="round"
+                                    />
+                                </Box>
                                 <input
                                     ref={inputRef}
                                     type="file"
@@ -255,9 +288,12 @@ export default function PhotoSearchModal({
                                 />
 
                                 <VStack gap="16px" py="32px" px="16px">
-                                    <Icon as={IoImages} w="68.33px" h="64.92px" color="SkyBlue" />
+                                    {/* Figma 82px icon frame, --blue (#C6E7F7) */}
+                                    <Box color="SkyBlue" display="flex">
+                                        <ImagesIcon />
+                                    </Box>
 
-                                    <VStack gap="12px" w="100%">
+                                    <VStack gap="16px" w="100%">
                                         <Text fontSize={{ base: "18", md: "20" }} fontWeight="600" color="Blue" textAlign="center">
                                             Drag and Drop Photos here
                                         </Text>
@@ -265,28 +301,27 @@ export default function PhotoSearchModal({
                                         {/* Stops the click reaching the zone's own
                                             handler, which would open the file dialog
                                             a second time. */}
+                                        {/* Figma "Small" line buttons: 16/8 padding, 120 min width,
+                                            18/500 text, 20px icon, 8px icon gap; 12px between buttons */}
                                         <Flex
                                             direction={{ base: "column", md: "row" }}
                                             align="center"
-                                            gap="10px"
+                                            gap="12px"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             <S2SButton
                                                 text="Upload Photo"
                                                 variant="outline"
-                                                width="170px"
-                                                height="38px"
-                                                fontSize="18"
+                                                size="sm"
                                                 disabled={isFull}
                                                 onClick={() => inputRef.current?.click()}
                                             />
                                             <S2SButton
-                                                icon={<Icon as={IoCameraOutline} boxSize="16px" />}
+                                                icon={<AICameraIcon />}
                                                 text="Take Photo"
                                                 variant="outline"
-                                                width="170px"
-                                                height="38px"
-                                                fontSize="18"
+                                                size="sm"
+                                                gap="8px"
                                                 disabled={isFull}
                                                 onClick={() => setIsCameraOpen(true)}
                                             />
@@ -307,23 +342,25 @@ export default function PhotoSearchModal({
                                                 bg="#E9E9E9"
                                                 borderRadius="12px"
                                             />
+                                            {/* Same as the Rehome photo remove button: 20px circle, 80% white, 10px ✕ */}
                                             <Flex
                                                 as="button"
                                                 aria-label={`Remove photo ${i + 1}`}
                                                 position="absolute"
                                                 top="4px"
                                                 right="4px"
-                                                boxSize="14px"
+                                                boxSize="20px"
                                                 align="center"
                                                 justify="center"
-                                                bg="rgba(255,255,255,0.85)"
+                                                bg="rgba(255,255,255,0.80)"
                                                 borderRadius="full"
+                                                color="GreyText"
                                                 onClick={() => {
                                                     setError("");
                                                     setPhotos((current) => current.filter((_, index) => index !== i));
                                                 }}
                                             >
-                                                <Icon as={IoClose} boxSize="9px" color="GreyText" />
+                                                <CloseIcon size={10} />
                                             </Flex>
                                         </Box>
                                     ))}
@@ -337,11 +374,10 @@ export default function PhotoSearchModal({
                             )}
 
                             <Flex justify="center">
+                                {/* Figma "Large": 24/12 padding, 160 min width, 20/600 */}
                                 <S2SButton
                                     text="Finish"
-                                    width="160px"
-                                    height="48px"
-                                    fontSize="20"
+                                    size="lg"
                                     loading={classify.isPending}
                                     onClick={finish}
                                 />
@@ -352,6 +388,7 @@ export default function PhotoSearchModal({
             </Portal>
 
             <CameraCaptureModal
+                ai
                 isOpen={isCameraOpen}
                 onClose={() => setIsCameraOpen(false)}
                 onCapture={(photo) => addFiles([photo])}

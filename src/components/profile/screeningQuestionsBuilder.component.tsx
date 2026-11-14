@@ -15,16 +15,18 @@ import {
     Textarea,
     VStack,
 } from "@chakra-ui/react";
-import { LuChevronDown, LuChevronUp, LuGripVertical, LuPlus, LuTrash2, LuX } from "react-icons/lu";
+import { LuChevronDown, LuChevronUp, LuGripVertical, LuPlus, LuTrash2 } from "react-icons/lu";
 import { MdImage } from "react-icons/md";
 import { RiImageAiFill } from "react-icons/ri";
-import { IoCameraOutline, IoClose } from "react-icons/io5";
+import { IoCameraOutline } from "react-icons/io5";
 
 import { S2SButton, S2SIconButton } from "../S2S.components";
 import { OTHER_OPTION, type CustomQuestionType, type CustomScreeningQuestionDraft } from "../../types/profile.type";
 import { MAX_PHOTOS } from "../../types/rehome.type";
 import { discardScreeningImage, stageScreeningImage } from "../../utils/screeningImages.util";
 import CameraCaptureModal from "../rehome/cameraCaptureModal.component";
+import CloseIcon from "../icons/closeIcon.component";
+import ChevronDownIcon from "../icons/chevronDownIcon.component";
 
 const QUESTION_TYPES = createListCollection({
     items: [
@@ -64,7 +66,10 @@ function QuestionTypeSelect({ value, onChange }: { value: CustomQuestionType; on
                     <Select.ValueText fontSize="16" fontWeight="400" color="Grey" />
                 </Select.Trigger>
                 <Select.IndicatorGroup pe="12px">
-                    <Select.Indicator color="GreyText" />
+                    {/* Same Figma dropdown chevron as S2SDropDown */}
+                    <Select.Indicator color="GreyText" css={{ "& svg": { width: "20px", height: "20px" } }}>
+                        <ChevronDownIcon />
+                    </Select.Indicator>
                 </Select.IndicatorGroup>
             </Select.Control>
             <Portal>
@@ -104,6 +109,7 @@ function emptyScreeningQuestion(order: number): CustomScreeningQuestionDraft {
         questionType: "ESSAY",
         questionText: "",
         questionOptions: [],
+        questionImages: [],
         questionRequired: true,
         questionOrder: order,
     };
@@ -181,9 +187,11 @@ function RemoveOptionButton({ label, onClick }: { label: string; onClick: () => 
             flexShrink={0}
             color="GreyMuted"
             _hover={{ color: "GreyText" }}
+            // Brief: ✕ looked smaller than Figma — 14px, using the site's Figma ✕ glyph
+            css={{ "& svg": { width: "14px", height: "14px" } }}
             onClick={onClick}
         >
-            <Icon as={LuX} boxSize="12px" />
+            <CloseIcon />
         </IconButton>
     );
 }
@@ -288,7 +296,14 @@ function OptionsEditor({
                     <OptionMarker shape={shape} faded />
                 </chakra.button>
                 <Text fontSize="16" fontWeight="500" py="4px">
-                    <chakra.button type="button" color="GreyMuted" cursor="pointer" onClick={addOption}>
+                    {/* Figma hover flow: --info (#969696), underlined on hover like Add "Other" */}
+                    <chakra.button
+                        type="button"
+                        color="GreyInfo"
+                        cursor="pointer"
+                        _hover={{ textDecoration: "underline" }}
+                        onClick={addOption}
+                    >
                         Add another option
                     </chakra.button>
                     {!hasOther && (
@@ -339,17 +354,21 @@ function ImageGrid({ urls, onRemove }: { urls: string[]; onRemove?: (url: string
                             position="absolute"
                             top="8px"
                             right="8px"
-                            boxSize="23.58px"
+                            // Same as the Rehome photo remove button: 20px circle, 80% white, 10px ✕
+                            boxSize="20px"
                             minW="unset"
+                            p="0"
                             rounded="full"
-                            bg="#EDEDED"
-                            _hover={{ bg: "#e0e0e0" }}
+                            bg="rgba(255,255,255,0.80)"
+                            _hover={{ bg: "rgba(255,255,255,0.80)" }}
+                            color="GreyText"
+                            css={{ "& svg": { width: "10px", height: "10px" } }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(url);
                             }}
                         >
-                            <Icon as={IoClose} boxSize="12px" color="GreyText" />
+                            <CloseIcon />
                         </IconButton>
                     )}
                 </Box>
@@ -454,27 +473,29 @@ function PhotoInput({ inputRef, onFiles }: { inputRef: React.RefObject<HTMLInput
 }
 
 /**
- * The small image icon beside the question field: switches another type to Image, and on an
- * Image question that already has photos, adds more (the drop zone is gone by then).
+ * The small image icon beside the question field adds photos without changing the question's type:
+ * illustration photos shown under the question text, or — on an Image question that already has
+ * photos — more of its own photos (the drop zone is gone by then).
  */
-function ImageShortcut({ question, onSwitch, onFiles }: { question: CustomScreeningQuestionDraft; onSwitch: () => void; onFiles: (files: File[]) => void }) {
+function ImageShortcut({ question, onFiles }: { question: CustomScreeningQuestionDraft; onFiles: (files: File[]) => void }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const isImage = question.questionType === "IMAGE";
     // Figma "No image": an empty Image question has no shortcut — the drop zone does the job
     if (isImage && question.questionOptions.length === 0) return null;
-    const isFull = isImage && question.questionOptions.length >= MAX_PHOTOS;
+    const photoCount = isImage ? question.questionOptions.length : question.questionImages.length;
+    const isFull = photoCount >= MAX_PHOTOS;
 
     return (
         <>
-            {isImage && <PhotoInput inputRef={inputRef} onFiles={onFiles} />}
+            <PhotoInput inputRef={inputRef} onFiles={onFiles} />
             <IconButton
-                aria-label={isImage ? "Add photos" : "Make this an image question"}
+                aria-label={isImage ? "Add photos" : "Add photos to this question"}
                 variant="plain"
                 minW="unset"
                 boxSize="28px"
                 color="Blue"
                 disabled={isFull}
-                onClick={() => (isImage ? inputRef.current?.click() : onSwitch())}
+                onClick={() => inputRef.current?.click()}
             >
                 <Icon as={MdImage} boxSize="28px" />
             </IconButton>
@@ -495,6 +516,9 @@ function QuestionPreview({ question }: { question: CustomScreeningQuestionDraft 
                     <>{" "}<Text as="span" color="#FF5151">*</Text></>
                 )}
             </Text>
+
+            {/* Figma: illustration photos sit right under the question text */}
+            {question.questionImages.length > 0 && <ImageGrid urls={question.questionImages} />}
 
             {question.questionType === "ESSAY" && <AnswerLine />}
 
@@ -580,6 +604,7 @@ export default function ScreeningQuestionsBuilder({
     /** Releases any not-yet-uploaded photos a question is about to lose. */
     const dropImages = (question: CustomScreeningQuestionDraft) => {
         if (question.questionType === "IMAGE") question.questionOptions.forEach(discardScreeningImage);
+        question.questionImages.forEach(discardScreeningImage);
     };
 
     const removeAt = (index: number) => {
@@ -591,27 +616,41 @@ export default function ScreeningQuestionsBuilder({
     const changeType = (index: number, questionType: CustomQuestionType) => {
         const question = questions[index];
         if (questionType === question.questionType) return;
-        dropImages(question);
+        // Photos survive a type change: an Image question's own photos become illustration photos, and
+        // illustration photos become an Image question's own photos — nothing the owner added is lost
+        const photos = question.questionType === "IMAGE" ? question.questionOptions : question.questionImages;
         updateAt(index, {
             questionType,
             // Figma: a choice question starts with a single "Option 1"
-            questionOptions: questionType === "MULTIPLE_CHOICE" || questionType === "CHECKLIST" ? ["Option 1"] : [],
+            questionOptions:
+                questionType === "IMAGE"
+                    ? photos
+                    : questionType === "MULTIPLE_CHOICE" || questionType === "CHECKLIST"
+                      ? ["Option 1"]
+                      : [],
+            questionImages: questionType === "IMAGE" ? [] : photos,
         });
     };
 
+    /** Photos go to an Image question's own set, or to any other question's illustration photos. */
+    const photoField = (question: CustomScreeningQuestionDraft) =>
+        question.questionType === "IMAGE" ? "questionOptions" : "questionImages";
+
     const addPhotos = (index: number, files: File[]) => {
-        const current = questions[index].questionOptions;
+        const field = photoField(questions[index]);
+        const current = questions[index][field];
         const room = Math.max(MAX_PHOTOS - current.length, 0);
         const added = files
             .filter((file) => file.type.startsWith("image/"))
             .slice(0, room)
             .map(stageScreeningImage);
-        if (added.length > 0) updateAt(index, { questionOptions: [...current, ...added] });
+        if (added.length > 0) updateAt(index, { [field]: [...current, ...added] });
     };
 
     const removePhoto = (index: number, url: string) => {
+        const field = photoField(questions[index]);
         discardScreeningImage(url);
-        updateAt(index, { questionOptions: questions[index].questionOptions.filter((u) => u !== url) });
+        updateAt(index, { [field]: questions[index][field].filter((u) => u !== url) });
     };
 
     const move = (from: number, to: number) => {
@@ -635,7 +674,8 @@ export default function ScreeningQuestionsBuilder({
     return (
         <VStack ref={containerRef} align="stretch" gap="24px" w="100%">
             {questions.length === 0 && (
-                <Text fontSize="14" color="GreyText">
+                // Same size/weight as the step description above (16/400)
+                <Text fontSize="16" fontWeight="400" color="GreyText">
                     No additional questions yet.
                 </Text>
             )}
@@ -717,7 +757,6 @@ export default function ScreeningQuestionsBuilder({
                                         <Flex align="center" gap="12px" flexShrink={0}>
                                             <ImageShortcut
                                                 question={question}
-                                                onSwitch={() => changeType(index, "IMAGE")}
                                                 onFiles={(files) => addPhotos(index, files)}
                                             />
                                             <QuestionTypeSelect
@@ -726,6 +765,14 @@ export default function ScreeningQuestionsBuilder({
                                             />
                                         </Flex>
                                     </Flex>
+
+                                    {/* Figma: illustration photos right under the question text, removable here */}
+                                    {question.questionImages.length > 0 && (
+                                        <ImageGrid
+                                            urls={question.questionImages}
+                                            onRemove={(url) => removePhoto(index, url)}
+                                        />
+                                    )}
 
                                     {question.questionType === "ESSAY" && <AnswerLine />}
 

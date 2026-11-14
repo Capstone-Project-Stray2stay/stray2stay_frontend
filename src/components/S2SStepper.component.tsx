@@ -41,7 +41,8 @@ export default function S2SStepper({ steps, current }: S2SStepperType) {
                         >
                             <Circle
                                 size={{ base: "33.85px", md: "48px" }}
-                                borderWidth={{ base: "1.01px", md: "1.55px" }}
+                                // Figma brief: 2px stroke on desktop (mobile unchanged until the mobile pass)
+                                borderWidth={{ base: "1.01px", md: "2px" }}
                                 borderColor="Orange"
                                 bg={isDone ? "Cream" : "White"}
                                 boxShadow={CIRCLE_SHADOW}

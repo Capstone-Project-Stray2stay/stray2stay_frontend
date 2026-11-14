@@ -51,31 +51,34 @@ export default function S2SPetCard({ rank, width, height, petImageURL, petAge, p
                     </Box>
                 )}
             </Box>
-            <Flex direction="column" p={{ base: "8px", md: "16px" }} gap="8px">
+            {/* Figma text boxes use the font's natural line height, not Chakra's 1.5 */}
+            <Flex direction="column" p={{ base: "8px", md: "16px" }} gap="8px" lineHeight="normal">
                 <Flex justify="space-between" align="center" gap={2}>
                     <Text
                         color="Grey"
                         fontSize={{ base: "14", md: "18" }}
                         fontWeight="semibold"
+                        lineHeight="normal"
                         flex="1"
                         minW={0}
                         truncate
                     >
                         {petLocation}
                     </Text>
-                    <Box flexShrink={0}>
+                    <Box flexShrink={0} display="flex">
                         {petGender === "Male" ? (
-                            <IoMaleOutline size={21} color="#87CFF0" />
+                            // Figma --bluetext
+                            <IoMaleOutline size={21} color="#85BFE2" />
                         ) : (
                             <IoFemaleOutline size={21} color="#FF69B4" />
                         )}
                     </Box>
                 </Flex>
                 <Flex direction="column" gap="4px">
-                    <Text fontSize={{ base: "14", md: "16" }} fontWeight="medium" color="BlueText" truncate>
+                    <Text fontSize={{ base: "14", md: "16" }} fontWeight="medium" lineHeight="normal" color="BlueText" truncate>
                         {petBreed}
                     </Text>
-                    <Text fontSize={{ base: "14", md: "16" }} fontWeight="medium" color="GreyInfo">
+                    <Text fontSize={{ base: "14", md: "16" }} fontWeight="medium" lineHeight="normal" color="GreyInfo">
                         {petAge}
                     </Text>
                 </Flex>

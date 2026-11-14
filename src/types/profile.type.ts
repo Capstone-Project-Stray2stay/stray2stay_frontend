@@ -90,6 +90,8 @@ export interface CustomScreeningQuestion {
     questionType: CustomQuestionType;
     questionText: string;
     questionOptions?: string[];
+    /** Illustration photos shown under the question text (any type; an IMAGE question's own photos are its options). */
+    questionImages?: string[];
     questionRequired: boolean;
     questionOrder: number;
 }
@@ -108,6 +110,8 @@ export interface CustomScreeningQuestionDraft {
     questionType: CustomQuestionType;
     questionText: string;
     questionOptions: string[];
+    /** Illustration photos under the question text; staged blob: URLs until the questions are saved. */
+    questionImages: string[];
     questionRequired: boolean;
     questionOrder: number;
 }
@@ -123,6 +127,7 @@ export interface CustomAnswerResponse {
     questionId: number;
     questionText: string;
     questionType: CustomQuestionType;
+    questionImages?: string[];
     value: string | string[];
 }
 

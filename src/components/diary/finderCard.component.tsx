@@ -14,6 +14,10 @@ export default function FinderCard({ pet }: { pet: DiaryPet }) {
         <S2SCardShell
             railColor="Cream"
             w="100%"
+            // Brief: as wide as the month calendar below and as tall as the pet card on the left
+            // (Figma pet card: 95 content + 16/16 padding = 127), content centred vertically
+            maxW={{ md: "398.99px" }}
+            minH={{ md: "127px" }}
             py="16px"
             px={{ base: "20px", md: "32px" }}
             pl={{ base: "26px", md: "32px" }}

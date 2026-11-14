@@ -19,7 +19,7 @@ import {
   LuChevronRight,
   LuX,
 } from "react-icons/lu";
-import { FaPaw } from "react-icons/fa6";
+import PawIcon from "../components/icons/pawIcon.component";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
@@ -32,6 +32,25 @@ import PendingIcon from "../components/icons/pendingIcon.component";
 import type { AdoptSubmission } from "../services/apis/pet.api";
 
 const FALLBACK_IMAGE = "/assets/images/house.png";
+
+// Health & Conditions icon: the image sits at Figma's exact offsets inside the 40.65px circle (Figma's
+// placement is a touch off-centre, on purpose per the design). left/top are the image's visual top-left.
+function HealthIcon({ src, size, left, top, rotate = false }: { src: string; size: number; left: number; top: number; rotate?: boolean }) {
+  return (
+    <Box position="relative" boxSize="40.65px" flexShrink={0}>
+      <Box position="absolute" inset="0" borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" />
+      <Image
+        src={src}
+        alt=""
+        position="absolute"
+        left={`${left}px`}
+        top={`${top}px`}
+        boxSize={`${size}px`}
+        transform={rotate ? "rotate(180deg)" : undefined}
+      />
+    </Box>
+  );
+}
 
 function formatAgeGroup(ageGroup: string): string {
   const match = ageGroupOptions.find((o) => o.value === ageGroup);
@@ -118,14 +137,15 @@ export default function PetProfile() {
     <Box width="100%" px={{ base: "30px", md: "9%"}}>
       <S2SPageTitle title="Pet Profile" />
 
-      <Box maxW="900px" mx="auto" mt={{ base: "48px", md: "64px" }}>
+      <Box maxW="900px" mx="auto" mt={{ base: "48px", md: 0 }}>
         <Box borderRadius="24px" overflow="hidden" boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)">
           <Flex bg="rgba(135, 207, 240, 0.70)" align="center" justify="space-between" px={{ base: 5, md: 10 }} py="16px">
             <Text color="White" fontSize="24" fontWeight="600">
               Pet ID Card
             </Text>
             <Flex boxSize="48px" align="center" justify="center" color="White">
-              <FaPaw size={40} />
+              {/* 48 frame = the 40px paw art this box already used */}
+              <PawIcon size={48} />
             </Flex>
           </Flex>
 
@@ -204,9 +224,10 @@ export default function PetProfile() {
               )}
             </Box>
 
-            <VStack flex="1 1 340px" maxW={{ md: "406px" }} minW={0} align="flex-start" gap={6}>
+            {/* Figma "auto" line height, so the 4px label→value gap reads as 4px rather than Chakra's 1.5 leading */}
+            <VStack flex="1 1 340px" maxW={{ md: "406px" }} minW={0} align="flex-start" gap={6} lineHeight="normal">
               <Box>
-                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                   Name
                 </Text>
                 <Badge bg="Cream" color="Grey" borderRadius="full" px="16px" py="8px" fontSize="18" fontWeight="500">
@@ -217,7 +238,7 @@ export default function PetProfile() {
               {/* Figma: fixed 200px first column so Breed/Age Group and Color/Gender line up */}
               <Flex w="100%" gap={{ base: 6, md: "48px" }}>
                 <Box w={{ md: "200px" }} flexShrink={0}>
-                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                     Breed
                   </Text>
                   <Text color="GreyText" fontSize="18" fontWeight="500">
@@ -225,7 +246,7 @@ export default function PetProfile() {
                   </Text>
                 </Box>
                 <Box flex="1" minW={0}>
-                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                     Color
                   </Text>
                   <Text color="GreyText" fontSize="18" fontWeight="500">
@@ -236,7 +257,7 @@ export default function PetProfile() {
 
               <Flex w="100%" gap={{ base: 6, md: "48px" }}>
                 <Box w={{ md: "200px" }} flexShrink={0}>
-                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                     Age Group
                   </Text>
                   <Text color="GreyText" fontSize="18" fontWeight="500">
@@ -244,7 +265,7 @@ export default function PetProfile() {
                   </Text>
                 </Box>
                 <Box flex="1" minW={0}>
-                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                  <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                     Gender
                   </Text>
                   <Flex align="center" gap="7px">
@@ -261,7 +282,7 @@ export default function PetProfile() {
               </Flex>
 
               <Box>
-                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                   Location
                 </Text>
                 <Text color="GreyText" fontSize="18" fontWeight="500">
@@ -270,7 +291,7 @@ export default function PetProfile() {
               </Box>
 
               <Box>
-                <Text color="BlueText" fontSize="16" fontWeight="500" mb="6px">
+                <Text color="BlueText" fontSize="16" fontWeight="500" mb="4px">
                   Personality
                 </Text>
                 <Flex gap="7px" wrap="wrap">
@@ -289,28 +310,27 @@ export default function PetProfile() {
           </Flex>
         </Box>
 
-        <Box mt={8} borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: 10 }} py={{ base: 5, md: 8 }}>
-          <Text color="Grey" fontSize="20" fontWeight="600" mb={2}>
+        <Box mt="32px" borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: "40px" }} py={{ base: 5, md: "32px" }} lineHeight="normal">
+          <Text color="Grey" fontSize="20" fontWeight="600" lineHeight="normal" mb="8px">
             Health &amp; Conditions
           </Text>
-          <Box height="1.81px" bg="SkyBlue" mb={6} />
+          <Box height="1.81px" bg="SkyBlue" mb="24px" />
 
           <Flex gap={{ base: 6, md: "80px" }} wrap="wrap">
-            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
-              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
-                <Image src="/assets/icons/vaccination.png" alt="" boxSize="23.23px" />
-              </Flex>
+            <Flex w={{ md: "200px" }} align="flex-start" gap="12px">
+              {/* Figma: rotate(180°) at (32.36, 31.53) → visual box from (9.13, 8.30) */}
+              <HealthIcon src="/assets/icons/vaccination.png" size={23.23} left={9.13} top={8.3} rotate />
               <Box>
-                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb="4px">
                   Vaccinations
                 </Text>
-                <VStack align="flex-start" gap={1}>
+                <VStack align="flex-start" gap="4.15px">
                   {knownVaccines.map((vaccine) => {
                     const received = pet.petVaccination.includes(vaccine);
                     return (
-                      <Flex key={vaccine} align="center" gap={1.5}>
+                      <Flex key={vaccine} align="center" gap="1.66px">
                         <Icon as={received ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={received ? "#76CAAC" : "#F57676"} />
-                        <Text color="GreyInfo" fontSize="18" fontWeight="500">
+                        <Text color="GreyText" fontSize="18" fontWeight="500">
                           {vaccine}
                         </Text>
                       </Flex>
@@ -320,41 +340,39 @@ export default function PetProfile() {
               </Box>
             </Flex>
 
-            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
-              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
-                <Image src="/assets/icons/sterilized.png" alt="" boxSize="23.23px" />
-              </Flex>
+            <Flex w={{ md: "200px" }} align="flex-start" gap="12px">
+              {/* Figma: rotate(180°) at (33.19, 31.53) → visual box from (9.96, 8.30) */}
+              <HealthIcon src="/assets/icons/sterilized.png" size={23.23} left={9.96} top={8.3} rotate />
               <Box>
-                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb="4px">
                   Sterilized
                 </Text>
-                <Flex align="center" gap={1.5}>
+                <Flex align="center" gap="1.66px">
                   <Icon as={pet.petSterilized ? LuCheck : LuX} boxSize={5} strokeWidth={3} color={pet.petSterilized ? "#76CAAC" : "#F57676"} />
-                  <Text color="GreyInfo" fontSize="18" fontWeight="500">
+                  <Text color="GreyText" fontSize="18" fontWeight="500">
                     {pet.petSterilized ? "Yes" : "No"}
                   </Text>
                 </Flex>
               </Box>
             </Flex>
 
-            <Flex w={{ md: "200px" }} align="flex-start" gap={3}>
-              <Flex boxSize="40.65px" flexShrink={0} borderRadius="full" bg="white" boxShadow="0px 3.32px 16.59px rgba(201, 220, 225, 0.20)" border="0.83px solid" borderColor="BabyGray" align="center" justify="center">
-                <Image src="/assets/icons/special_care.png" alt="" boxSize="20.74px" />
-              </Flex>
+            <Flex w={{ md: "200px" }} align="flex-start" gap="12px">
+              {/* Figma: (9.96, 11.62). Its white pill behind the heart sits on the white circle, so it's invisible and omitted */}
+              <HealthIcon src="/assets/icons/special_care.png" size={20.74} left={9.96} top={11.62} />
               <Box>
-                <Text color="GreyText" fontSize="18" fontWeight="600" mb={1}>
+                <Text color="GreyText" fontSize="18" fontWeight="600" mb="4px">
                   Special Care
                 </Text>
                 {specialCareItems.length > 0 ? (
                   <VStack align="flex-start" gap={0.5}>
                     {specialCareItems.map((item, i) => (
-                      <Text key={i} color="GreyInfo" fontSize="18" fontWeight="500">
+                      <Text key={i} color="GreyText" fontSize="18" fontWeight="500">
                         • {item}
                       </Text>
                     ))}
                   </VStack>
                 ) : (
-                  <Text color="GreyInfo" fontSize="18" fontWeight="500">
+                  <Text color="GreyText" fontSize="18" fontWeight="500">
                     None
                   </Text>
                 )}
@@ -363,28 +381,31 @@ export default function PetProfile() {
           </Flex>
         </Box>
 
-        <Box mt={8} borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: 10 }} py={{ base: 5, md: 8 }}>
-          <Text color="Grey" fontSize="20" fontWeight="600" mb={2}>
+        <Box mt="32px" borderRadius="24px" bg="rgba(255, 255, 255, 0.70)" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" px={{ base: 5, md: "40px" }} py={{ base: 5, md: "32px" }}>
+          <Text color="Grey" fontSize="20" fontWeight="600" lineHeight="normal" mb="8px">
             Note
           </Text>
-          <Box height="1.81px" bg="SkyBlue" mb={6} />
-          <Text color="GreyInfo" fontSize="18" fontWeight="500" lineHeight="1.2">
+          <Box height="1.81px" bg="SkyBlue" mb="24px" />
+          <Text color="GreyText" fontSize="18" fontWeight="500" lineHeight="normal">
             {pet.note || "No additional notes."}
           </Text>
         </Box>
 
-        <Box mt={8} boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" borderRadius="25px">
+        <Box mt="32px" boxShadow="0px 3.61px 18.06px rgba(201, 220, 225, 0.20)" borderRadius="24px">
           <S2SAccordion
             title="Pet's Nature Personality"
             content={pet.petDetail || "No description available."}
             width="100%"
-            px={{ base: 5, md: 10 }}
-            py={{ base: 5, md: 8 }}
+            // Figma 40/32 in px: Chakra's 10/8 spacing units are rem, and the 15px root makes them 37.5/30
+            px={{ base: 5, md: "40px" }}
+            py={{ base: 5, md: "32px" }}
             fontSize="20"
             contentFontSize="18"
             contentPt="0px"
             contentPb="32px"
-            contentColor="#969696"
+            // Figma brief: --gray #7E7E7E, medium weight
+            contentColor="GreyText"
+            contentFontWeight="500"
           />
         </Box>
 
@@ -421,11 +442,12 @@ export default function PetProfile() {
                 bgColor="Orange"
                 icon={<PendingIcon />}
                 size="lg"
+                isStatus
               />
             ) : (
               <S2SButton
                 text="Adopt this pet"
-                icon={<FaPaw />}
+                icon={<PawIcon />}
                 size="lg"
                 onClick={handleAdoptClick}
               />

@@ -11,6 +11,7 @@ import { PERSONALITY_OPTIONS } from "../../utils/personalityOptions";
 import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "../../types/rehome.type";
 import type { S2SDropDownOption } from "../../types/component.type";
 import { toBreedOptions } from "../../hooks/query/pet.query";
+import VaccinationInfoModal from "./vaccinationInfoModal.component";
 
 export default function Step3Details({
     draft,
@@ -28,6 +29,7 @@ export default function Step3Details({
     const [customPersonality, setCustomPersonality] = useState("");
     const [isAddingPersonality, setIsAddingPersonality] = useState(false);
     const [specialCareDraft, setSpecialCareDraft] = useState("");
+    const [showVaccineInfo, setShowVaccineInfo] = useState(false);
 
     const petType: PetType = draft.petType ?? "dog";
 
@@ -93,8 +95,10 @@ export default function Step3Details({
                     <DetailField label="Breed" required>
                         <S2SDropDown
                             key={breedItems.length === 0 ? "loading" : "loaded"}
-                            placeholder=""
                             {...detailDropDownStyle}
+                            // Breed is only empty here when the AI classifier couldn't match one
+                            placeholder="Could not identify breed. Please choose from the list."
+                            placeholderColor="Red"
                             data={breedItems}
                             value={draft.breed}
                             onValueChange={(breed) => onChange({ breed, color: "" })}
@@ -147,6 +151,9 @@ export default function Step3Details({
                     ))}
 
                     {isAddingPersonality ? (
+                        // Fixed-width wrapper: S2SInput's InputGroup is full-width, which pushed the field onto
+                        // its own line at the left. Boxed, it takes the Add button's spot at the end of the row.
+                        <Box w="150px" flexShrink={0}>
                         <S2SInput
                             {...detailInputStyle}
                             w="150px"
@@ -163,20 +170,22 @@ export default function Step3Details({
                                 }
                             }}
                         />
+                        </Box>
                     ) : (
+                        // Figma "+ Add": 38px, 20px each side, --font icon and 16/500 text
                         <Button
                             variant="plain"
                             gap="6px"
                             h={{ base: "30px", md: "38px" }}
-                            px={{ base: "12px", md: "16px" }}
+                            px={{ base: "12px", md: "20px" }}
                             borderRadius={{ base: "27.88px", md: "48px" }}
                             bg="rgba(255,255,255,0.70)"
                             borderWidth={{ base: "0.58px", md: "1px" }}
                             borderColor="BlueText"
                             onClick={() => setIsAddingPersonality(true)}
                         >
-                            <Icon as={IoAdd} boxSize={{ base: "7.22px", md: "10.5px" }} color="GreyText" />
-                            <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="GreyText">
+                            <Icon as={IoAdd} boxSize={{ base: "7.22px", md: "10.5px" }} color="Grey" />
+                            <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="Grey">
                                 Add
                             </Text>
                         </Button>
@@ -201,18 +210,28 @@ export default function Step3Details({
                             <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey">
                                 Vaccinations
                             </Text>
-                            <Icon
-                                as={IoInformationCircleOutline}
+                            {/* Opens the Figma "Vaccination Information" dialog */}
+                            <IconButton
+                                aria-label="What do these vaccines cover?"
+                                variant="plain"
+                                minW="unset"
                                 boxSize={{ base: "16.48px", md: "18px" }}
+                                p="0"
                                 color="BlueText"
-                            />
+                                onClick={() => setShowVaccineInfo(true)}
+                            >
+                                <Icon as={IoInformationCircleOutline} boxSize={{ base: "16.48px", md: "18px" }} />
+                            </IconButton>
                         </Flex>
+                        {/* Same two-column grid as Sterilized below, so the second checkbox lines up in both rows
+                            (Figma itself has them misaligned). 200px = Figma's vaccination option row width. */}
                         <Flex
                             direction={{ base: "column", md: "row" }}
                             align="flex-start"
-                            gap={{ base: "16.48px", md: "32px" }}
-                            w={{ base: "94px", md: "auto" }}
+                            gap={{ base: "16.48px", md: "0" }}
+                            w={{ base: "94px", md: "200px" }}
                             flexShrink={0}
+                            css={{ "@media (min-width: 48rem)": { "& > *": { flex: "1 1 0" } } }}
                         >
                             {VACCINE_OPTIONS[petType].map((vaccine) => (
                                 <S2SCheckbox
@@ -239,11 +258,11 @@ export default function Step3Details({
                         </Text>
                         <Flex
                             direction={{ base: "column", md: "row" }}
-                            w={{ base: "94px", md: "180px" }}
-                            justify={{ base: "flex-start", md: "space-between" }}
+                            w={{ base: "94px", md: "200px" }}
                             align="flex-start"
                             gap={{ base: "16.48px", md: "0" }}
                             flexShrink={0}
+                            css={{ "@media (min-width: 48rem)": { "& > *": { flex: "1 1 0" } } }}
                         >
                             <S2SCheckbox
                                 label="Yes"
@@ -349,6 +368,12 @@ export default function Step3Details({
                     onChange={(e) => onChange({ note: e.target.value })}
                 />
             </DetailSection>
+
+            <VaccinationInfoModal
+                isOpen={showVaccineInfo}
+                onClose={() => setShowVaccineInfo(false)}
+                vaccines={VACCINE_OPTIONS[petType]}
+            />
         </Flex>
     );
 }

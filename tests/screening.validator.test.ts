@@ -24,6 +24,7 @@ const question = (overrides: Partial<CustomScreeningQuestionDraft>): CustomScree
     questionType: "ESSAY",
     questionText: "Why are you interested in this pet?",
     questionOptions: [],
+    questionImages: [],
     questionRequired: true,
     questionOrder: 0,
     ...overrides,

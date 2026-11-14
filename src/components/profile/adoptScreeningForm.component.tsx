@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Dialog, Flex, Grid, Image, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { Dialog, Flex, Input, Portal, RadioGroup, Text, VStack } from "@chakra-ui/react";
 
 import { S2SButton, S2SCheckbox, S2SInput, S2SDialogCloseButton } from "../S2S.components";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
+import QuestionPhotos from "./questionPhotos.component";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type { AdoptSubmission } from "../../services/apis/pet.api";
 import { screeningAnswersSchema, screeningMissingNumbers } from "../../validators/screening.validator";
@@ -180,29 +181,7 @@ function CustomQuestionInput({
     }
 
     // IMAGE: the owner's photos, shown for context only — nothing to answer
-    if (choices.length === 0) return null;
-    return (
-        <Grid
-            w="100%"
-            gap="10px"
-            templateColumns={{
-                base: "1fr",
-                md: choices.length === 1 ? "1fr" : choices.length === 2 ? "1fr 2fr" : "repeat(3, 1fr)",
-            }}
-        >
-            {choices.map((url, i) => (
-                <Image
-                    key={url}
-                    src={url}
-                    alt={`${question.questionText || "Owner photo"} ${i + 1}`}
-                    w="100%"
-                    h={{ base: "220px", md: "320px" }}
-                    objectFit="cover"
-                    bg="#E9E9E9"
-                />
-            ))}
-        </Grid>
-    );
+    return <QuestionPhotos urls={choices} label={question.questionText || "Owner photo"} />;
 }
 
 interface ScreeningDraft {
@@ -463,14 +442,16 @@ export default function AdoptScreeningForm({
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={handleClose} top="32px" right="32px" boxSize="28px" iconBoxSize="14px" zIndex={1} />
+                        <S2SDialogCloseButton onClick={handleClose} top="32px" right="32px" boxSize="28px" zIndex={1} />
 
                         <VStack py="32px" px={{ base: "24px", md: "32px" }} gap="24px" align="stretch">
-                            <VStack gap="8px" maxW="626px" alignSelf="center" px={{ base: "28px", md: 0 }}>
-                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center">
+                            {/* Title line is 28px — the close button's height — and both start 32px down, so the
+                                ✕ sits level with the title. 12px to the subtitle; subtitle lines balanced in length. */}
+                            <VStack gap="12px" maxW="626px" alignSelf="center" px={{ base: "28px", md: 0 }}>
+                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center" lineHeight="28px">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize="16" fontWeight="400" color="Grey" textAlign="center">
+                                <Text fontSize="16" fontWeight="400" color="Grey" textAlign="center" css={{ textWrap: "balance" }}>
                                     Your responses will be shared with {petName}&apos;s current owner/finder to
                                     assist in the adoption approval process.
                                 </Text>
@@ -531,6 +512,11 @@ export default function AdoptScreeningForm({
                                                                 : " (optional)"}
                                                         </Text>
                                                     )}
+                                                    {/* The owner's illustration photos, under the question text */}
+                                                    <QuestionPhotos
+                                                        urls={question.questionImages ?? []}
+                                                        label={question.questionText || "Question photo"}
+                                                    />
                                                     <CustomQuestionInput
                                                         question={question}
                                                         value={customDraft[question.questionId]}

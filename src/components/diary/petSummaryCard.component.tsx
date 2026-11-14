@@ -41,7 +41,11 @@ export default function PetSummaryCard({
             px={{ base: "20px", md: "32px" }}
             pl={{ base: "26px", md: "32px" }}
             gap={{ base: "9px", md: "32px" }}
-            align={{ base: "stretch", md: "flex-start" }}
+            // Figma Frame 250: 95 content + 16/16 padding = 127 tall; finder card matches this height.
+            // Text boxes use Figma's Auto line height
+            minH={{ md: "127px" }}
+            lineHeight="normal"
+            align={{ base: "stretch", md: "center" }}
             justify={{ md: "center" }}
             wrap={{ md: "wrap" }}
         >

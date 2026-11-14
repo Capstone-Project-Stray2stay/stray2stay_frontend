@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Flex, Icon, IconButton, Image, Input, Text, VStack } from "@chakra-ui/react";
-import { LuPencil } from "react-icons/lu";
 import { IoImages } from "react-icons/io5";
 
+import EditIcon from "../icons/editIcon.component";
 import { S2SButton } from "../S2S.components";
 import { S2SCardShell } from "../S2S.components";
 import { WEEKDAYS } from "../../utils/dateUtils";
@@ -252,13 +252,15 @@ export default function DayEntries({
             aria-label="Edit entry"
             variant="plain"
             minW="unset"
-            boxSize={{ base: "14.36px", md: "16px" }}
+            // Figma "medium" icon: 24px frame, 16px pencil art inside (Icon_edit). Mobile size unchanged for now
+            boxSize={{ base: "14.36px", md: "24px" }}
             p="0"
             color="Blue"
             flexShrink={0}
+            css={{ "& svg": { width: "100%", height: "100%" } }}
             onClick={() => setIsEditing(true)}
         >
-            <Icon as={LuPencil} boxSize="100%" />
+            <EditIcon />
         </IconButton>
     );
 
@@ -323,14 +325,18 @@ export default function DayEntries({
                     // Nothing recorded and nothing this user can do about it:
                     // either they only have read access, or the day is outside
                     // the window they may write to.
+                    // Centred in the whole entry column (not right-aligned like a photo), and the same type
+                    // as the Profile empty states ("You haven't listed any pets…"): 16/400 --font
                     <Flex
                         {...PHOTO_PROPS}
+                        maxW="100%"
+                        alignSelf="stretch"
                         align="center"
                         justify="center"
                         px="24px"
                         borderRadius={{ base: "11.62px", md: "16px" }}
                     >
-                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="GreyMuted" textAlign="center">
+                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="400" color="Grey" textAlign="center">
                             {!canWrite
                                 ? "No entry for this day."
                                 : "This day is outside the diary's range."}
