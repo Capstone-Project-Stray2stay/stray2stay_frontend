@@ -3,13 +3,14 @@ import { IconButton } from "@chakra-ui/react";
 import type { S2SDialogCloseButtonType } from "../types/component.type";
 import CloseIcon from "./icons/closeIcon.component";
 
-// Figma "Frame 551": 28px #EBEBEB circle with the 12px #7E7E7E ✕ ("Vector.svg") — same as the Select modal's close
+// 28px #EBEBEB circle with the Figma ✕ ("Vector.svg") in #7E7E7E, drawn at the old ✕ size by default
 export default function S2SDialogCloseButton({
     onClick,
     top = "32px",
     right = "32px",
     boxSize = "28px",
-    iconBoxSize = "12px",
+    // Old IoClose at 14px drew a ~7.4px glyph; this padding-free ✕ matches it at 7.4px
+    iconBoxSize = "7.4px",
     zIndex,
     inline = false,
 }: S2SDialogCloseButtonType) {

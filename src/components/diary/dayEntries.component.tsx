@@ -252,8 +252,8 @@ export default function DayEntries({
             aria-label="Edit entry"
             variant="plain"
             minW="unset"
-            // Figma "medium" icon: 24px frame, 16px pencil art inside (Icon_edit). Mobile size unchanged for now
-            boxSize={{ base: "14.36px", md: "24px" }}
+            // Figma pencil (Icon_edit) at the old visual size: the old 16px LuPencil drew ~13px of art, a 20px frame matches
+            boxSize={{ base: "14.36px", md: "20px" }}
             p="0"
             color="Blue"
             flexShrink={0}
@@ -325,8 +325,8 @@ export default function DayEntries({
                     // Nothing recorded and nothing this user can do about it:
                     // either they only have read access, or the day is outside
                     // the window they may write to.
-                    // Centred in the whole entry column (not right-aligned like a photo), and the same type
-                    // as the Profile empty states ("You haven't listed any pets…"): 16/400 --font
+                    // Centred in the whole entry column (not right-aligned like a photo), in --font like the
+                    // Profile empty states; size and weight stay at the original 16/500
                     <Flex
                         {...PHOTO_PROPS}
                         maxW="100%"
@@ -336,7 +336,7 @@ export default function DayEntries({
                         px="24px"
                         borderRadius={{ base: "11.62px", md: "16px" }}
                     >
-                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="400" color="Grey" textAlign="center">
+                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="Grey" textAlign="center">
                             {!canWrite
                                 ? "No entry for this day."
                                 : "This day is outside the diary's range."}

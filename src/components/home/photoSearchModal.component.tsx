@@ -67,8 +67,8 @@ function SpeciesPill({
                 bg={selected ? "Cream_active" : "Cream"}
                 transition="background 0.15s ease"
             >
-                {/* Figma: 32px icon frame centred in the 44px circle */}
-                <Image src={icon} alt="" boxSize="32px" objectFit="contain" />
+                {/* Original icon size, centred in the 44px circle */}
+                <Image src={icon} alt="" w="29.33px" h="26.67px" objectFit="contain" />
             </Circle>
             <Text fontSize="18" fontWeight="600" color="Grey">
                 {label}
@@ -203,8 +203,8 @@ export default function PhotoSearchModal({
                                     bg="#EBEBEB"
                                     _hover={{ bg: "#e0e0e0" }}
                                     color="GreyText"
-                                    // Chakra's IconButton forces svg to its own size; Figma's ✕ is 12px
-                                    css={{ "& svg": { width: "12px", height: "12px" } }}
+                                    // Figma ✕ at the original size: the old 14px IoClose drew a ~7.4px glyph
+                                    css={{ "& svg": { width: "7.4px", height: "7.4px" } }}
                                 >
                                     {/* Figma "Frame 551": 28px #EBEBEB circle, 12px #7E7E7E ✕ */}
                                     <CloseIcon />
@@ -288,9 +288,9 @@ export default function PhotoSearchModal({
                                 />
 
                                 <VStack gap="16px" py="32px" px="16px">
-                                    {/* Figma 82px icon frame, --blue (#C6E7F7) */}
+                                    {/* Figma photos icon at the original size: a 72px frame draws the same ~60px art as the old IoImages */}
                                     <Box color="SkyBlue" display="flex">
-                                        <ImagesIcon />
+                                        <ImagesIcon size={72} />
                                     </Box>
 
                                     <VStack gap="16px" w="100%">
@@ -301,8 +301,7 @@ export default function PhotoSearchModal({
                                         {/* Stops the click reaching the zone's own
                                             handler, which would open the file dialog
                                             a second time. */}
-                                        {/* Figma "Small" line buttons: 16/8 padding, 120 min width,
-                                            18/500 text, 20px icon, 8px icon gap; 12px between buttons */}
+                                        {/* Original button sizes: 170x38, 18px text, 16px camera icon */}
                                         <Flex
                                             direction={{ base: "column", md: "row" }}
                                             align="center"
@@ -312,16 +311,19 @@ export default function PhotoSearchModal({
                                             <S2SButton
                                                 text="Upload Photo"
                                                 variant="outline"
-                                                size="sm"
+                                                width="170px"
+                                                height="38px"
+                                                fontSize="18"
                                                 disabled={isFull}
                                                 onClick={() => inputRef.current?.click()}
                                             />
                                             <S2SButton
-                                                icon={<AICameraIcon />}
+                                                icon={<AICameraIcon size="16px" />}
                                                 text="Take Photo"
                                                 variant="outline"
-                                                size="sm"
-                                                gap="8px"
+                                                width="170px"
+                                                height="38px"
+                                                fontSize="18"
                                                 disabled={isFull}
                                                 onClick={() => setIsCameraOpen(true)}
                                             />
@@ -342,14 +344,14 @@ export default function PhotoSearchModal({
                                                 bg="#E9E9E9"
                                                 borderRadius="12px"
                                             />
-                                            {/* Same as the Rehome photo remove button: 20px circle, 80% white, 10px ✕ */}
+                                            {/* 80% white circle at the original 14px, Figma ✕ at the old ~4.8px glyph size */}
                                             <Flex
                                                 as="button"
                                                 aria-label={`Remove photo ${i + 1}`}
                                                 position="absolute"
                                                 top="4px"
                                                 right="4px"
-                                                boxSize="20px"
+                                                boxSize="14px"
                                                 align="center"
                                                 justify="center"
                                                 bg="rgba(255,255,255,0.80)"
@@ -360,7 +362,7 @@ export default function PhotoSearchModal({
                                                     setPhotos((current) => current.filter((_, index) => index !== i));
                                                 }}
                                             >
-                                                <CloseIcon size={10} />
+                                                <CloseIcon size={4.8} />
                                             </Flex>
                                         </Box>
                                     ))}
@@ -374,10 +376,11 @@ export default function PhotoSearchModal({
                             )}
 
                             <Flex justify="center">
-                                {/* Figma "Large": 24/12 padding, 160 min width, 20/600 */}
                                 <S2SButton
                                     text="Finish"
-                                    size="lg"
+                                    width="160px"
+                                    height="48px"
+                                    fontSize="20"
                                     loading={classify.isPending}
                                     onClick={finish}
                                 />

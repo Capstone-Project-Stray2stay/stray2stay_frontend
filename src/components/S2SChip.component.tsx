@@ -35,7 +35,7 @@ export default function S2SChip({
         }
         transition="all 0.15s ease"
       >
-        <Tag.Label fontSize={{ md: "16" }} fontWeight="500" lineHeight="normal">{text}</Tag.Label>
+        <Tag.Label fontWeight="bold" lineHeight="normal">{text}</Tag.Label>
         {!readOnly && selected && (
           <Tag.EndElement>
             <Tag.CloseTrigger onClick={onToggle} />

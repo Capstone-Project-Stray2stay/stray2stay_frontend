@@ -67,7 +67,7 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
             )}
 
             {open && (
-                // right offset matches S2SAvatar's pr="14px" so this lines up with the pill's edge, not the bell's
+                // -14px cancels S2SAvatar's pr="14px", so the panel's right edge lines up with the pill's edge, not the bell's
                 <Box
                     position="absolute"
                     top="calc(100% + 10px)"

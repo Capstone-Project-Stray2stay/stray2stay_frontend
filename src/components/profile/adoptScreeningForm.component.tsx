@@ -442,7 +442,7 @@ export default function AdoptScreeningForm({
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={handleClose} top="32px" right="32px" boxSize="28px" zIndex={1} />
+                        <S2SDialogCloseButton onClick={handleClose} top="32px" right="32px" boxSize="28px" iconBoxSize="12px" zIndex={1} />
 
                         <VStack py="32px" px={{ base: "24px", md: "32px" }} gap="24px" align="stretch">
                             {/* Title line is 28px — the close button's height — and both start 32px down, so the
