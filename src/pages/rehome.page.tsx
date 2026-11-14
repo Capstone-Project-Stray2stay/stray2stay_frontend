@@ -184,7 +184,7 @@ export default function Rehome() {
 
             <Flex
                 justify={{ base: "flex-start", md: "center" }}
-                mt={{ base: "32px", md: "64px" }}
+                mt={{ base: "32px", md: 0 }}
                 overflowX="auto"
             >
                 <S2SStepper steps={STEPS} current={step} />

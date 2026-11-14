@@ -2,12 +2,13 @@ import { IconButton } from "@chakra-ui/react"
 
 import type { S2SIconButtonType } from "../types/component.type"
 
-export default function S2SIconButton({ icon, ariaLabel, bgColor, iconColor, boxSize, onClick }: S2SIconButtonType) {
+export default function S2SIconButton({ icon, ariaLabel, bgColor, iconColor, boxSize, boxShadow, onClick }: S2SIconButtonType) {
     return (
         <IconButton
             aria-label={ariaLabel || "icon-button"}
             rounded="full"
             boxSize={boxSize}
+            boxShadow={boxShadow}
             bg={bgColor || "Blue"}
             color={iconColor || "white"}
             _hover={{ bg: `${bgColor || "Blue"}_hover` }}

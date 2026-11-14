@@ -21,6 +21,8 @@ const config = defineConfig({
         LightYellow: { value: "#FFF6D4" },
         White: { value: "#FFFFFF" },
         Cream: { value: "#FFEEC1" },
+        // Figma brief: Dog / Cat / All circle fill on hover and when selected
+        PetIconActive: { value: "#FCE4A7" },
         YellowBorder: { value: "#FFD387" },
         SkyBlue: { value: "#C6E7F7" },
         GreyText: { value: "#7E7E7E" },
@@ -122,7 +124,20 @@ const config = defineConfig({
     },
     "*": {
       WebkitTapHighlightColor: "transparent",
+      "@supports (-moz-appearance: none)": {
+        scrollbarWidth: "thin",
+        scrollbarColor: "var(--chakra-colors--sky-blue) transparent",
+      },
     },
+    // Site-wide scrollbar: thin rounded SkyBlue thumb (Blue on hover), clear track, no arrow buttons.
+    // Chrome/Edge/Safari use the ::-webkit-scrollbar parts; Firefox only supports "thin" + colours, and is
+    // fenced off with @supports because setting scrollbar-color in Chrome would switch the webkit styling off.
+    "*::-webkit-scrollbar": { width: "6px", height: "6px" },
+    "*::-webkit-scrollbar-button": { display: "none" },
+    "*::-webkit-scrollbar-track": { background: "transparent" },
+    "*::-webkit-scrollbar-corner": { background: "transparent" },
+    "*::-webkit-scrollbar-thumb": { bg: "SkyBlue", borderRadius: "999px" },
+    "*::-webkit-scrollbar-thumb:hover": { bg: "Blue" },
   },
 });
 

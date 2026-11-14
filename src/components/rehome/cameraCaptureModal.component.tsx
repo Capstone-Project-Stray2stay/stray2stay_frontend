@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Dialog, Flex, Icon, IconButton, Image, Portal, Text, VStack } from "@chakra-ui/react";
-import { IoCameraOutline, IoClose } from "react-icons/io5";
+import { Box, Dialog, Flex, Icon, Image, Portal, Text, VStack } from "@chakra-ui/react";
+import { IoCameraOutline } from "react-icons/io5";
 
-import { S2SButton } from "../../components/S2S.components";
+import { S2SButton, S2SDialogCloseButton } from "../../components/S2S.components";
+import AICameraIcon from "../icons/aiCameraIcon.component";
 
 const shotName = () => `camera-${Date.now()}.jpg`;
 
@@ -44,10 +45,13 @@ export default function CameraCaptureModal({
     isOpen,
     onClose,
     onCapture,
+    ai = false,
 }: {
     isOpen: boolean;
     onClose: () => void;
     onCapture: (photo: File) => void;
+    /** The shot goes to the breed classifier: Capture gets the sparkle camera used for every AI upload */
+    ai?: boolean;
 }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const fallbackInputRef = useRef<HTMLInputElement>(null);
@@ -154,40 +158,35 @@ export default function CameraCaptureModal({
                 <Dialog.Positioner>
                     <Dialog.Content
                         maxW={{ base: "335px", md: "560px" }}
-                        borderRadius={{ base: "25.34px", md: "40px" }}
+                        // No Figma design for this dialog: matches the other dialogs' 24px corners on desktop
+                        borderRadius={{ base: "25.34px", md: "24px" }}
                         p="0"
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <IconButton
-                            aria-label="Close"
+                        {/* Desktop matches the other dialogs: 32px padding all round, ✕ 32px in from the corner
+                            and level with the 28px title line. Mobile unchanged until the mobile pass. */}
+                        <S2SDialogCloseButton
                             onClick={onClose}
-                            position="absolute"
-                            top={{ base: "20px", md: "24px" }}
-                            right={{ base: "20px", md: "24px" }}
-                            boxSize="23.58px"
-                            minW="unset"
-                            p="0"
-                            rounded="full"
-                            bg="#EDEDED"
-                            _hover={{ bg: "#e0e0e0" }}
+                            top={{ base: "20px", md: "32px" }}
+                            right={{ base: "20px", md: "32px" }}
                             zIndex={1}
-                        >
-                            <Icon as={IoClose} boxSize="12px" color="GreyText" />
-                        </IconButton>
+                        />
 
                         <VStack
-                            pt={{ base: "48px", md: "56px" }}
-                            pb={{ base: "28px", md: "36px" }}
-                            px={{ base: "24px", md: "40px" }}
+                            pt={{ base: "48px", md: "32px" }}
+                            pb={{ base: "28px", md: "32px" }}
+                            px={{ base: "24px", md: "32px" }}
                             gap={{ base: "18px", md: "24px" }}
                             align="stretch"
                         >
                             <Text
-                                fontSize={{ base: "18", md: "22" }}
+                                // Same 24/600 title as the other dialogs (no Figma design for this one)
+                                fontSize={{ base: "18", md: "24" }}
                                 fontWeight="600"
                                 color="Grey"
                                 textAlign="center"
+                                lineHeight={{ md: "28px" }}
                             >
                                 {shot ? "Use this photo?" : "Take a Photo"}
                             </Text>
@@ -308,7 +307,7 @@ export default function CameraCaptureModal({
                                         />
                                     )}
                                     <S2SButton
-                                        icon={<Icon as={IoCameraOutline} boxSize="20px" />}
+                                        icon={ai ? <AICameraIcon size="20px" /> : <Icon as={IoCameraOutline} boxSize="20px" />}
                                         text="Capture"
                                         width={{ base: "160px", md: "190px" }}
                                         height={{ base: "36px", md: "44px" }}

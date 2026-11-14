@@ -2,6 +2,7 @@ import { Box, Dialog, HStack, Icon, Image, Input, Portal, RadioGroup, Text, VSta
 import { LuSparkles } from "react-icons/lu";
 
 import { S2SDialogCloseButton } from "../S2S.components";
+import QuestionPhotos from "./questionPhotos.component";
 import { SCREENING_SECTIONS } from "../../utils/screeningForm";
 import type { ScreeningQuestion } from "../../utils/screeningForm";
 import type {
@@ -270,15 +271,16 @@ export default function ScreeningAnswersModal({
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner>
+                    {/* Same shell as the adopter's Adoption Screening Form (adoptScreeningForm.component) */}
                     <Dialog.Content
-                        maxW={{base: "90vw", lg: "60vw"}}
+                        maxW="800px"
                         maxH="90vh"
-                        borderRadius="50px"
+                        borderRadius="24px"
                         p="0"
                         position="relative"
                         boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)"
                     >
-                        <S2SDialogCloseButton onClick={onClose} zIndex={1} />
+                        <S2SDialogCloseButton onClick={onClose} top="32px" right="32px" boxSize="28px" zIndex={1} />
 
                         {/* Dialog.Content is a flex column with a maxH, so this
                             fills it and clips; the answers below take whatever
@@ -286,20 +288,20 @@ export default function ScreeningAnswersModal({
                             double-count the header and summary and spill past
                             the rounded corners. */}
                         <VStack
-                            pt={{base: "80px", md: "53px"}}
-                            pb="40px"
-                            px={{ base: "24px", md: "54px" }}
-                            gap="30px"
+                            py="32px"
+                            px={{ base: "24px", md: "32px" }}
+                            gap="24px"
                             align="stretch"
                             flex="1"
                             minH="0"
                             overflow="hidden"
                         >
-                            <VStack gap="21px" maxW="626px" alignSelf="center" flexShrink={0}>
-                                <Text fontSize={{base: "20", md: "24"}} fontWeight="600" color="Grey" textAlign="center">
+                            {/* Same header as the adopter form: 28px title line level with the ✕, 12px gap, balanced subtitle */}
+                            <VStack gap="12px" maxW="626px" alignSelf="center" flexShrink={0} px={{ base: "28px", md: 0 }}>
+                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center" lineHeight="28px">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize={{base: "14", md: "16"}} fontWeight="500" color="GreyText" textAlign="center">
+                                <Text fontSize="16" fontWeight="400" color="Grey" textAlign="center" css={{ textWrap: "balance" }}>
                                     {adopterName}&apos;s responses, shared to assist in the adoption
                                     approval process.
                                 </Text>
@@ -311,9 +313,11 @@ export default function ScreeningAnswersModal({
                                     No screening answers were submitted with this request.
                                 </Text>
                             ) : (
+                                // Section/question spacing and type mirror the adopter form: 16 between sections,
+                                // 12 inside, questions indented 24, 8 from question to answer, 16/400 --font text
                                 <VStack
                                     align="stretch"
-                                    gap="30px"
+                                    gap="16px"
                                     flex="1"
                                     minH="0"
                                     overflowY="auto"
@@ -323,21 +327,26 @@ export default function ScreeningAnswersModal({
                                         summary={answers.aiSummary}
                                         status={answers.aiSummaryStatus}
                                     />
-                                    {SCREENING_SECTIONS.map((section) => (
-                                        <VStack key={section.title} align="stretch" gap="20px">
-                                            <Text fontSize="16" color="black">
+                                    {SCREENING_SECTIONS.map((section, sectionIndex) => (
+                                        <VStack key={section.title} align="stretch" gap="12px">
+                                            <Text fontSize="16" fontWeight="400" color="Grey">
+                                                {section.questions.some((q) => q.number !== "") && `${sectionIndex + 1}. `}
                                                 {section.title}
                                             </Text>
 
-                                            <VStack align="stretch" gap="25px" px="25px">
+                                            <VStack
+                                                align="stretch"
+                                                gap="12px"
+                                                px={section.questions.every((q) => q.number === "") ? 0 : "24px"}
+                                            >
                                                 {section.questions.map((question) => (
                                                     <VStack
                                                         key={question.id}
                                                         align="flex-start"
-                                                        gap="12px"
+                                                        gap="8px"
                                                     >
                                                         {question.text && (
-                                                            <Text fontSize="16" color="black">
+                                                            <Text fontSize="16" fontWeight="400" color="Grey">
                                                                 {question.number} {question.text}
                                                             </Text>
                                                         )}
@@ -352,21 +361,26 @@ export default function ScreeningAnswersModal({
                                     ))}
 
                                     {answers.CustomAnswers && answers.CustomAnswers.length > 0 && (
-                                        <VStack align="stretch" gap="20px">
-                                            <Text fontSize="16" color="black">
+                                        <VStack align="stretch" gap="12px">
+                                            <Text fontSize="16" fontWeight="400" color="Grey">
                                                 Additional Questions
                                             </Text>
-                                            <VStack align="stretch" gap="25px" px="25px">
+                                            <VStack align="stretch" gap="12px" px="24px">
                                                 {answers.CustomAnswers.map((answer) => (
                                                     <VStack
                                                         key={answer.questionId}
                                                         align="stretch"
-                                                        gap="12px"
+                                                        gap="8px"
                                                         w="100%"
                                                     >
-                                                        <Text fontSize="16" color="black">
+                                                        <Text fontSize="16" fontWeight="400" color="Grey">
                                                             {answer.questionText}
                                                         </Text>
+                                                        {/* The owner's illustration photos, as the adopter saw them */}
+                                                        <QuestionPhotos
+                                                            urls={answer.questionImages ?? []}
+                                                            label={answer.questionText || "Question photo"}
+                                                        />
                                                         <CustomAnswerView answer={answer} />
                                                     </VStack>
                                                 ))}

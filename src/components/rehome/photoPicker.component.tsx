@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Flex, Icon, IconButton, Image, Text, VStack } from "@chakra-ui/react";
-import { IoBulbOutline, IoCameraOutline, IoClose } from "react-icons/io5";
-import { RiImageAiFill } from "react-icons/ri";
+import { Box, Flex, IconButton, Image, Text, VStack, useBreakpointValue } from "@chakra-ui/react";
 import heic2any from "heic2any";
 
 import { S2SButton } from "../S2S.components";
+import AICameraIcon from "../icons/aiCameraIcon.component";
+import AIImagesIcon from "../icons/aiImagesIcon.component";
+import LightbulbIcon from "../icons/lightbulbIcon.component";
+import CloseIcon from "../icons/closeIcon.component";
+import DashedOutline from "../dashedOutline.component";
 import CameraCaptureModal from "./cameraCaptureModal.component";
 import { MAX_PHOTOS, type PetPhoto } from "../../types/rehome.type";
 
@@ -30,6 +33,8 @@ export default function PhotoPicker({
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+    // SVG rx can't take responsive values, so pick the zone's corner radius per breakpoint
+    const outlineRadius = useBreakpointValue({ base: 16.27, md: 24 }) ?? 24;
     const [error, setError] = useState("");
     const [isCameraOpen, setIsCameraOpen] = useState(false);
 
@@ -91,13 +96,12 @@ export default function PhotoPicker({
     // The design puts this inside the dashed zone on desktop but below it on
     // mobile, so it is rendered in both places and revealed by breakpoint.
     const tip = (
-        <Flex align={{ base: "flex-start", md: "center" }} gap={{ base: "6px", md: "4px" }}>
-            <Icon
-                as={IoBulbOutline}
-                boxSize={{ base: "21px", md: "24px" }}
-                flexShrink={0}
-                color="GreyInfo"
-            />
+        // Figma: 24px bulb, 4px gap, bottom-aligned with the 18/500 --info text
+        <Flex align={{ base: "flex-start", md: "flex-end" }} gap={{ base: "6px", md: "4px" }}>
+            {/* Figma "Icon_lightbulb", 24px, --info */}
+            <Box color="GreyInfo" flexShrink={0} boxSize={{ base: "21px", md: "24px" }} css={{ "& svg": { width: "100%", height: "100%" } }}>
+                <LightbulbIcon />
+            </Box>
             <Text
                 fontSize={{ base: "12", md: "18" }}
                 fontWeight="500"
@@ -150,11 +154,11 @@ export default function PhotoPicker({
             <Box
                 mt={showAiHint ? { base: "16px", md: "30px" } : "0"}
                 bg="rgba(255,255,255,0.70)"
+                position="relative"
                 borderRadius={{ base: "16.27px", md: "24px" }}
-                borderWidth={{ base: "1.30px", md: "1.5px" }}
-                borderStyle="dashed"
-                borderColor={isDragging ? "BlueText" : "Blue"}
-                transition="border-color 0.15s ease"
+                // Same Figma dash as the Home photo-search drop zone (2px, 10/10, round caps)
+                color={isDragging ? "BlueText" : "Blue"}
+                transition="color 0.15s ease"
                 cursor={isFull ? "default" : "pointer"}
                 onClick={() => !isFull && inputRef.current?.click()}
                 onDragOver={(e) => {
@@ -168,6 +172,7 @@ export default function PhotoPicker({
                     addFiles(e.dataTransfer.files);
                 }}
             >
+                <DashedOutline radius={outlineRadius} />
                 <input
                     ref={inputRef}
                     type="file"
@@ -181,21 +186,21 @@ export default function PhotoPicker({
                     }}
                 />
 
-                {/* Figma: 32px vertical padding, 16px under the icon, 12px between the rest */}
+                {/* Figma: 32px top/bottom, 16px between icon, text, buttons and tip; text lines 8px apart;
+                    Auto line height. Mobile values unchanged until the mobile pass. */}
                 <VStack
-                    gap={{ base: "14.97px", md: "12px" }}
+                    gap={{ base: "14.97px", md: "16px" }}
                     py="32px"
                     px={{ base: "16px", md: "24px" }}
+                    lineHeight={{ md: "normal" }}
                 >
                     <VStack gap={{ base: "7px", md: "16px" }}>
-                        <Icon
-                            as={RiImageAiFill}
-                            w={{ base: "61.19px", md: "82px" }}
-                            h={{ base: "55.98px", md: "82px" }}
-                            color="SkyBlue"
-                        />
+                        {/* Figma "Vector (5)" in its 82px frame, --blue; mobile keeps its old size for now */}
+                        <Box color="SkyBlue" boxSize={{ base: "61.19px", md: "82px" }} css={{ "& svg": { width: "100%", height: "100%" } }}>
+                            <AIImagesIcon />
+                        </Box>
 
-                        <VStack gap={{ base: "13.02px", md: "12px" }}>
+                        <VStack gap={{ base: "13.02px", md: "16px" }}>
                             <VStack gap={{ base: 0, md: "8px" }} textAlign="center">
                                 <Text
                                     fontSize={{ base: "14", md: "20" }}
@@ -215,28 +220,33 @@ export default function PhotoPicker({
 
                             {/* Stops the click reaching the zone's own handler,
                                 which would open the file dialog a second time. */}
+                            {/* Desktop matches the Home photo-search popup: Figma "Small" line buttons
+                                (16/8 padding, 120 min, 18/500, 20px icon 8px from text), 12px apart.
+                                Mobile keeps its old sizes until the mobile pass. */}
                             <Flex
                                 direction={{ base: "column", md: "row" }}
                                 align="center"
-                                gap={{ base: "10px", md: "16px" }}
+                                gap={{ base: "10px", md: "12px" }}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                {/* Figma "Small" Line button */}
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width={{ base: "160.78px", md: "170px" }}
-                                    height={{ base: "27.99px", md: "38px" }}
+                                    size="sm"
+                                    width={{ base: "160.78px", md: "auto" }}
+                                    height={{ base: "27.99px", md: "auto" }}
                                     fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => inputRef.current?.click()}
                                 />
                                 <S2SButton
-                                    icon={<Icon as={IoCameraOutline} boxSize={{ base: "16px", md: "20px" }} />}
+                                    icon={<AICameraIcon />}
                                     text="Take Photo"
                                     variant="outline"
-                                    width={{ base: "160.78px", md: "170px" }}
-                                    height={{ base: "27.99px", md: "38px" }}
+                                    size="sm"
+                                    gap="8px"
+                                    width={{ base: "160.78px", md: "auto" }}
+                                    height={{ base: "27.99px", md: "auto" }}
                                     fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => setIsCameraOpen(true)}
@@ -267,20 +277,23 @@ export default function PhotoPicker({
                                 bg="#E9E9E9"
                                 borderRadius={{ base: "12.45px", md: "14.49px" }}
                             />
+                            {/* Brief: 20x20 circle at 80% white, 10x10 ✕ (Figma close glyph). Mobile size unchanged for now */}
                             <IconButton
                                 aria-label={`Remove photo ${i + 1}`}
                                 position="absolute"
                                 top="4px"
                                 right="4px"
-                                boxSize={{ base: "12.89px", md: "15px" }}
+                                boxSize={{ base: "12.89px", md: "20px" }}
                                 minW="unset"
                                 p="0"
-                                bg="rgba(255,255,255,0.85)"
-                                _hover={{ bg: "rgba(255,255,255,0.85)" }}
+                                bg="rgba(255,255,255,0.80)"
+                                _hover={{ bg: "rgba(255,255,255,0.80)" }}
                                 borderRadius="full"
+                                color="GreyMuted"
+                                css={{ "& svg": { width: "10px", height: "10px" } }}
                                 onClick={() => removeAt(i)}
                             >
-                                <Icon as={IoClose} boxSize={{ base: "8px", md: "9px" }} color="GreyMuted" />
+                                <CloseIcon />
                             </IconButton>
                         </Box>
                     ))}
@@ -294,6 +307,7 @@ export default function PhotoPicker({
             )}
 
             <CameraCaptureModal
+                ai
                 isOpen={isCameraOpen}
                 onClose={() => setIsCameraOpen(false)}
                 // Goes through addFiles like a picked file does, so the
