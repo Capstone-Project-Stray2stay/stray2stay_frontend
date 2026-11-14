@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Box, Drawer, Flex, Grid, Image, Portal, Text, VStack } from "@chakra-ui/react";
-import { IoSearchOutline, IoCameraOutline } from "react-icons/io5";
+import { IoSearchOutline } from "react-icons/io5";
 import { LuFilter } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ import {
     S2SPetCard,
     S2SPetCardSkeleton,
     S2SPagination,
+    S2SDialogCloseButton,
 } from "../components/S2S.components";
 
 import { useAdoptBreeds, usePetColors, useSearchPets } from "../hooks/query/pet.query";
@@ -23,6 +24,8 @@ import { formatGender, genderOptions, ageGroupOptions } from "../utils/petOption
 import { districtState } from "../utils/address.util";
 import PhotoSearchModal from "../components/home/photoSearchModal.component";
 import type { PhotoSearchResult } from "../components/home/photoSearchModal.component";
+import AICameraIcon from "../components/icons/aiCameraIcon.component";
+import PawIcon from "../components/icons/pawIcon.component";
 
 const PAGE_SIZE = 16;
 
@@ -56,11 +59,14 @@ export default function Adopt() {
     const [page, setPage] = useState(1);
     const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
     const [photoSearchOpen, setPhotoSearchOpen] = useState(false);
+    // Set when someone clicks the locked Color filter before picking a breed
+    const [showBreedFirstHint, setShowBreedFirstHint] = useState(false);
 
     const changeCategory = (next: "dog" | "cat" | "all") => {
         setCategory(next);
         setBreed("");
         setColor("");
+        setShowBreedFirstHint(false);
         setGender("");
         setAgeGroup("");
         setLocation("");
@@ -72,6 +78,7 @@ export default function Adopt() {
         setKeyword("");
         setBreed("");
         setColor("");
+        setShowBreedFirstHint(false);
         setGender("");
         setAgeGroup("");
         setLocation("");
@@ -128,6 +135,7 @@ export default function Adopt() {
         setBreed(value);
         setColor("");
         setPage(1);
+        setShowBreedFirstHint(false);
     };
     const handleColorChange = (value: string) => {
         setColor(value);
@@ -154,10 +162,12 @@ export default function Adopt() {
             {/* Figma content is 1043px wide (1440px frame); past that, the space-between filter row and
                 card grid would keep spreading, so everything below the header is capped and centred */}
             <Box maxW="1043px" mx="auto">
-            <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: "64px" }}>
-                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/paw.png" alt="All" boxSize={{base: "28px", md: "40px"}} objectFit="contain" />} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
+            <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: 0 }}>
+                {/* Figma: 48px icon frame in the 72px circle (dog/cat art 44x40, paw art 40x33); scaled to the 51px mobile circle */}
+                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "34px", md: "48px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "34px", md: "48px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
+                {/* Shared Figma paw: its 48 frame holds the 40x32.86 art from the Figma "All" icon; --font color */}
+                <S2SPetIconButton icon={<Box as="span" display="flex" color="Grey" boxSize={{base: "34px", md: "48px"}}><PawIcon size="100%" /></Box>} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
             </Flex>
 
             <Flex display={{ base: "flex", md: "none" }} gap="10px" mt="24px" align="center" justify="center" wrap="wrap">
@@ -174,7 +184,8 @@ export default function Adopt() {
                                 display="flex"
                                 onClick={() => setPhotoSearchOpen(true)}
                             >
-                                <IoCameraOutline color="gray" size={20} />
+                                {/* AI photo search: sparkle camera like every AI upload */}
+                                <Box as="span" color="gray" display="flex"><AICameraIcon size="20px" /></Box>
                             </Box>
                         }
                         value={keyword}
@@ -188,13 +199,14 @@ export default function Adopt() {
                 <Box flex={1} maxW="784px" display="flex">
                     <S2SInput
                         placeholder="Search by keyword ( e.g. black, orange )"
-                        endIcon={<IoSearchOutline size={24} color="#7E7E7E" />}
+                        // Chakra's end element already pads 12px; 12 more puts the icon 24px in, matching ps
+                        endIcon={<Box me="12px" display="flex"><IoSearchOutline size={24} color="#7E7E7E" /></Box>}
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
                         h="48px"
                         ps="24px"
                         pe="56px"
-                        fontSize="16"
+                        fontSize="20"
                         fontWeight="500"
                         color="Grey"
                         bg={FILTER_BG}
@@ -204,11 +216,14 @@ export default function Adopt() {
                     />
                 </Box>
                 <S2SIconButton
-                    icon={<IoCameraOutline size={26} />}
+                    // Figma Icon_AIcamera at 32px; the wrapper outranks IconButton's default svg sizing
+                    icon={<Box as="span" display="flex" css={{ "& svg": { width: "32px", height: "32px" } }}><AICameraIcon /></Box>}
                     ariaLabel="Search by photo"
                     bgColor="White"
                     iconColor="GreyText"
                     boxSize="48px"
+                    // Same Figma shadow as the filter dropdowns next to it
+                    boxShadow={FILTER_SHADOW}
                     onClick={() => setPhotoSearchOpen(true)}
                 />
             </Flex>
@@ -218,7 +233,10 @@ export default function Adopt() {
                     placeholder="Breed"
                     width="190px"
                     height="40px"
-                    fontSize="16"
+                    fontSize="20"
+                    paddingX="16px"
+                    gutter={4}
+                    variant="filter"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -228,27 +246,47 @@ export default function Adopt() {
                     onValueChange={handleBreedChange}
                     clearable
                 />
-                <S2SDropDown
-                    key={`color-${breed}-${colorsLoading ? "loading" : "loaded"}`}
-                    placeholder="Color"
-                    width="190px"
-                    height="40px"
-                    fontSize="16"
-                    bg={FILTER_BG}
-                    borderColor="transparent"
-                    boxShadow={FILTER_SHADOW}
-                    placeholderColor="GreyText"
-                    data={colorOptions}
-                    value={color}
-                    onValueChange={handleColorChange}
-                    disabled={breed === ""}
-                    clearable
-                />
+                <Box position="relative">
+                    <S2SDropDown
+                        key={`color-${breed}-${colorsLoading ? "loading" : "loaded"}`}
+                        placeholder="Color"
+                        width="190px"
+                        height="40px"
+                        fontSize="20"
+                        paddingX="16px"
+                        gutter={4}
+                        variant="filter"
+                        bg={FILTER_BG}
+                        borderColor="transparent"
+                        boxShadow={FILTER_SHADOW}
+                        placeholderColor="GreyText"
+                        data={colorOptions}
+                        value={color}
+                        onValueChange={handleColorChange}
+                        disabled={breed === ""}
+                        clearable
+                    />
+                    {/* A disabled field swallows clicks, so a clear layer on top catches them
+                        and explains why Color won't open yet */}
+                    {breed === "" && (
+                        <Box
+                            position="absolute"
+                            inset="0"
+                            rounded="full"
+                            cursor="pointer"
+                            aria-hidden="true"
+                            onClick={() => setShowBreedFirstHint(true)}
+                        />
+                    )}
+                </Box>
                 <S2SDropDown
                     placeholder="Gender"
                     width="190px"
                     height="40px"
-                    fontSize="16"
+                    fontSize="20"
+                    paddingX="16px"
+                    gutter={4}
+                    variant="filter"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -262,7 +300,10 @@ export default function Adopt() {
                     placeholder="Age Group"
                     width="190px"
                     height="40px"
-                    fontSize="16"
+                    fontSize="20"
+                    paddingX="16px"
+                    gutter={4}
+                    variant="filter"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -277,7 +318,10 @@ export default function Adopt() {
                     placeholder="Location"
                     width="190px"
                     height="40px"
-                    fontSize="16"
+                    fontSize="20"
+                    paddingX="16px"
+                    gutter={4}
+                    variant="filter"
                     bg={FILTER_BG}
                     borderColor="transparent"
                     boxShadow={FILTER_SHADOW}
@@ -288,8 +332,26 @@ export default function Adopt() {
                     clearable
                 />
             </Flex>
+            {/* Figma: 16px below the filters, 18/400 --Red, 0.54 letter spacing, centred */}
+            {showBreedFirstHint && breed === "" && (
+                <Text
+                    display={{ base: "none", md: "block" }}
+                    mt="16px"
+                    textAlign="center"
+                    color="#FF5151"
+                    fontSize="18"
+                    fontWeight="400"
+                    letterSpacing="0.54px"
+                    lineHeight="normal"
+                    role="alert"
+                >
+                    Please select a breed first.
+                </Text>
+            )}
             <Flex display={{ base: "none", md: "flex" }} justify="flex-end" mt="16px">
-                <S2SButton text="Clear" bgColor="Blue" width="120px" height="48px" fontSize="20" onClick={resetFilters} />
+                {/* Figma "LargeShort": 16/12 padding, 120 min width, 20/600. Height pinned to 48 (12 + 24 text line + 12)
+                    because Chakra's tighter button line height would render it at 44, as on the PDPA buttons */}
+                <S2SButton text="Clear" bgColor="Blue" size="lgShort" height="48px" onClick={resetFilters} />
             </Flex>
 
             <Drawer.Root placement="bottom" open={filterDrawerOpen} onOpenChange={(e) => setFilterDrawerOpen(e.open)}>
@@ -299,7 +361,8 @@ export default function Adopt() {
                         <Drawer.Content maxH="85vh" borderTopLeftRadius="24px" borderTopRightRadius="24px" overflow="hidden" p="10px">
                             <Flex width="100%" justify="space-between" align="center" pt={6} px={6}>
                                 <Text fontSize="20" fontWeight="600" color="Grey">Filters</Text>
-                                <Drawer.CloseTrigger/>
+                                {/* Same Figma close as the dialogs, sitting in the header row level with "Filters" */}
+                                <S2SDialogCloseButton inline onClick={() => setFilterDrawerOpen(false)} />
                             </Flex>
                             <Drawer.Body overflowY="auto">
                                 <VStack align="stretch" gap="24px" pt={2}>
@@ -312,16 +375,43 @@ export default function Adopt() {
                                         onValueChange={handleBreedChange}
                                         clearable
                                     />
-                                    <S2SDropDown
-                                        key={`color-drawer-${breed}-${colorsLoading ? "loading" : "loaded"}`}
-                                        placeholder="Color"
-                                        width="100%"
-                                        data={colorOptions}
-                                        value={color}
-                                        onValueChange={handleColorChange}
-                                        disabled={breed === ""}
-                                        clearable
-                                    />
+                                    {/* Mobile take on the desktop hint: same copy and red, shown right under Color */}
+                                    <VStack align="stretch" gap="8px">
+                                        <Box position="relative">
+                                            <S2SDropDown
+                                                key={`color-drawer-${breed}-${colorsLoading ? "loading" : "loaded"}`}
+                                                placeholder="Color"
+                                                width="100%"
+                                                data={colorOptions}
+                                                value={color}
+                                                onValueChange={handleColorChange}
+                                                disabled={breed === ""}
+                                                clearable
+                                            />
+                                            {breed === "" && (
+                                                <Box
+                                                    position="absolute"
+                                                    inset="0"
+                                                    rounded="full"
+                                                    cursor="pointer"
+                                                    aria-hidden="true"
+                                                    onClick={() => setShowBreedFirstHint(true)}
+                                                />
+                                            )}
+                                        </Box>
+                                        {showBreedFirstHint && breed === "" && (
+                                            <Text
+                                                ps="16px"
+                                                color="#FF5151"
+                                                fontSize="14"
+                                                fontWeight="400"
+                                                lineHeight="normal"
+                                                role="alert"
+                                            >
+                                                Please select a breed first.
+                                            </Text>
+                                        )}
+                                    </VStack>
                                     <S2SDropDown
                                         placeholder="Gender"
                                         width="100%"

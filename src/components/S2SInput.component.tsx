@@ -34,6 +34,8 @@ export default function S2SInput({
                 bg={bg}
                 borderRadius={borderRadius}
                 borderColor={borderColor}
+                // Typed text uses --font (#595959), same as the Note textarea; callers can still override via rest
+                color="Grey"
                 focusRingColor="BlueText"
                 _focus={{ borderColor: "Blue" }}
                 _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed" }}

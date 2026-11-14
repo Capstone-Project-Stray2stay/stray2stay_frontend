@@ -14,6 +14,7 @@ export interface S2SAccordionType {
     contentPt?: ResponsiveSpace
     contentPb?: ResponsiveSpace
     contentColor?: string
+    contentFontWeight?: string
 }
 
 export type S2SButtonSize = "lg" | "lgShort" | "md" | "sm" | "xs"
@@ -29,9 +30,13 @@ export interface S2SButtonType {
     height?: ResponsiveSpace
     fontSize?: ResponsiveSpace
     width?: ResponsiveSpace
+    /** Icon-to-text gap; overrides the size's default (some Figma instances differ from the sheet) */
+    gap?: string
     loading?: boolean
     disabled?: boolean
     onClick?: () => void
+    /** Shows state only (looks like a button, isn't clickable): drops hover/press and the pointer cursor */
+    isStatus?: boolean
 }
 
 export interface S2SChipType {
@@ -62,6 +67,13 @@ export interface S2SDropDownType {
     placeholderColor?: string
     /** Shows a ✕ next to the chevron once a value is picked, so the field can be emptied again */
     clearable?: boolean
+    /** Left padding of the text and right padding of the chevron (e.g. "16px") */
+    paddingX?: string
+    /** Space in px between the field and the open list (default 0: list hangs straight off the field) */
+    gutter?: number
+    /** "filter": the Figma Adopt filter (hover border, blue border once filled; list with 16px padding,
+     *  16 radius, 40px rows 10px apart, 20/500 text, blue check) */
+    variant?: "default" | "filter"
 }
 
 export interface S2SCheckboxType {
@@ -76,6 +88,7 @@ export interface S2SIconButtonType {
     bgColor?: string
     iconColor?: string
     boxSize?: ResponsiveSpace
+    boxShadow?: string
     onClick?: () => void
 }
 
@@ -135,4 +148,6 @@ export interface S2SDialogCloseButtonType {
     boxSize?: ResponsiveSpace
     iconBoxSize?: ResponsiveSpace
     zIndex?: number
+    /** Place in normal layout flow instead of absolutely in the dialog's corner */
+    inline?: boolean
 }

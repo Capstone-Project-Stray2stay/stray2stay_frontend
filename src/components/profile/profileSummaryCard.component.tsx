@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Avatar, Box, Button, Flex, Icon, IconButton, Text, VStack } from "@chakra-ui/react";
 import { LuPencil, LuUser } from "react-icons/lu";
-import { MdPets } from "react-icons/md";
+import PawIcon from "../icons/pawIcon.component";
 import type { IconType } from "react-icons";
 
 import type { InfoTab } from "../../types/profile.type";
@@ -114,7 +114,7 @@ export default function ProfileSummaryCard({
                         onClick={() => onTabChange("personal")}
                     />
                     <MenuItem
-                        icon={MdPets}
+                        icon={PawIcon}
                         label="Pet Preferences"
                         active={activeTab === "preferences"}
                         onClick={() => onTabChange("preferences")}

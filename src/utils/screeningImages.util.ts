@@ -2,7 +2,8 @@ import { uploadScreeningAnswerImageAPI } from "../services/apis/pet.api";
 import type { CustomScreeningQuestionDraft } from "../types/profile.type";
 
 /**
- * Photos an owner adds to an IMAGE question stay in the browser until the questions are saved:
+ * Photos an owner adds to a question — an IMAGE question's own photos, or the illustration photos any
+ * question can carry (questionImages) — stay in the browser until the questions are saved:
  * the pet may not exist yet (Register a Pet, step 4), and a photo removed before saving should
  * never be uploaded. Each staged file is shown through a blob: URL that also serves as its key.
  */
@@ -28,8 +29,7 @@ export async function uploadStagedScreeningImages(
 ): Promise<CustomScreeningQuestionDraft[]> {
     const uploaded = new Map<string, string>();
     const pending = questions
-        .filter((q) => q.questionType === "IMAGE")
-        .flatMap((q) => q.questionOptions)
+        .flatMap((q) => [...(q.questionType === "IMAGE" ? q.questionOptions : []), ...q.questionImages])
         .filter((url) => staged.has(url));
 
     await Promise.all(
@@ -39,9 +39,10 @@ export async function uploadStagedScreeningImages(
     );
     pending.forEach(discardScreeningImage);
 
-    return questions.map((q) =>
-        q.questionType === "IMAGE"
-            ? { ...q, questionOptions: q.questionOptions.map((url) => uploaded.get(url) ?? url) }
-            : q,
-    );
+    const swap = (url: string) => uploaded.get(url) ?? url;
+    return questions.map((q) => ({
+        ...q,
+        questionOptions: q.questionType === "IMAGE" ? q.questionOptions.map(swap) : q.questionOptions,
+        questionImages: q.questionImages.map(swap),
+    }));
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
 
@@ -55,6 +55,7 @@ function UserInformationForm({
     const [isDecliningConsent, setIsDecliningConsent] = useState(false);
     const [resolvingLocation, setResolvingLocation] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const pdpaContentRef = useRef<HTMLDivElement>(null);
 
     const updateUserMutation = useUpdateUser();
     const updateNewUserStatusMutation = useUpdateNewUserStatus();
@@ -121,65 +122,76 @@ function UserInformationForm({
                 closeOnEscape={false}
                 closeOnInteractOutside={false}
                 placement="center"
+                // Focus the card itself on open; otherwise the first button (Decline) gets a focus ring
+                initialFocusEl={() => pdpaContentRef.current}
             >
                 <Portal>
                     <Dialog.Backdrop bg="blackAlpha.500" />
                     <Dialog.Positioner px={4}>
+                        {/* Figma PDPA notice: 750px card, 32px padding and 32px gaps, 24px radius.
+                            Text boxes are Figma "auto" line height, hence lineHeight="normal". */}
                         <Dialog.Content
-                            maxW="560px"
+                            ref={pdpaContentRef}
+                            outline="none"
+                            maxW="750px"
                             maxH="90vh"
                             overflowY="auto"
-                            borderRadius={{ base: "24px", md: "32px" }}
+                            borderRadius="24px"
                             p="0"
                         >
-                            <VStack align="stretch" gap={5} p={{ base: 6, md: 9 }}>
-                                <VStack align="stretch" gap={2}>
-                                    <Dialog.Title fontSize={{ base: "22px", md: "26px" }} color="Grey">
-                                        Personal Data Protection Notice
-                                    </Dialog.Title>
-                                    <Text fontSize="sm" color="GreyText">
-                                        Please review how Stray2Stay uses your personal data before continuing.
-                                    </Text>
+                            <VStack align="stretch" gap={{ base: "24px", md: "32px" }} p={{ base: "24px", md: "32px" }} lineHeight="normal">
+                                <VStack align="stretch" gap="16px">
+                                    <VStack align="stretch" gap="12px">
+                                        <Dialog.Title fontSize="24" fontWeight="600" lineHeight="normal" color="Grey" textAlign="center">
+                                            Personal Data Protection Notice
+                                        </Dialog.Title>
+                                        <Text fontSize="18" fontWeight="400" letterSpacing="0.54px" color="GreyText" textAlign="center">
+                                            Please review how Stray2Stay uses your personal data before continuing.
+                                        </Text>
+                                    </VStack>
+                                    <Box h="2px" bg="SkyBlue" />
                                 </VStack>
 
-                                <Box h="2px" bg="SkyBlue" borderRadius="full" />
+                                {/* Figma separates the paragraphs with a blank line */}
+                                <Text fontSize="18" fontWeight="400" letterSpacing="0.54px" color="GreyText">
+                                    We collect the information you provide, such as your name, email address,
+                                    phone number, home address, and pet preferences. We use it to create and
+                                    manage your account, contact you, and provide Stray2Stay adoption and
+                                    rehoming services.
+                                    <br />
+                                    <br />
+                                    Information relevant to an adoption or rehoming interaction may be used to
+                                    connect the people involved. We retain and protect personal data in line
+                                    with our applicable privacy practices and legal obligations.
+                                    <br />
+                                    <br />
+                                    You may request access to or correction of your personal data, or withdraw
+                                    your consent, by contacting Stray2Stay support.
+                                </Text>
 
-                                <VStack align="stretch" gap={4} color="GreyText" fontSize="sm" lineHeight="1.7">
-                                    <Text>
-                                        We collect the information you provide, such as your name, email address,
-                                        phone number, home address, and pet preferences. We use it to create and
-                                        manage your account, contact you, and provide Stray2Stay adoption and
-                                        rehoming services.
-                                    </Text>
-                                    <Text>
-                                        Information relevant to an adoption or rehoming interaction may be used to
-                                        connect the people involved. We retain and protect personal data in line
-                                        with our applicable privacy practices and legal obligations.
-                                    </Text>
-                                    <Text>
-                                        You may request access to or correction of your personal data, or withdraw
-                                        your consent, by contacting Stray2Stay support.
-                                    </Text>
-                                    <Text fontWeight="medium" color="Grey">
-                                        You must accept this notice to continue setting up your account. If you
-                                        decline, you will be signed out and will not be able to use the services.
-                                    </Text>
-                                </VStack>
+                                <Text fontSize="18" fontWeight="500" color="Grey">
+                                    You must accept this notice to continue setting up your account. If you
+                                    decline, you will be signed out and will not be able to use the services.
+                                </Text>
 
-                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={3} justify="flex-end">
+                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={{ base: "12px", sm: "24px" }} justify="flex-end">
+                                    {/* Figma "LargeShort" buttons: 16/12 padding, 120px min, 20/600 text */}
                                     <S2SButton
                                         text="Decline and log out"
                                         variant="outline"
-                                        width={{ base: "full", sm: "170px" }}
-                                        height="44px"
+                                        bgColor="BlueText"
+                                        size="lgShort"
+                                        // Figma: 12 + 24 (20px text line) + 12
+                                        height="48px"
                                         disabled={isDecliningConsent}
                                         loading={isDecliningConsent}
                                         onClick={handleDeclineConsent}
                                     />
                                     <S2SButton
                                         text="Accept and continue"
-                                        width={{ base: "full", sm: "190px" }}
-                                        height="44px"
+                                        bgColor="Blue"
+                                        size="lgShort"
+                                        height="48px"
                                         disabled={isDecliningConsent}
                                         onClick={() => setShowPdpaNotice(false)}
                                     />
@@ -192,7 +204,7 @@ function UserInformationForm({
 
             <Flex justify="center" w="100%">
                 {/* Figma: 788px form (128px in from each side of the 1043px content) */}
-                <VStack mt="64px" gap="80px" align="stretch" w="100%" maxW="788px">
+                <VStack mt={{ base: "64px", md: 0 }} gap="80px" align="stretch" w="100%" maxW="788px">
                     <VStack gap="48px" align="stretch">
                         <PersonalInfoFields
                             value={personalInfo}

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Avatar, Box, Flex, Icon, IconButton, Text, VStack } from "@chakra-ui/react";
 import { LuPencil } from "react-icons/lu";
-import { MdPets } from "react-icons/md";
+import PawIcon from "../icons/pawIcon.component";
 
 import { S2SButton, S2SCardShell } from "../S2S.components";
 
@@ -98,7 +98,7 @@ export default function ProfileInfoCard({
                     variant="outline"
                     bgColor="BlueText"
                     size="sm"
-                    icon={<MdPets />}
+                    icon={<PawIcon />}
                     onClick={onEditPreferences}
                 />
             </VStack>

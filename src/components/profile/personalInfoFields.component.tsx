@@ -33,6 +33,7 @@ function AddressSelect({
                     key={data.length === 0 ? "loading" : "loaded"}
                     {...detailDropDownStyle}
                     placeholder=""
+                    clearable
                     data={data}
                     value={value}
                     onValueChange={onValueChange}
