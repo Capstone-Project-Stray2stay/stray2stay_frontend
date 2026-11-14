@@ -163,11 +163,10 @@ export default function Adopt() {
                 card grid would keep spreading, so everything below the header is capped and centred */}
             <Box maxW="1043px" mx="auto">
             <Flex justify="center" gap={{ base: "28px", md: "48px" }} mt={{ base: "24px", md: 0 }}>
-                {/* Figma: 48px icon frame in the 72px circle (dog/cat art 44x40, paw art 40x33); scaled to the 51px mobile circle */}
-                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "34px", md: "48px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
-                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "34px", md: "48px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
-                {/* Shared Figma paw: its 48 frame holds the 40x32.86 art from the Figma "All" icon; --font color */}
-                <S2SPetIconButton icon={<Box as="span" display="flex" color="Grey" boxSize={{base: "34px", md: "48px"}}><PawIcon size="100%" /></Box>} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
+                {/* Original icon sizes: dog/cat 44px (28 on mobile); the Figma paw is drawn at a 45px frame so its art matches the old 40px paw.png */}
+                <S2SPetIconButton icon={<Image src="/assets/icons/dog.png" alt="Dog" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Dog" selected={category === "dog"} onClick={() => changeCategory("dog")} />
+                <S2SPetIconButton icon={<Image src="/assets/icons/cat.png" alt="Cat" boxSize={{base: "28px", md: "44px"}} objectFit="contain" />} label="Cat" selected={category === "cat"} onClick={() => changeCategory("cat")} />
+                                <S2SPetIconButton icon={<Box as="span" display="flex" color="Grey" boxSize={{base: "32px", md: "45px"}}><PawIcon size="100%" /></Box>} label="All" selected={category === "all"} onClick={() => changeCategory("all")} />
             </Flex>
 
             <Flex display={{ base: "flex", md: "none" }} gap="10px" mt="24px" align="center" justify="center" wrap="wrap">
@@ -206,7 +205,7 @@ export default function Adopt() {
                         h="48px"
                         ps="24px"
                         pe="56px"
-                        fontSize="20"
+                        fontSize="16"
                         fontWeight="500"
                         color="Grey"
                         bg={FILTER_BG}
@@ -216,8 +215,8 @@ export default function Adopt() {
                     />
                 </Box>
                 <S2SIconButton
-                    // Figma Icon_AIcamera at 32px; the wrapper outranks IconButton's default svg sizing
-                    icon={<Box as="span" display="flex" css={{ "& svg": { width: "32px", height: "32px" } }}><AICameraIcon /></Box>}
+                    // Figma Icon_AIcamera at the original 26px; the wrapper outranks IconButton's default svg sizing
+                    icon={<Box as="span" display="flex" css={{ "& svg": { width: "26px", height: "26px" } }}><AICameraIcon /></Box>}
                     ariaLabel="Search by photo"
                     bgColor="White"
                     iconColor="GreyText"
@@ -233,7 +232,7 @@ export default function Adopt() {
                     placeholder="Breed"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     paddingX="16px"
                     gutter={4}
                     variant="filter"
@@ -252,7 +251,7 @@ export default function Adopt() {
                         placeholder="Color"
                         width="190px"
                         height="40px"
-                        fontSize="20"
+                        fontSize="16"
                         paddingX="16px"
                         gutter={4}
                         variant="filter"
@@ -283,7 +282,7 @@ export default function Adopt() {
                     placeholder="Gender"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     paddingX="16px"
                     gutter={4}
                     variant="filter"
@@ -300,7 +299,7 @@ export default function Adopt() {
                     placeholder="Age Group"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     paddingX="16px"
                     gutter={4}
                     variant="filter"
@@ -318,7 +317,7 @@ export default function Adopt() {
                     placeholder="Location"
                     width="190px"
                     height="40px"
-                    fontSize="20"
+                    fontSize="16"
                     paddingX="16px"
                     gutter={4}
                     variant="filter"

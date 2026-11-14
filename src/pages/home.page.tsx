@@ -226,10 +226,11 @@ export default function Home() {
               <S2SButton
                 text="Upload Photo"
                 bgColor="Blue"
+                // Figma AI camera at 1.2em, the same drawn width as the old full-bleed FaCamera at 1em
                 icon={<AICameraIcon />}
-                // Figma "Large" button: 24/12 padding, 8 gap, 24px icon, 20/600 text
-                size="lg"
                 width="full"
+                height={{ lg: "48px" }}
+                fontSize={{ lg: "20" }}
                 onClick={() => setIsPhotoSearchOpen(true)}
               />
             </Box>
@@ -312,9 +313,8 @@ export default function Home() {
                 { value: "19", label: "Cat breeds classified" },
               ].map((stat) => (
                 <Flex key={stat.label} direction="column" align="center" gap="4px" lineHeight="normal">
-                  {/* Figma "auto" line height (Chakra's 1.5 would pad the 4px gap by ~10px).
-                      Number: Figma 27 minus the team's 1px; no "27" theme token, so set directly. */}
-                  <Text color="Grey" fontSize="26px" fontWeight="600">
+                  {/* Figma "auto" line height (Chakra's 1.5 would pad the 4px gap by ~10px); original number size */}
+                  <Text color="Grey" fontSize={{ base: "28px", md: "36px" }} fontWeight="600">
                     {stat.value}
                   </Text>
                   <Text color="GreyText" fontSize={{ base: "15px", md: "20px" }} fontWeight="500" textAlign="center">

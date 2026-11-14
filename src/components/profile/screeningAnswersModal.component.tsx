@@ -298,10 +298,10 @@ export default function ScreeningAnswersModal({
                         >
                             {/* Same header as the adopter form: 28px title line level with the ✕, 12px gap, balanced subtitle */}
                             <VStack gap="12px" maxW="626px" alignSelf="center" flexShrink={0} px={{ base: "28px", md: 0 }}>
-                                <Text fontSize="24" fontWeight="600" color="Grey" textAlign="center" lineHeight="28px">
+                                <Text fontSize={{base: "20", md: "24"}} fontWeight="600" color="Grey" textAlign="center" lineHeight="28px">
                                     Adoption Screening Form
                                 </Text>
-                                <Text fontSize="16" fontWeight="400" color="Grey" textAlign="center" css={{ textWrap: "balance" }}>
+                                <Text fontSize={{base: "14", md: "16"}} fontWeight="500" color="Grey" textAlign="center" css={{ textWrap: "balance" }}>
                                     {adopterName}&apos;s responses, shared to assist in the adoption
                                     approval process.
                                 </Text>

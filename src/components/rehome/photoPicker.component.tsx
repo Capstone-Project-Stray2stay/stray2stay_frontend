@@ -220,9 +220,7 @@ export default function PhotoPicker({
 
                             {/* Stops the click reaching the zone's own handler,
                                 which would open the file dialog a second time. */}
-                            {/* Desktop matches the Home photo-search popup: Figma "Small" line buttons
-                                (16/8 padding, 120 min, 18/500, 20px icon 8px from text), 12px apart.
-                                Mobile keeps its old sizes until the mobile pass. */}
+                            {/* Original button sizes (170x38, 18px text; smaller on mobile), 12px apart */}
                             <Flex
                                 direction={{ base: "column", md: "row" }}
                                 align="center"
@@ -232,21 +230,23 @@ export default function PhotoPicker({
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    size="sm"
-                                    width={{ base: "160.78px", md: "auto" }}
-                                    height={{ base: "27.99px", md: "auto" }}
+                                    width={{ base: "160.78px", md: "170px" }}
+                                    height={{ base: "27.99px", md: "38px" }}
                                     fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => inputRef.current?.click()}
                                 />
                                 <S2SButton
-                                    icon={<AICameraIcon />}
+                                    // Figma AI camera at the original 16 / 20px
+                                    icon={
+                                        <Box as="span" display="flex" boxSize={{ base: "16px", md: "20px" }} css={{ "& svg": { width: "100%", height: "100%" } }}>
+                                            <AICameraIcon />
+                                        </Box>
+                                    }
                                     text="Take Photo"
                                     variant="outline"
-                                    size="sm"
-                                    gap="8px"
-                                    width={{ base: "160.78px", md: "auto" }}
-                                    height={{ base: "27.99px", md: "auto" }}
+                                    width={{ base: "160.78px", md: "170px" }}
+                                    height={{ base: "27.99px", md: "38px" }}
                                     fontSize={{ base: "14", md: "18" }}
                                     disabled={isFull}
                                     onClick={() => setIsCameraOpen(true)}
@@ -277,20 +277,20 @@ export default function PhotoPicker({
                                 bg="#E9E9E9"
                                 borderRadius={{ base: "12.45px", md: "14.49px" }}
                             />
-                            {/* Brief: 20x20 circle at 80% white, 10x10 ✕ (Figma close glyph). Mobile size unchanged for now */}
+                            {/* 80% white circle at the original 12.89 / 15px; Figma ✕ at the old IoClose 8 / 9px glyph size (~4.2 / 4.8px) */}
                             <IconButton
                                 aria-label={`Remove photo ${i + 1}`}
                                 position="absolute"
                                 top="4px"
                                 right="4px"
-                                boxSize={{ base: "12.89px", md: "20px" }}
+                                boxSize={{ base: "12.89px", md: "15px" }}
                                 minW="unset"
                                 p="0"
                                 bg="rgba(255,255,255,0.80)"
                                 _hover={{ bg: "rgba(255,255,255,0.80)" }}
                                 borderRadius="full"
                                 color="GreyMuted"
-                                css={{ "& svg": { width: "10px", height: "10px" } }}
+                                css={{ "& svg": { width: "4.8px", height: "4.8px" }, "@media (max-width: 47.99rem)": { "& svg": { width: "4.2px", height: "4.2px" } } }}
                                 onClick={() => removeAt(i)}
                             >
                                 <CloseIcon />

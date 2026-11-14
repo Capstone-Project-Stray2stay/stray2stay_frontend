@@ -191,6 +191,8 @@ function UserInformationForm({
                                         size="lgShort"
                                         // Figma: 12 + 24 (20px text line) + 12
                                         height="48px"
+                                        // Original button text size (Chakra's default), not the LargeShort 20
+                                        fontSize="sm"
                                         disabled={isDecliningConsent}
                                         loading={isDecliningConsent}
                                         onClick={handleDeclineConsent}
@@ -200,6 +202,7 @@ function UserInformationForm({
                                         bgColor="Blue"
                                         size="lgShort"
                                         height="48px"
+                                        fontSize="sm"
                                         disabled={isDecliningConsent}
                                         onClick={() => setShowPdpaNotice(false)}
                                     />

@@ -67,7 +67,7 @@ function QuestionTypeSelect({ value, onChange }: { value: CustomQuestionType; on
                 </Select.Trigger>
                 <Select.IndicatorGroup pe="12px">
                     {/* Same Figma dropdown chevron as S2SDropDown */}
-                    <Select.Indicator color="GreyText" css={{ "& svg": { width: "20px", height: "20px" } }}>
+                    <Select.Indicator color="GreyText">
                         <ChevronDownIcon />
                     </Select.Indicator>
                 </Select.IndicatorGroup>
@@ -187,8 +187,8 @@ function RemoveOptionButton({ label, onClick }: { label: string; onClick: () => 
             flexShrink={0}
             color="GreyMuted"
             _hover={{ color: "GreyText" }}
-            // Brief: ✕ looked smaller than Figma — 14px, using the site's Figma ✕ glyph
-            css={{ "& svg": { width: "14px", height: "14px" } }}
+            // Figma ✕ glyph at the old size (LuX 12px drew a 6px glyph)
+            css={{ "& svg": { width: "6px", height: "6px" } }}
             onClick={onClick}
         >
             <CloseIcon />
@@ -354,15 +354,15 @@ function ImageGrid({ urls, onRemove }: { urls: string[]; onRemove?: (url: string
                             position="absolute"
                             top="8px"
                             right="8px"
-                            // Same as the Rehome photo remove button: 20px circle, 80% white, 10px ✕
-                            boxSize="20px"
+                            // 80% white circle at the old 23.58px size, Figma ✕ at the old ~6.4px glyph size
+                            boxSize="23.58px"
                             minW="unset"
                             p="0"
                             rounded="full"
                             bg="rgba(255,255,255,0.80)"
                             _hover={{ bg: "rgba(255,255,255,0.80)" }}
                             color="GreyText"
-                            css={{ "& svg": { width: "10px", height: "10px" } }}
+                            css={{ "& svg": { width: "6.4px", height: "6.4px" } }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(url);
@@ -674,8 +674,7 @@ export default function ScreeningQuestionsBuilder({
     return (
         <VStack ref={containerRef} align="stretch" gap="24px" w="100%">
             {questions.length === 0 && (
-                // Same size/weight as the step description above (16/400)
-                <Text fontSize="16" fontWeight="400" color="GreyText">
+                <Text fontSize="14" color="GreyText">
                     No additional questions yet.
                 </Text>
             )}
