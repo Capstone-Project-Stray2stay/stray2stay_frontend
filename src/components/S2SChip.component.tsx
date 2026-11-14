@@ -21,7 +21,7 @@ export default function S2SChip({
         bg={isActive ? "Blue" : "rgba(255, 255, 255, 0.70)"}
         color={isActive ? "white" : "Grey"}
         rounded="full"
-        h={{ md: "38px" }}
+        h={{ md: "35px" }}
         px={{ base: "12px", md: "20px" }}
         py={{ base: "6px", md: 0 }}
         borderWidth="1px"
@@ -35,7 +35,7 @@ export default function S2SChip({
         }
         transition="all 0.15s ease"
       >
-        <Tag.Label fontWeight="bold" lineHeight="normal">{text}</Tag.Label>
+        <Tag.Label fontWeight={"500"} fontSize={"md"} lineHeight="normal">{text}</Tag.Label>
         {!readOnly && selected && (
           <Tag.EndElement>
             <Tag.CloseTrigger onClick={onToggle} />

@@ -317,7 +317,7 @@ export default function Step3Details({
                                 </Box>
                                 <IconButton
                                     aria-label="Add special care"
-                                    boxSize={{ base: "27.47px", md: "30px" }}
+                                    boxSize={{ base: "27.47px", md: "35px" }}
                                     minW="unset"
                                     flexShrink={0}
                                     rounded="full"
@@ -325,7 +325,7 @@ export default function Step3Details({
                                     color="white"
                                     onClick={addSpecialCare}
                                 >
-                                    <Icon as={IoAdd} boxSize={{ base: "13.73px", md: "15px" }} />
+                                    <Icon as={IoAdd} boxSize={{ base: "13.73px", md: "18px" }} />
                                 </IconButton>
                             </Flex>
 

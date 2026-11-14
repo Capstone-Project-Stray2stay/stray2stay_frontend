@@ -239,10 +239,11 @@ export default function PhotoPicker({
                                 <S2SButton
                                     // Figma AI camera at the original 16 / 20px
                                     icon={
-                                        <Box as="span" display="flex" boxSize={{ base: "16px", md: "20px" }} css={{ "& svg": { width: "100%", height: "100%" } }}>
+                                        <Box as="span" display="flex" boxSize={{ base: "16px", md: "22px" }} css={{ "& svg": { width: "100%", height: "100%" } }}>
                                             <AICameraIcon />
                                         </Box>
                                     }
+                                    gap={"0px"}
                                     text="Take Photo"
                                     variant="outline"
                                     width={{ base: "160.78px", md: "170px" }}
@@ -283,17 +284,17 @@ export default function PhotoPicker({
                                 position="absolute"
                                 top="4px"
                                 right="4px"
-                                boxSize={{ base: "12.89px", md: "15px" }}
+                                boxSize={{ base: "12.89px", md: "20px" }}
                                 minW="unset"
                                 p="0"
                                 bg="rgba(255,255,255,0.80)"
                                 _hover={{ bg: "rgba(255,255,255,0.80)" }}
                                 borderRadius="full"
-                                color="GreyMuted"
-                                css={{ "& svg": { width: "4.8px", height: "4.8px" }, "@media (max-width: 47.99rem)": { "& svg": { width: "4.2px", height: "4.2px" } } }}
+                                color="Grey"
+                                css={{ "& svg": { width: "10px", height: "10px" }, "@media (max-width: 47.99rem)": { "& svg": { width: "4.2px", height: "4.2px" } } }}
                                 onClick={() => removeAt(i)}
                             >
-                                <CloseIcon />
+                                <CloseIcon size={100}/>
                             </IconButton>
                         </Box>
                     ))}

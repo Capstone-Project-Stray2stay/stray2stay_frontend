@@ -2,7 +2,6 @@ import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
 // Typography tokens shrink text by 1px; page-title headings are reduced by 2px.
 const px = (size: number) => ({ value: `var(--font-size-${size}, ${size - 1}px)` });
-const rem = (size: number) => ({ value: `var(--font-size-${size}, ${(size - 1) / 16}rem)` });
 
 const config = defineConfig({
   theme: {
@@ -45,7 +44,7 @@ const config = defineConfig({
         Orange_hover: { value: "#FBBE6A" },
         Orange_active: { value: "#F9B95F" },
         Cream_hover: { value: "#FBE7B4" },
-        Cream_active: { value: "#F7E1A7" },
+        Cream_active: { value: "#FFD381" },
         // "Line" button fills
         LineHover: { value: "rgba(198, 231, 247, 0.30)" },
         LineActive: { value: "rgba(198, 231, 247, 0.50)" },
@@ -99,20 +98,20 @@ const config = defineConfig({
         "60": px(60),
         "64": px(64),
         // Chakra's default scale, re-declared so FONT_SCALE also reaches built-in components
-        "2xs": rem(10),
-        xs: rem(12),
-        sm: rem(14),
-        md: rem(16),
-        lg: rem(18),
-        xl: rem(20),
-        "2xl": rem(24),
-        "3xl": rem(30),
-        "4xl": rem(36),
-        "5xl": rem(48),
-        "6xl": rem(60),
-        "7xl": rem(72),
-        "8xl": rem(96),
-        "9xl": rem(128),
+        "2xs": px(10),
+        xs: px(12),
+        sm: px(14),
+        md: px(16),
+        lg: px(18),
+        xl: px(20),
+        "2xl": px(24),
+        "3xl": px(30),
+        "4xl": px(36),
+        "5xl": px(48),
+        "6xl": px(60),
+        "7xl": px(72),
+        "8xl": px(96),
+        "9xl": px(128),
       },
     },
   },

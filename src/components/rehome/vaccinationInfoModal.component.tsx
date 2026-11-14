@@ -1,4 +1,4 @@
-import { Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
+import { Dialog, Flex, Box, Portal, Text, VStack } from "@chakra-ui/react";
 
 import { S2SButton } from "../S2S.components";
 
@@ -26,20 +26,24 @@ export default function VaccinationInfoModal({
             <Portal>
                 <Dialog.Backdrop bg="blackAlpha.400" />
                 <Dialog.Positioner px={4}>
-                    <Dialog.Content maxW="460px" borderRadius="24px" p="0" bg="white" boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)">
+                    <Dialog.Content maxW="580px" borderRadius="24px" p="0" bg="white" boxShadow="0px 3.37px 16.84px rgba(201,220,225,0.20)">
                         <VStack p="32px" gap="32px" align="stretch" lineHeight="normal">
                             <Dialog.Title fontSize="24" fontWeight="600" color="Grey" textAlign="center" lineHeight="normal">
                                 Vaccination Information
                             </Dialog.Title>
 
-                            <Text fontSize="20" fontWeight="500" color="Grey">
-                                {vaccines.map((vaccine, i) => (
-                                    <span key={vaccine}>
-                                        {i > 0 && <br />}
-                                        <Text as="span" fontWeight="600">{vaccine}</Text>
-                                        : {VACCINE_DESCRIPTIONS[vaccine] ?? ""}
-                                    </span>
-                                ))}
+                            <Text fontSize="18" fontWeight="400" color="Grey">
+                                <Flex gap={"5px"} flexDir={"column"}>
+                                    {vaccines.map((vaccine, i) => (
+                                        <Box>
+                                            <span key={vaccine}>
+                                                {i > 0 && <br />}
+                                                <Text as="span" fontWeight="600">{vaccine}</Text>
+                                                : {VACCINE_DESCRIPTIONS[vaccine] ?? ""}
+                                            </span>
+                                        </Box>
+                                    ))}
+                                </Flex>
                             </Text>
 
                             <Flex justify="flex-end">

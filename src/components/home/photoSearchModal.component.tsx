@@ -5,14 +5,13 @@ import {
     Circle,
     Dialog,
     Flex,
-    IconButton,
     Image,
     Portal,
     Text,
     VStack,
 } from "@chakra-ui/react";
 
-import { S2SButton } from "../../components/S2S.components";
+import { S2SButton, S2SDialogCloseButton } from "../../components/S2S.components";
 import AICameraIcon from "../icons/aiCameraIcon.component";
 import CloseIcon from "../icons/closeIcon.component";
 import ImagesIcon from "../icons/imagesIcon.component";
@@ -189,26 +188,9 @@ export default function PhotoSearchModal({
                                     Select
                                 </Text>
                                 {/* Vertically centred on the title; 32px from the dialog's right edge on desktop */}
-                                <IconButton
-                                    aria-label="Close"
-                                    onClick={onClose}
-                                    position="absolute"
-                                    top="50%"
-                                    transform="translateY(-50%)"
-                                    right={{ base: "0", md: "-48px" }}
-                                    boxSize="28px"
-                                    minW="unset"
-                                    p="0"
-                                    rounded="full"
-                                    bg="#EBEBEB"
-                                    _hover={{ bg: "#e0e0e0" }}
-                                    color="GreyText"
-                                    // Figma ✕ at the original size: the old 14px IoClose drew a ~7.4px glyph
-                                    css={{ "& svg": { width: "7.4px", height: "7.4px" } }}
-                                >
-                                    {/* Figma "Frame 551": 28px #EBEBEB circle, 12px #7E7E7E ✕ */}
-                                    <CloseIcon />
-                                </IconButton>
+                                <Box position="absolute" top="50%" transform="translateY(-50%)" right={{ base: "0", md: "-48px" }}>
+                                    <S2SDialogCloseButton onClick={onClose} inline />
+                                </Box>
                             </Box>
 
                             <Flex
