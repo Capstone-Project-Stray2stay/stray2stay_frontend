@@ -55,7 +55,7 @@ function ProfileContent({
     const [searchParams, setSearchParams] = useSearchParams();
     const location = useLocation();
     const listTab: ListTab = searchParams.get("tab") === "adoptions" ? "adoptions" : "rehoming";
-    const setListTab = (tab: ListTab) => setSearchParams({ tab }, { replace: true });
+    const setListTab = (tab: ListTab) => setSearchParams({ tab }, { replace: true, preventScrollReset: true });
     // location.key changes on every navigation, so clicking the same notification
     // twice re-opens the row even though the URL stays the same
     const focusPet = searchParams.get("pet")

@@ -27,8 +27,8 @@ export default function EditSaveButton({
             flexShrink={0}
             bg="white"
             borderWidth="1.36px"
-            borderColor="Blue"
-            color="Blue"
+            borderColor={isEditing ? "AcceptGreen" : "Blue"}
+            color={isEditing ? "AcceptGreen" : "Blue"}
             transition="background 0.15s ease"
             _hover={{ bg: "LineHover" }}
             _active={{ bg: "LineActive" }}

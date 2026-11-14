@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Grid, Text, VStack } from "@chakra-ui/react";
 
 import { S2SDropDown, S2SInput } from "../S2S.components";
 import { detailDropDownStyle, detailInputStyle } from "../../utils/detailField.style";
@@ -12,6 +12,9 @@ import type { S2SDropDownOption } from "../../types/component.type";
 
 const toOptions = (values: { name_en: string }[]): S2SDropDownOption[] =>
     values.map((v) => ({ value: v.name_en, label: v.name_en }));
+
+// Lets a picked State/District/Sub District be cleared back to empty via the ✕ next to the chevron
+const ADDRESS_DROPDOWN = { ...detailDropDownStyle, placeholder: "", clearable: true } as const;
 
 function AddressSelect({
     label,
@@ -27,13 +30,11 @@ function AddressSelect({
     disabled?: boolean;
 }) {
     return (
-        <Box flex="1 1 134px" minW="120px" maxW={{md: "180px"}}>
+        <Box minW={0}>
             <ProfileField label={label} labelColor="GreyMuted" labelSize="14">
                 <S2SDropDown
                     key={data.length === 0 ? "loading" : "loaded"}
-                    {...detailDropDownStyle}
-                    placeholder=""
-                    clearable
+                    {...ADDRESS_DROPDOWN}
                     data={data}
                     value={value}
                     onValueChange={onValueChange}
@@ -117,7 +118,7 @@ export default function PersonalInfoFields({
                 </ProfileField>
 
                 <ProfileField label="Address">
-                    <Flex gap="12px" wrap="wrap" mt="6px" w="100%">
+                    <Grid templateColumns={{ base: "1fr 1fr", md: "repeat(4, 1fr)" }} gap="12px" w="100%">
                         <AddressSelect
                             label="State"
                             data={provinceItems}
@@ -150,7 +151,7 @@ export default function PersonalInfoFields({
                                 });
                             }}
                         />
-                        <Box flex="1 1 134px" minW="120px" maxW={{md: "180px"}}>
+                        <Box minW={0}>
                             <ProfileField label="Street" labelColor="GreyMuted" labelSize="14">
                                 <S2SInput
                                     {...detailInputStyle}
@@ -160,7 +161,7 @@ export default function PersonalInfoFields({
                                 />
                             </ProfileField>
                         </Box>
-                    </Flex>
+                    </Grid>
                 </ProfileField>
             </VStack>
         </VStack>

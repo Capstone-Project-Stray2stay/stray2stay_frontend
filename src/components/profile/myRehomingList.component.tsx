@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Dialog, Flex, Icon, IconButton, Portal, Text, VStack } from "@chakra-ui/react";
 import {
-    LuBookOpen,
+    LuBook,
     LuCheck,
     LuChevronDown,
     LuChevronUp,
@@ -207,7 +207,7 @@ function RehomingRow({
                     <Flex align="center" gap={{ base: "8px", md: "12px" }}>
                         {isAdopted ? (
                             <RoundIconButton
-                                icon={LuBookOpen}
+                                icon={LuBook}
                                 ariaLabel={`Open ${pet.name}'s diary`}
                                 color="BlueText"
                                 onClick={() => navigate("/diary")}
@@ -259,8 +259,8 @@ function RehomingRow({
                     <Portal>
                         <Dialog.Backdrop bg="blackAlpha.400" />
                         <Dialog.Positioner>
-                            <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-                                <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                            <Dialog.Content maxW="380px" borderRadius="24px" p="0">
+                                <VStack pt="32px" pb="32px" px="32px" gap="16px" align="center">
                                     <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                         Delete this pet?
                                     </Text>
