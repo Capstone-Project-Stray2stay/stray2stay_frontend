@@ -67,10 +67,11 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
             )}
 
             {open && (
+                // right offset matches S2SAvatar's pr="14px" so this lines up with the pill's edge, not the bell's
                 <Box
                     position="absolute"
                     top="calc(100% + 10px)"
-                    right="0"
+                    right="-14px"
                     zIndex="popover"
                     w={{ base: "min(calc(100vw - 64px), 300px)", lg: "360px" }}
                     maxW={{ base: "calc(100vw - 64px)", lg: "360px" }}
@@ -82,12 +83,14 @@ export default function S2SNotificationCenter({ enabled }: { enabled: boolean })
                     borderWidth="1px"
                     borderColor="gray.100"
                 >
-                    <Flex px="4" py="3" justify="space-between" align="center" borderBottomWidth="1px">
+                    <Flex position="relative" px="4" py="3" align="center" justify="center" borderBottomWidth="1px">
                         <Text fontWeight="bold" color="Grey">Notifications</Text>
                         {unreadCount > 0 && (
                             <IconButton
                                 aria-label="Mark all notifications as read"
                                 title="Mark all as read"
+                                position="absolute"
+                                right="4"
                                 size="sm"
                                 variant="ghost"
                                 color="BlueText"

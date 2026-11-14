@@ -13,7 +13,7 @@ import { geocodeAddressAPI } from "../services/apis/address.api";
 import { joinAddress, joinAddressForGeocode } from "../utils/address.util";
 import { serverMessage } from "../utils/error.util";
 import { toPreferencePayload } from "../services/apis/user.api";
-import { EMPTY_PERSONAL_INFO } from "../types/profile.type";
+import { EMPTY_PERSONAL_INFO, emptyPetPreference } from "../types/profile.type";
 import type { PersonalInfoDraft, PetPreferenceDraft } from "../types/profile.type";
 
 import PersonalInfoFields from "../components/profile/personalInfoFields.component";
@@ -26,10 +26,17 @@ export default function UserInformation() {
 
     if (userInfoLoading || statusLoading) return <Box />;
 
+    // First-time setup: give a new user one blank Dog and Cat card to start from, instead of an empty section.
+    const initialPreferences = preferences?.length
+        ? preferences
+        : userStatus
+          ? [emptyPetPreference("dog"), emptyPetPreference("cat")]
+          : [];
+
     return (
         <UserInformationForm
             initialPersonalInfo={personalInfo ?? EMPTY_PERSONAL_INFO}
-            initialPreferences={preferences ?? []}
+            initialPreferences={initialPreferences}
             requiresPdpaConsent={userStatus}
         />
     );
@@ -130,19 +137,22 @@ function UserInformationForm({
                             maxH="90vh"
                             overflowY="auto"
                             borderRadius={{ base: "24px", md: "32px" }}
+                            borderWidth="1px"
+                            borderColor="BabyGray"
+                            boxShadow="none"
                             p="0"
                         >
                             <VStack align="stretch" gap={5} p={{ base: 6, md: 9 }}>
-                                <VStack align="stretch" gap={2}>
-                                    <Dialog.Title fontSize={{ base: "22px", md: "26px" }} color="Grey">
+                                <VStack align="center" gap={2}>
+                                    <Dialog.Title fontSize={{ base: "22px", md: "26px" }} color="Grey" textAlign="center">
                                         Personal Data Protection Notice
                                     </Dialog.Title>
-                                    <Text fontSize="sm" color="GreyText">
+                                    <Text fontSize="sm" color="GreyText" textAlign="center">
                                         Please review how Stray2Stay uses your personal data before continuing.
                                     </Text>
                                 </VStack>
 
-                                <Box h="2px" bg="SkyBlue" borderRadius="full" />
+                                <Box h="1px" bg="SkyBlue" />
 
                                 <VStack align="stretch" gap={4} color="GreyText" fontSize="sm" lineHeight="1.7">
                                     <Text>
@@ -166,7 +176,7 @@ function UserInformationForm({
                                     </Text>
                                 </VStack>
 
-                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={3} justify="flex-end">
+                                <Flex direction={{ base: "column-reverse", sm: "row" }} gap={3} justify="center">
                                     <S2SButton
                                         text="Decline and log out"
                                         variant="outline"
@@ -230,20 +240,29 @@ function UserInformationForm({
                 <Portal>
                     <Dialog.Backdrop bg="blackAlpha.400" />
                     <Dialog.Positioner>
-                        <Dialog.Content maxW="380px" borderRadius="30px" p="0">
-                            <VStack pt="40px" pb="32px" px="32px" gap="16px" align="center">
+                        <Dialog.Content
+                            maxW="380px"
+                            borderRadius="30px"
+                            borderWidth="1px"
+                            borderColor="BabyGray"
+                            boxShadow="none"
+                            p="0"
+                        >
+                            <VStack pt="40px" pb="32px" px="32px" gap="16px" align="stretch">
                                 <Text fontSize="20" fontWeight="600" color="Grey" textAlign="center">
                                     Please fill in your information
                                 </Text>
-                                <Text fontSize="14" color="GreyText" textAlign="center">
+                                <Text fontSize="14" color="GreyText">
                                     All personal details, including your address, are required before you can continue.
                                 </Text>
-                                <S2SButton
-                                    text="Got it"
-                                    bgColor="Blue"
-                                    width="140px"
-                                    onClick={() => setShowIncompleteWarning(false)}
-                                />
+                                <Flex justify="flex-end">
+                                    <S2SButton
+                                        text="Got it"
+                                        bgColor="Blue"
+                                        width="140px"
+                                        onClick={() => setShowIncompleteWarning(false)}
+                                    />
+                                </Flex>
                             </VStack>
                         </Dialog.Content>
                     </Dialog.Positioner>
