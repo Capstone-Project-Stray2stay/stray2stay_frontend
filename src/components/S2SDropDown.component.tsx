@@ -103,8 +103,8 @@ export default function S2SDropDown({
                         _disabled={{ opacity: 1, color: "Grey", cursor: "not-allowed", bg }}
                     />
                     <Combobox.IndicatorGroup>
-                        {/* Figma "Vector (3)" chevron in its 20px frame; the css beats Chakra's own icon sizing */}
-                        <Combobox.Trigger color="GreyText" css={{ "& svg": { width: "20px", height: "20px" } }}>
+                        {/* Figma "Vector (3)" chevron, at Chakra's default indicator size (the original size) */}
+                        <Combobox.Trigger color="GreyText">
                             <ChevronDownIcon />
                         </Combobox.Trigger>
                     </Combobox.IndicatorGroup>
@@ -135,7 +135,6 @@ export default function S2SDropDown({
                         transition="background 0.15s ease"
                         _hover={{ bg: "White_hover" }}
                         _active={{ bg: "White_active" }}
-                        css={{ "& svg": { width: "12px", height: "12px" } }}
                     >
                         <CloseIcon />
                     </Combobox.ClearTrigger>
@@ -162,7 +161,7 @@ export default function S2SDropDown({
                         flexDirection="column"
                         gap="10px"
                     >
-                        <Combobox.Empty px="0" color="GreyText" fontSize={fontSize ?? { base: "14", md: "16" }}>No items found</Combobox.Empty>
+                        <Combobox.Empty px="0" color="GreyText" fontSize={{ base: "14", md: "16" }}>No items found</Combobox.Empty>
                         {collection.items.map((item) => (
                             <Combobox.Item
                                 item={item}
@@ -177,7 +176,7 @@ export default function S2SDropDown({
                                 flexShrink={0}
                                 rounded="8px"
                                 color="GreyText"
-                                fontSize={fontSize ?? { base: "14", md: "16" }}
+                                fontSize={{ base: "14", md: "16" }}
                                 fontWeight="500"
                                 lineHeight="normal"
                                 _hover={{ bg: "White_active" }}
@@ -189,15 +188,8 @@ export default function S2SDropDown({
                                     )}
                                     <Span>{item.label}</Span>
                                 </HStack>
-                                {/* Figma "Vector (4)" check, 20px frame, --bluetext */}
-                                {/* Chakra squeezed the indicator to 15px; pin the 20px frame and its svg */}
-                                <Combobox.ItemIndicator
-                                    color="BlueText"
-                                    boxSize="20px"
-                                    minW="20px"
-                                    flexShrink={0}
-                                    css={{ "& svg": { width: "20px", height: "20px" } }}
-                                >
+                                {/* Figma "Vector (4)" check in --bluetext, at Chakra's default indicator size (the original size) */}
+                                <Combobox.ItemIndicator color="BlueText" flexShrink={0}>
                                     <CheckIcon />
                                 </Combobox.ItemIndicator>
                             </Combobox.Item>

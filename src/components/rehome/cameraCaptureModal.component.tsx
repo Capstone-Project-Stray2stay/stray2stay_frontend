@@ -170,6 +170,9 @@ export default function CameraCaptureModal({
                             onClick={onClose}
                             top={{ base: "20px", md: "32px" }}
                             right={{ base: "20px", md: "32px" }}
+                            // Original close size: 23.58px button, ✕ drawn like the old 12px IoClose (~6.4px)
+                            boxSize="23.58px"
+                            iconBoxSize="6.4px"
                             zIndex={1}
                         />
 
@@ -181,8 +184,7 @@ export default function CameraCaptureModal({
                             align="stretch"
                         >
                             <Text
-                                // Same 24/600 title as the other dialogs (no Figma design for this one)
-                                fontSize={{ base: "18", md: "24" }}
+                                                                fontSize={{ base: "18", md: "22" }}
                                 fontWeight="600"
                                 color="Grey"
                                 textAlign="center"
