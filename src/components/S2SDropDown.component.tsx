@@ -144,9 +144,9 @@ export default function S2SDropDown({
                 <Combobox.Positioner>
                     {/* Figma filter list, used by every dropdown: 16px padding top/bottom, side padding equal to
                         the field's text inset (the list is portalled, so it can't read the field's CSS var),
-                        16 radius, 80% white, 40px rows 10px apart, 500 text at the field's own size */}
+                        16 radius, solid white (80% let the page show through), 40px rows 10px apart, 500 text */}
                     <Combobox.Content
-                        bg="rgba(255, 255, 255, 0.80)"
+                        bg="white"
                         borderRadius="16px"
                         boxShadow="0px 4px 20px rgba(201, 220, 225, 0.20)"
                         maxH="376px"
