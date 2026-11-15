@@ -243,7 +243,7 @@ export default function PhotoPicker({
                                             <AICameraIcon />
                                         </Box>
                                     }
-                                    gap={"0px"}
+                                    gap={"6px"}
                                     text="Take Photo"
                                     variant="outline"
                                     width={{ base: "160.78px", md: "170px" }}

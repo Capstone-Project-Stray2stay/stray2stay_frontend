@@ -13,34 +13,39 @@ export default function FinderCard({ pet }: { pet: DiaryPet }) {
     return (
         <S2SCardShell
             railColor="Cream"
+            railWidth="14px"
             w="100%"
-            // Brief: as wide as the month calendar below and as tall as the pet card on the left
-            // (Figma pet card: 95 content + 16/16 padding = 127), content centred vertically
-            maxW={{ md: "398.99px" }}
+            // Two-column desktop: as wide as the month calendar below and as tall as the pet card on the left
+            // (Figma pet card: 95 content + 16/16 padding = 127). Single column: full width like the pet card.
+            maxW={{ xl: "398.99px" }}
             minH={{ md: "127px" }}
             py="16px"
-            px={{ base: "20px", md: "32px" }}
-            pl={{ base: "26px", md: "32px" }}
+            // Figma mobile (1009:2124): content 40px in, 24px avatar gap
+            px={{ base: "40px", md: "32px" }}
             align="center"
         >
-            <Flex gap={{ base: "20px", md: "24px" }} align="center" minW="0">
-                <Avatar.Root boxSize={{ base: "69.53px", md: "85px" }} flexShrink={0}>
+            <Flex gap="24px" align="center" minW="0">
+                <Avatar.Root boxSize="85px" flexShrink={0}>
                     <Avatar.Fallback name={pet.counterpartName} />
                     <Avatar.Image src={pet.counterpartImage} />
                 </Avatar.Root>
 
-                <VStack align="flex-start" gap={{ base: "5.73px", md: "7px" }} minW="0">
-                    <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey" truncate>
-                        {pet.counterpartName}
-                    </Text>
-                    <Text fontSize={{ base: "14", md: "15" }} fontWeight="500" color="GreyMuted">
-                        {pet.counterpartRole}
-                    </Text>
+                {/* Outer gap: role line → phone line */}
+                <VStack align="flex-start" gap={{ base: "6px", md: "4px" }} minW="0">
+                    {/* Inner gap: name → role line, set separately from the phone spacing */}
+                    <VStack align="flex-start" gap={{ base: "6px", md: "4px" }} minW="0" maxW="100%">
+                        <Text fontSize="20" fontWeight="600" color="Grey" truncate maxW="100%">
+                            {pet.counterpartName}
+                        </Text>
+                        <Text fontSize="15" fontWeight="500" color="GreyMuted">
+                            {pet.counterpartRole}
+                        </Text>
+                    </VStack>
                     {/* Plenty of accounts have never filled in a phone number. */}
                     {pet.counterpartPhone && (
-                        <Flex align="center" gap="8px">
-                            <Icon as={IoCall} boxSize={{ base: "11.45px", md: "14px" }} color="GreyText" />
-                            <Text fontSize={{ base: "14", md: "15" }} fontWeight="500" color="GreyMuted">
+                        <Flex align="center" gap={{ base: "7px", md: "8px" }}>
+                            <Icon as={IoCall} boxSize="14px" color="GreyText" />
+                            <Text fontSize="15" fontWeight="500" color="GreyMuted">
                                 {pet.counterpartPhone}
                             </Text>
                         </Flex>

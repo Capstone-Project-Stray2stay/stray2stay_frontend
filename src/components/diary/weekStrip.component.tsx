@@ -1,15 +1,25 @@
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Text, VStack } from "@chakra-ui/react";
+import type { ReactNode } from "react";
 
+import CalendarIcon from "../icons/calendarIcon.component";
 import { MONTHS_LONG, MONTHS_SHORT, WEEKDAYS, isSameDay, toDateKey, weekOf } from "../../utils/dateUtils";
 
 export default function WeekStrip({
     selectedDate,
     entryDateKeys,
     onSelect,
+    calendarOpen = false,
+    onCalendarToggle,
+    calendar,
 }: {
     selectedDate: Date;
     entryDateKeys: Set<string>;
     onSelect: (date: Date) => void;
+    /** Phone only: the month calendar folds away behind the header's calendar button (Figma mobile) */
+    calendarOpen?: boolean;
+    onCalendarToggle?: () => void;
+    /** Rendered between the phone header and the days while calendarOpen */
+    calendar?: ReactNode;
 }) {
     const days = weekOf(selectedDate);
 
@@ -20,14 +30,29 @@ export default function WeekStrip({
             gap={{ base: "14px", md: "24px" }}
             w="100%"
         >
-            <Text
-                display={{ base: "block", md: "none" }}
-                fontSize="16"
-                fontWeight="600"
-                color="Grey"
-            >
-                {MONTHS_LONG[selectedDate.getMonth()]}
-            </Text>
+            {/* Figma mobile: month name left, 24px calendar button (--button) right */}
+            <Flex display={{ base: "flex", md: "none" }} justify="space-between" align="center">
+                <Text fontSize="16" fontWeight="600" color="Grey">
+                    {MONTHS_LONG[selectedDate.getMonth()]}
+                </Text>
+                {onCalendarToggle && (
+                    <IconButton
+                        aria-label={calendarOpen ? "Hide month calendar" : "Show month calendar"}
+                        aria-expanded={calendarOpen}
+                        variant="plain"
+                        minW="unset"
+                        boxSize="24px"
+                        p="0"
+                        // Same --button blue as the desktop pencil
+                        color="Blue"
+                        css={{ "& svg": { width: "24px", height: "24px" } }}
+                        onClick={onCalendarToggle}
+                    >
+                        <CalendarIcon />
+                    </IconButton>
+                )}
+            </Flex>
+            {calendarOpen && calendar && <Box display={{ base: "block", md: "none" }}>{calendar}</Box>}
             <Text
                 display={{ base: "none", md: "block" }}
                 fontSize="24"

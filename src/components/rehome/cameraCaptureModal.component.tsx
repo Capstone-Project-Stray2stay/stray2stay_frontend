@@ -170,9 +170,6 @@ export default function CameraCaptureModal({
                             onClick={onClose}
                             top={{ base: "20px", md: "32px" }}
                             right={{ base: "20px", md: "32px" }}
-                            // Original close size: 23.58px button, ✕ drawn like the old 12px IoClose (~6.4px)
-                            boxSize="23.58px"
-                            iconBoxSize="6.4px"
                             zIndex={1}
                         />
 
@@ -312,7 +309,7 @@ export default function CameraCaptureModal({
                                     <S2SButton
                                         icon={ai ? <Box as="span" display="flex" boxSize={{ base: "16px", md: "22px" }} css={{ "& svg": { width: "100%", height: "100%" } }}><AICameraIcon /></Box>: <Icon as={IoCameraOutline} boxSize="20px" />}
                                         text="Capture"
-                                        gap="0px"
+                                        gap="6px"
                                         width={{ base: "160px", md: "190px" }}
                                         height={{ base: "36px", md: "44px" }}
                                         fontSize={{ base: "14", md: "18" }}

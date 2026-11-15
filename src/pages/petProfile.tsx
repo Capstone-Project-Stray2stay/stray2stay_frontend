@@ -25,7 +25,7 @@ import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 import { S2SPageTitle, S2SAccordion, S2SButton } from "../components/S2S.components";
 import { useAdoptPet, usePetInfo } from "../hooks/query/pet.query";
 import { useAuth } from "../hooks/query/auth.query";
-import { formatGender, ageGroupOptions } from "../utils/petOptions.util";
+import { formatGender, ageGroupOptions, GENDER_COLORS } from "../utils/petOptions.util";
 import { VACCINE_OPTIONS } from "../types/rehome.type";
 import AdoptScreeningForm from "../components/profile/adoptScreeningForm.component";
 import PendingIcon from "../components/icons/pendingIcon.component";
@@ -270,9 +270,9 @@ export default function PetProfile() {
                   </Text>
                   <Flex align="center" gap="7px">
                     {pet.petGender?.toUpperCase() === "MALE" ? (
-                      <IoMaleOutline size={16.59} color="#87CFF0" />
+                      <IoMaleOutline size={16.59} color={GENDER_COLORS.male} />
                     ) : (
-                      <IoFemaleOutline size={16.59} color="#FF69B4" />
+                      <IoFemaleOutline size={16.59} color={GENDER_COLORS.female} />
                     )}
                     <Text color="GreyText" fontSize="18" fontWeight="500">
                       {formatGender(pet.petGender)}

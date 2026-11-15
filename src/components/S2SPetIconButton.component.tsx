@@ -11,7 +11,8 @@ export default function S2SPetIconButton({ icon, label, selected = false, onClic
                 boxShadow="0px 4px 4px rgba(0, 0, 0, 0.05)"
                 transition="background 0.15s ease"
                 pt={pt}
-                _groupHover={{ bg: "Cream_hover" }}
+                // Hover only tints unpicked circles, so a picked one turns orange straight away instead of after the mouse leaves
+                _groupHover={selected ? undefined : { bg: "Cream_hover" }}
                 _groupActive={{ bg: "Cream_active" }}
             >
                 {icon}

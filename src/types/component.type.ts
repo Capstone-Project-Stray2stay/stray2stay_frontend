@@ -30,6 +30,8 @@ export interface S2SButtonType {
     height?: ResponsiveSpace
     fontSize?: ResponsiveSpace
     width?: ResponsiveSpace
+    /** Overrides the size's min width (e.g. a Figma instance narrower than the sheet's xs) */
+    minWidth?: ResponsiveSpace
     /** Icon-to-text gap; overrides the size's default (some Figma instances differ from the sheet) */
     gap?: string
     loading?: boolean

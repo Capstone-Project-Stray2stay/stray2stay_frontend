@@ -2,6 +2,7 @@ import { Box, Image, Text, Flex } from "@chakra-ui/react";
 import { IoMaleOutline, IoFemaleOutline } from "react-icons/io5";
 
 import type { S2SPetCardType } from "../types/component.type"
+import { GENDER_COLORS } from "../utils/petOptions.util"
 
 export default function S2SPetCard({ rank, width, height, petImageURL, petAge, petBreed, petGender, petLocation, onClick }: S2SPetCardType) {
     return (
@@ -67,10 +68,9 @@ export default function S2SPetCard({ rank, width, height, petImageURL, petAge, p
                     </Text>
                     <Box flexShrink={0} display="flex">
                         {petGender === "Male" ? (
-                            // Figma --bluetext
-                            <IoMaleOutline size={21} color="#85BFE2" />
+                            <IoMaleOutline size={21} color={GENDER_COLORS.male} />
                         ) : (
-                            <IoFemaleOutline size={21} color="#FF69B4" />
+                            <IoFemaleOutline size={21} color={GENDER_COLORS.female} />
                         )}
                     </Box>
                 </Flex>

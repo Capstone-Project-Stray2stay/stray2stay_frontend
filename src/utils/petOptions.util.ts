@@ -1,4 +1,7 @@
 
+/** Gender symbol colours used everywhere a ♂ / ♀ is shown: male is --bluetext, female the brief's soft pink. */
+export const GENDER_COLORS = { male: "#85BFE2", female: "#FF95BD" } as const;
+
 export const genderOptions = [
     { value: "MALE", label: "Male" },
     { value: "FEMALE", label: "Female" },

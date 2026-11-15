@@ -3,10 +3,13 @@ import type { ReactNode } from "react";
 
 export default function S2SCardShell({
     railColor,
+    railWidth = { base: "8px", md: "14px" },
     children,
     ...rest
 }: {
     railColor: string;
+    /** Rail thickness; the mobile Diary cards keep Figma's 14px rail at every size */
+    railWidth?: React.ComponentProps<typeof Box>["w"];
     children: ReactNode;
 } & React.ComponentProps<typeof Flex>) {
     return (
@@ -22,7 +25,7 @@ export default function S2SCardShell({
                 left="0.2px"
                 top="0"
                 bottom="0"
-                w={{base: "8px", md: "14px"}}
+                w={railWidth}
                 bg={railColor}
                 borderRadius="25px"
             />

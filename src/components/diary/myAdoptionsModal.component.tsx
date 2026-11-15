@@ -31,7 +31,7 @@ export default function MyAdoptionsModal({
                                 My Adoptions
                             </Text>
 
-                            <Box h="2px" bg="SkyBlue" borderRadius="full" />
+                            <Box h="2px" bg="SkyBlue" borderRadius="full" flexShrink={0} />
 
                             {pets.length === 0 && (
                                 <Text fontSize="16" fontWeight="500" color="GreyMuted" textAlign="center">
@@ -49,7 +49,9 @@ export default function MyAdoptionsModal({
                                                 <Avatar.Image src={pet.petImageAddress[0]} />
                                             </Avatar.Root>
                                             <VStack align="flex-start" gap="2px" minW="0">
-                                                <Text fontSize="20" fontWeight="500" color="Grey" truncate>
+                                                {/* maxW: in a flex-start column the name sizes to its content and runs
+                                                    under the button; capping it at the column lets truncate add the … */}
+                                                <Text fontSize="18" fontWeight="500" color="Grey" truncate maxW="100%">
                                                     {pet.petName}
                                                 </Text>
                                                 {/* Pets the user rehomed appear here too, but their
