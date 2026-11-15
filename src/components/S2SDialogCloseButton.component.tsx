@@ -13,6 +13,8 @@ export default function S2SDialogCloseButton({
     right = "32px",
     zIndex,
     inline = false,
+    boxSize = BOX_SIZE,
+    iconBoxSize = ICON_BOX_SIZE,
 }: S2SDialogCloseButtonType) {
     return (
         <IconButton
@@ -23,7 +25,7 @@ export default function S2SDialogCloseButton({
             top={inline ? undefined : top}
             right={inline ? undefined : right}
             flexShrink={0}
-            boxSize={BOX_SIZE}
+            boxSize={boxSize}
             minW="unset"
             p="0"
             rounded="full"
@@ -31,7 +33,7 @@ export default function S2SDialogCloseButton({
             _hover={{ bg: "#e0e0e0" }}
             color="GreyText"
             // Chakra's IconButton sizes its svg itself; pin it to the Figma ✕
-            css={{ "& svg": { width: ICON_BOX_SIZE, height: ICON_BOX_SIZE } }}
+            css={{ "& svg": { width: iconBoxSize, height: iconBoxSize } }}
             zIndex={zIndex}
         >
             <CloseIcon />

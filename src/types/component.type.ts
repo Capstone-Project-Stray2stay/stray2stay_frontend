@@ -149,4 +149,8 @@ export interface S2SDialogCloseButtonType {
     zIndex?: number
     /** Place in normal layout flow instead of absolutely in the dialog's corner */
     inline?: boolean
+    /** Override the default 36px button circle */
+    boxSize?: string
+    /** Override the default 12px ✕ icon */
+    iconBoxSize?: string
 }
