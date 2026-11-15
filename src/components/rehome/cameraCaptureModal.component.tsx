@@ -170,9 +170,6 @@ export default function CameraCaptureModal({
                             onClick={onClose}
                             top={{ base: "20px", md: "32px" }}
                             right={{ base: "20px", md: "32px" }}
-                            // Original close size: 23.58px button, ✕ drawn like the old 12px IoClose (~6.4px)
-                            boxSize="23.58px"
-                            iconBoxSize="6.4px"
                             zIndex={1}
                         />
 

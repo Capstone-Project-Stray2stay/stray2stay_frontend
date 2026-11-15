@@ -19,7 +19,8 @@ export default function MonthCalendar({
     return (
         <VStack
             w="100%"
-            maxW={{ base: "100%", md: "398.99px" }}
+            // Fixed Figma width only in the two-column desktop layout; full width in the single column
+            maxW={{ base: "100%", xl: "398.99px" }}
             p={{ base: "24px", md: "32px" }}
             gap={{ base: "15.40px", md: "24px" }}
             align="stretch"

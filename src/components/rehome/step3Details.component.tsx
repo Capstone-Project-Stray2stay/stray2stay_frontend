@@ -96,6 +96,8 @@ export default function Step3Details({
                         <S2SDropDown
                             key={breedItems.length === 0 ? "loading" : "loaded"}
                             {...detailDropDownStyle}
+                            // ✕ to clear the pick, like the Pet Preferences card
+                            clearable
                             // Breed is only empty here when the AI classifier couldn't match one
                             placeholder="Could not identify breed. Please choose from the list."
                             placeholderColor="Red"
@@ -110,6 +112,8 @@ export default function Step3Details({
                             key={colorItems.length === 0 ? "loading" : "loaded"}
                             placeholder=""
                             {...detailDropDownStyle}
+                            // ✕ to clear the pick, like the Pet Preferences card
+                            clearable
                             data={colorItems}
                             value={draft.color}
                             disabled={draft.breed === ""}
@@ -121,6 +125,8 @@ export default function Step3Details({
                         <S2SDropDown
                             placeholder=""
                             {...detailDropDownStyle}
+                            // ✕ to clear the pick, like the Pet Preferences card
+                            clearable
                             data={ageGroupOptions}
                             value={draft.ageGroup}
                             onValueChange={(ageGroup) => onChange({ ageGroup })}
@@ -131,6 +137,8 @@ export default function Step3Details({
                         <S2SDropDown
                             placeholder=""
                             {...detailDropDownStyle}
+                            // ✕ to clear the pick, like the Pet Preferences card
+                            clearable
                             data={genderOptions}
                             value={draft.gender}
                             onValueChange={(gender) => onChange({ gender })}

@@ -306,6 +306,7 @@ export default function PhotoSearchModal({
                                                 width="170px"
                                                 height="38px"
                                                 fontSize="18"
+                                                gap="0px" 
                                                 disabled={isFull}
                                                 onClick={() => setIsCameraOpen(true)}
                                             />

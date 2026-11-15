@@ -3,6 +3,7 @@ import { Box, Flex, Icon, IconButton, Image, Input, Text, VStack } from "@chakra
 import { IoImages } from "react-icons/io5";
 
 import EditIcon from "../icons/editIcon.component";
+import DiaryPhotosIcon from "../icons/diaryPhotosIcon.component";
 import { S2SButton } from "../S2S.components";
 import { S2SCardShell } from "../S2S.components";
 import { WEEKDAYS } from "../../utils/dateUtils";
@@ -10,25 +11,26 @@ import type { DiaryEntry } from "../../types/diary.type";
 
 const CAPTION_INPUT_PROPS = {
     bg: "white",
-    borderRadius: { base: "28px", md: "21.42px" },
+    // Figma mobile and desktop share the 38px, 21.42px-radius, 24px-padded field; colours stay the desktop ones
+    borderRadius: "21.42px",
     borderWidth: "0.86px",
     borderColor: "BlueText",
-    px: { base: "16px", md: "24px" },
+    px: "24px",
     py: "8px",
-    h: { base: "41px", md: "38px" },
-    fontSize: { base: "14", md: "16" },
+    h: "38px",
+    fontSize: "16",
     fontWeight: "400",
     color: "Grey",
     _placeholder: { color: "GreyText" },
 } as const;
 
-// Figma (filled entry): 426×260 photo above the caption
+// Figma (filled entry): 426×260 photo above the caption; mobile full width × 181, 16px corners
 const PHOTO_PROPS = {
     w: "100%",
     maxW: { base: "100%", md: "426px" },
-    h: { base: "183.25px", md: "260px" },
+    h: { base: "181px", md: "260px" },
     bg: "rgba(255,255,255,0.60)",
-    borderRadius: { base: "11.62px", md: "21.42px" },
+    borderRadius: { base: "16px", md: "21.42px" },
     alignSelf: { base: "stretch", md: "flex-end" },
 } as const;
 
@@ -39,18 +41,18 @@ const dashedBorder = (color: string, radius: number) =>
 
 function EntryView({ entry }: { entry: DiaryEntry }) {
     return (
-        <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
+        <VStack align="stretch" gap="24px" w="100%">
             <Image {...PHOTO_PROPS} src={entry.imageAddress} alt={entry.caption || "Diary photo"} objectFit="cover" />
 
             <Box
                 bg="white"
-                borderRadius={{ base: "28px", md: "21.42px" }}
+                borderRadius="21.42px"
                 borderWidth="0.86px"
                 borderColor="BlueText"
-                px={{ base: "16px", md: "24px" }}
+                px="24px"
                 py="8px"
             >
-                <Text fontSize={{ base: "14", md: "16" }} fontWeight="400" color="Grey">
+                <Text fontSize="16" fontWeight="400" color="Grey">
                     {entry.caption}
                 </Text>
             </Box>
@@ -98,7 +100,7 @@ function EntryEditor({
     const canSave = photo !== null || Boolean(entry?.imageAddress);
 
     return (
-        <VStack align="stretch" gap={{ base: "18.60px", md: "24px" }} w="100%">
+        <VStack align="stretch" gap="24px" w="100%">
             <input
                 ref={inputRef}
                 type="file"
@@ -124,12 +126,13 @@ function EntryEditor({
                 // Figma: grows with its content (32px top/bottom) instead of a fixed photo-sized box
                 <Box
                     w="100%"
-                    py={{ base: "24px", md: "32px" }}
+                    // Figma mobile: 40px top/bottom, 16px corners
+                    py={{ base: "40px", md: "32px" }}
                     px="16px"
-                    borderRadius={{ base: "11.62px", md: "24px" }}
+                    borderRadius={{ base: "16px", md: "24px" }}
                     // Blue / BlueText theme colours, inlined because the SVG can't read tokens
                     backgroundImage={{
-                        base: dashedBorder(isDragging ? "%2385BFE2" : "%2387CFF0", 11.62),
+                        base: dashedBorder(isDragging ? "%2385BFE2" : "%2387CFF0", 16),
                         md: dashedBorder(isDragging ? "%2385BFE2" : "%2387CFF0", 24),
                     }}
                     cursor="pointer"
@@ -145,16 +148,21 @@ function EntryEditor({
                         acceptFile(e.dataTransfer.files);
                     }}
                 >
-                    <VStack gap={{ base: "9.14px", md: "16px" }}>
+                    <VStack gap={{ base: "16.85px", md: "16px" }}>
+                        {/* Mobile: the Figma photos icon at its 62.56 x 57.42 size; desktop unchanged */}
+                        <Box display={{ base: "flex", md: "none" }} color="SkyBlue">
+                            <DiaryPhotosIcon />
+                        </Box>
                         <Icon
                             as={IoImages}
-                            w={{ base: "50px", md: "68.33px" }}
-                            h={{ base: "46px", md: "64.92px" }}
+                            display={{ base: "none", md: "block" }}
+                            w="68.33px"
+                            h="64.92px"
                             color="SkyBlue"
                         />
-                        <VStack gap="12px">
+                        <VStack gap={{ base: "12.48px", md: "12px" }}>
                             <Text
-                                fontSize={{ base: "14", md: "20" }}
+                                fontSize={{ base: "16", md: "20" }}
                                 fontWeight="600"
                                 color="Blue"
                                 textAlign="center"
@@ -166,9 +174,9 @@ function EntryEditor({
                                 <S2SButton
                                     text="Upload Photo"
                                     variant="outline"
-                                    width={{ base: "160px", md: "158px" }}
-                                    height={{ base: "28px", md: "38px" }}
-                                    fontSize={{ base: "12", md: "18" }}
+                                    width={{ base: "154px", md: "158px" }}
+                                    height={{ base: "36px", md: "38px" }}
+                                    fontSize={{ base: "14", md: "18" }}
                                     onClick={() => inputRef.current?.click()}
                                 />
                             </Box>
@@ -246,14 +254,16 @@ export default function DayEntries({
 
     const isComplete = Boolean(entry?.imageAddress);
     const canEdit = canWrite && isWritableDay;
+    // Nothing recorded and nothing this user can do about it (read-only, or outside the writable window)
+    const isEmptyState = !(entry && isComplete && !isEditing) && !canEdit;
 
     const editPencil = isComplete && canEdit && !isEditing && (
         <IconButton
             aria-label="Edit entry"
             variant="plain"
             minW="unset"
-            // Figma pencil (Icon_edit) at the old visual size: the old 16px LuPencil drew ~13px of art, a 20px frame matches
-            boxSize={{ base: "14.36px", md: "20px" }}
+            // Figma pencil (Icon_edit): the art is 16 of the 24px frame. Mobile Figma draws 15.43px of art = a 23.14px frame
+            boxSize={{ base: "23.14px", md: "26px" }}
             p="0"
             color="Blue"
             flexShrink={0}
@@ -267,12 +277,14 @@ export default function DayEntries({
     return (
         <S2SCardShell
             railColor="SkyBlue"
+            railWidth="14px"
             w="100%"
             direction={{ base: "column", md: "row" }}
-            px={{ base: "20px", md: "32px" }}
-            pl={{ base: "26px", md: "46px" }}
-            py={{ base: "20px", md: "24px" }}
-            gap={{ base: "16px", md: "32px" }}
+            // Figma mobile (1009:2470): 32px left / 24px right, 16px top/bottom, 24px under the date row
+            px={{ base: "24px", md: "32px" }}
+            pl={{ base: "32px", md: "46px" }}
+            py={{ base: "16px", md: "24px" }}
+            gap={{ base: "24px", md: "32px" }}
             align="stretch"
         >
             <Flex
@@ -284,13 +296,13 @@ export default function DayEntries({
             >
                 <Flex
                     direction={{ base: "row", md: "column" }}
-                    align={{ base: "baseline", md: "center" }}
+                    align="center"
                     gap={{ base: "8px", md: "0.86px" }}
                 >
                     <Text fontSize={{ base: "20", md: "32" }} fontWeight="600" color="Grey">
                         {date.getDate()}
                     </Text>
-                    <Text fontSize={{ base: "14", md: "18" }} fontWeight="600" color="Grey">
+                    <Text fontSize={{ base: "16", md: "18" }} fontWeight="600" color="Grey">
                         {WEEKDAYS[date.getDay()]}
                     </Text>
                 </Flex>
@@ -306,11 +318,14 @@ export default function DayEntries({
                 flexShrink={0}
             />
 
-            <VStack flex="1" align="stretch" gap={{ base: "18.60px", md: "16px" }} minW="0">
-                {/* Figma keeps this 24px pencil row even when the pencil is hidden */}
-                <Flex display={{ base: "none", md: "flex" }} justify="flex-end" align="center" minH="24px">
-                    {editPencil}
-                </Flex>
+            <VStack flex="1" align="stretch" gap={{ base: "24px", md: "16px" }} minW="0">
+                {/* Figma keeps this 24px pencil row even when the pencil is hidden. The empty state drops it
+                    (and grows by the same 24 + 16px) so its message sits centred top-to-bottom in the card. */}
+                {!isEmptyState && (
+                    <Flex display={{ base: "none", md: "flex" }} justify="flex-end" align="center" minH="24px">
+                        {editPencil}
+                    </Flex>
+                )}
 
                 {entry && isComplete && !isEditing ? (
                     <EntryView entry={entry} />
@@ -326,9 +341,11 @@ export default function DayEntries({
                     // either they only have read access, or the day is outside
                     // the window they may write to.
                     // Centred in the whole entry column (not right-aligned like a photo), in --font like the
-                    // Profile empty states; size and weight stay at the original 16/500
+                    // Profile empty states; 16 size, regular weight. 300px = the 260px photo + the pencil row and gap
+                    // it replaces, so the card keeps the same height as the other days.
                     <Flex
                         {...PHOTO_PROPS}
+                        h={{ base: "181px", md: "300px" }}
                         maxW="100%"
                         alignSelf="stretch"
                         align="center"
@@ -336,7 +353,7 @@ export default function DayEntries({
                         px="24px"
                         borderRadius={{ base: "11.62px", md: "16px" }}
                     >
-                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="Grey" textAlign="center">
+                        <Text fontSize={{ base: "14", md: "16" }} fontWeight="400" color="Grey" textAlign="center">
                             {!canWrite
                                 ? "No entry for this day."
                                 : "This day is outside the diary's range."}

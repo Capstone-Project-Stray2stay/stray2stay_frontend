@@ -127,11 +127,17 @@ export default function Home() {
             <S2SButton
               text="Adopt a Pet"
               bgColor="Orange"
-              // 1.2em keeps the paw art the same width the old full-bleed FaPaw had (art is 40/48 of the frame)
-              icon={<PawIcon size="1.2em" />}
+              // Chakra squeezes every button svg to 18.75px, which left the paw art (40x33 of a 48 frame) far smaller
+              // than the house beside it. A 24px frame makes the paw as tall as the house (~16.5px) so the pair balances.
+              icon={
+                <Box as="span" display="flex" boxSize="24px" css={{ "& svg": { width: "100%", height: "100%" } }}>
+                  <PawIcon />
+                </Box>
+              }
               width={{ base: "48%", lg: "200px" }}
               height={{ lg: "48px" }}
               fontSize={{ lg: "20" }}
+              gap="8px"
               onClick={() => navigate("/adopt")}
             />
             <S2SButton
@@ -141,6 +147,7 @@ export default function Home() {
               width={{ base: "48%", lg: "220px" }}
               height={{ lg: "48px" }}
               fontSize={{ lg: "20" }}
+              gap="10px"
               onClick={() => navigate("/rehome")}
             />
           </Flex>
@@ -226,11 +233,17 @@ export default function Home() {
               <S2SButton
                 text="Upload Photo"
                 bgColor="Blue"
-                // Figma AI camera at 1.2em, the same drawn width as the old full-bleed FaCamera at 1em
-                icon={<AICameraIcon />}
+                // Same 24px frame as the Adopt paw: Chakra's 18.75px button svg shrank the camera art (20x17 of 24)
+                // well below the house/paw; at 24px it draws ~20x17px, level with them
+                icon={
+                  <Box as="span" display="flex" boxSize="26px" css={{ "& svg": { width: "100%", height: "100%" } }}>
+                    <AICameraIcon />
+                  </Box>
+                }
                 width="full"
                 height={{ lg: "48px" }}
                 fontSize={{ lg: "20" }}
+                gap="8px"
                 onClick={() => setIsPhotoSearchOpen(true)}
               />
             </Box>
@@ -313,8 +326,8 @@ export default function Home() {
                 { value: "19", label: "Cat breeds classified" },
               ].map((stat) => (
                 <Flex key={stat.label} direction="column" align="center" gap="4px" lineHeight="normal">
-                  {/* Figma "auto" line height (Chakra's 1.5 would pad the 4px gap by ~10px); original number size */}
-                  <Text color="Grey" fontSize={{ base: "28px", md: "36px" }} fontWeight="600">
+                  {/* Figma "auto" line height (Chakra's 1.5 would pad the 4px gap by ~10px); numbers 27px on desktop per brief */}
+                  <Text color="Grey" fontSize={{ base: "28px", md: "27px" }} fontWeight="600">
                     {stat.value}
                   </Text>
                   <Text color="GreyText" fontSize={{ base: "15px", md: "20px" }} fontWeight="500" textAlign="center">

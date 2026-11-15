@@ -50,6 +50,8 @@ export default function PetLocationSection({
                         key={provinceItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""
                         {...detailDropDownStyle}
+                        // ✕ to clear the pick, like the Pet Preferences card
+                        clearable
                         data={provinceItems}
                         value={value.state}
                         onValueChange={(state) =>
@@ -69,6 +71,8 @@ export default function PetLocationSection({
                         key={districtItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""
                         {...detailDropDownStyle}
+                        // ✕ to clear the pick, like the Pet Preferences card
+                        clearable
                         data={districtItems}
                         value={value.district}
                         disabled={value.state === ""}
@@ -83,6 +87,8 @@ export default function PetLocationSection({
                         key={subDistrictItems.length === 0 ? "loading" : "loaded"}
                         placeholder=""
                         {...detailDropDownStyle}
+                        // ✕ to clear the pick, like the Pet Preferences card
+                        clearable
                         data={subDistrictItems}
                         value={value.subDistrict}
                         disabled={value.district === ""}

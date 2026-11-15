@@ -8,7 +8,7 @@ import type { DiaryPet } from "../../types/diary.type";
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
     return (
-        <VStack align="flex-start" gap={{ base: "5px", md: "2px" }}>
+        <VStack align="flex-start" gap="2px">
             <Text fontSize="14" fontWeight="500" color="GreyMuted">
                 {label}
             </Text>
@@ -19,7 +19,7 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 
 function Value({ children }: { children: React.ReactNode }) {
     return (
-        <Text fontSize={{ base: "15", md: "16" }} fontWeight="500" color="Grey">
+        <Text fontSize="16" fontWeight="500" color="Grey">
             {children}
         </Text>
     );
@@ -35,12 +35,13 @@ export default function PetSummaryCard({
     return (
         <S2SCardShell
             railColor="Cream"
+            railWidth="14px"
             w="100%"
             direction={{ base: "column", md: "row" }}
-            py={{ base: "20px", md: "16px" }}
-            px={{ base: "20px", md: "32px" }}
-            pl={{ base: "26px", md: "32px" }}
-            gap={{ base: "9px", md: "32px" }}
+            // Figma mobile (Frame 1009:2097): 16px top/bottom, content 40px in from the left edge, 2px under the avatar row
+            py="16px"
+            px={{ base: "40px", md: "32px" }}
+            gap={{ base: "2px", md: "32px" }}
             // Figma Frame 250: 95 content + 16/16 padding = 127 tall; finder card matches this height.
             // Text boxes use Figma's Auto line height
             minH={{ md: "127px" }}
@@ -49,26 +50,36 @@ export default function PetSummaryCard({
             justify={{ md: "center" }}
             wrap={{ md: "wrap" }}
         >
-            <Flex gap={{ base: "20px", md: "24px" }} align="center">
-                <Avatar.Root boxSize={{ base: "78px", md: "85px" }} flexShrink={0}>
+            {/* Mobile: avatar and name column top-aligned in a 94px row */}
+            <Flex gap="24px" align={{ base: "flex-start", md: "center" }} h={{ base: "94px", md: "auto" }}>
+                <Avatar.Root boxSize="85px" flexShrink={0}>
                     <Avatar.Fallback name={pet.petName} />
                     <Avatar.Image src={pet.petImageAddress[0]} />
                 </Avatar.Root>
 
-                <VStack align="flex-start" gap={{ base: "11px", md: "10px" }}>
-                    <Text fontSize={{ base: "16", md: "20" }} fontWeight="600" color="Grey">
+                <VStack align="flex-start" gap="10px" minW="0">
+                    <Text fontSize="20" fontWeight="600" color="Grey" truncate maxW="100%">
                         {pet.petName}
                     </Text>
-                    {/* Figma: the "xs" Yellow button from the button sheet */}
-                    <S2SButton text="Change" bgColor="Cream" size="xs" onClick={onChangeClick} />
+                    {/* Figma: the "xs" Yellow button from the button sheet; mobile is a smaller 83 x 22 / 15px instance */}
+                    <S2SButton
+                        text="Change"
+                        bgColor="Cream"
+                        size="xs"
+                        width={{ base: "83.13px", md: "auto" }}
+                        minWidth={{ base: "0", md: "100px" }}
+                        height={{ base: "22.28px", md: "auto" }}
+                        fontSize={{ base: "15", md: "16" }}
+                        onClick={onChangeClick}
+                    />
                 </VStack>
             </Flex>
 
-            {/* Figma: the second column starts 119px in on both rows */}
+            {/* Figma: the second column starts 119px in on both rows (mobile rows 7px apart in a 95px block) */}
             <SimpleGrid
-                templateColumns={{ base: "repeat(2, minmax(0, 1fr))", md: "89px max-content" }}
-                columnGap={{ base: "27.12px", md: "30px" }}
-                rowGap="8px"
+                templateColumns={{ base: "89px minmax(0, 1fr)", md: "89px max-content" }}
+                columnGap="30px"
+                rowGap={{ base: "7px", md: "8px" }}
             >
                 <Detail label="Age Group">
                     <Value>{formatAgeGroup(pet.petAgeGroup)}</Value>
@@ -82,7 +93,7 @@ export default function PetSummaryCard({
                             the formatted label rather than the raw column. */}
                         <Icon
                             as={formatGender(pet.petGender) === "Female" ? IoFemale : IoMale}
-                            boxSize={{ base: "17px", md: "16px" }}
+                            boxSize="16px"
                             color={formatGender(pet.petGender) === "Female" ? GENDER_COLORS.female : GENDER_COLORS.male}
                         />
                         <Value>{formatGender(pet.petGender)}</Value>

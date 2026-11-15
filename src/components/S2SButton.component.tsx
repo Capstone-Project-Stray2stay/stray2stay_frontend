@@ -14,7 +14,7 @@ const SIZES: Record<S2SButtonSize, { minW: string; px: string; py: string; fontS
 // Light fills that need dark text instead of white
 const DARK_TEXT_FILLS = ["Cream", "White"];
 
-export default function S2SButton({ icon, type = "button", text, bgColor, variant = "solid", size, width, height, fontSize, gap, loading, disabled, onClick, isStatus = false }: S2SButtonType) {
+export default function S2SButton({ icon, type = "button", text, bgColor, variant = "solid", size, width, minWidth, height, fontSize, gap, loading, disabled, onClick, isStatus = false }: S2SButtonType) {
     const color = bgColor || "Blue";
     const isOutline = variant === "outline";
     const sizing = size ? SIZES[size] : undefined;
@@ -33,7 +33,7 @@ export default function S2SButton({ icon, type = "button", text, bgColor, varian
             _hover={isStatus ? undefined : isOutline ? { bg: "LineHover" } : { bg: `${color}_hover` }}
             _active={isStatus ? undefined : isOutline ? { bg: "LineActive" } : { bg: `${color}_active` }}
             cursor={isStatus ? "default" : undefined}
-            minW={sizing?.minW}
+            minW={minWidth ?? sizing?.minW}
             px={sizing?.px}
             py={sizing?.py}
             gap={gap ?? sizing?.gap}
@@ -46,7 +46,8 @@ export default function S2SButton({ icon, type = "button", text, bgColor, varian
         >
             {icon && (
                 <Flex
-                    pr={sizing ? undefined : 2}
+                    // A size or an explicit gap sets the icon–text spacing; the old 8px pad only fills in otherwise
+                    pr={sizing || gap !== undefined ? undefined : 2}
                     css={sizing ? { "& svg": { width: sizing.iconSize, height: sizing.iconSize } } : undefined}
                 >
                     {icon}

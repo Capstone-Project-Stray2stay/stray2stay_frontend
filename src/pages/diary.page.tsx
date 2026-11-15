@@ -32,7 +32,13 @@ export default function Diary() {
     // reorder plain CSS direction:column can't express. So the arrangement is
     // picked once here, in JS, rather than mounting the page twice behind
     // display:none (which would double up DayEntries' internal edit state).
-    const isDesktop = useBreakpointValue({ base: false, lg: true }) ?? false;
+    //
+    // Three layouts: phone (< md) follows the Figma mobile frames; md–xl is one centred
+    // 602px column with the desktop card styles; xl+ is the two-column Figma desktop
+    // (below 1280px, with the 12vw sidebar, the two columns squeeze the calendar too far).
+    const isDesktop = useBreakpointValue({ base: false, xl: true }) ?? false;
+    const isPhone = useBreakpointValue({ base: true, md: false }) ?? true;
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
     const [selectedPid, setSelectedPid] = useState<number | null>(null);
     const [selectedDate, setSelectedDate] = useState(() => today());
@@ -106,7 +112,7 @@ export default function Diary() {
 
     if (petsLoading) {
         return (
-            <Box width="100%" px={{ base: "30px", md: "9%" }}>
+            <Box width="100%" px={{ base: "24px", md: "9%" }}>
                 <S2SPageTitle title="Pet Diary" />
                 <Flex justify="center" py="120px">
                     <Spinner color="Blue" size="lg" />
@@ -117,7 +123,7 @@ export default function Diary() {
 
     if (petsError || !selectedPet) {
         return (
-            <Box width="100%" px={{ base: "30px", md: "9%" }}>
+            <Box width="100%" px={{ base: "24px", md: "9%" }}>
                 <S2SPageTitle title="Pet Diary" />
                 <VStack gap="16px" py="120px">
                     <Text fontSize="18" fontWeight="600" color="Grey" textAlign="center">
@@ -147,12 +153,25 @@ export default function Diary() {
             viewMonth={viewMonth}
             selectedDate={selectedDate}
             onMonthChange={(delta) => setViewMonth((month) => addMonths(month, delta))}
-            onSelect={setSelectedDate}
+            onSelect={(date) => {
+                setSelectedDate(date);
+                // On a phone the calendar is a fold-out: picking a day closes it again
+                setIsCalendarOpen(false);
+            }}
         />
     );
 
     const weekStrip = (
-        <WeekStrip selectedDate={selectedDate} entryDateKeys={entryDateKeys} onSelect={handleSelectDate} />
+        <WeekStrip
+            selectedDate={selectedDate}
+            entryDateKeys={entryDateKeys}
+            onSelect={handleSelectDate}
+            {...(isPhone && {
+                calendarOpen: isCalendarOpen,
+                onCalendarToggle: () => setIsCalendarOpen((open) => !open),
+                calendar: monthCalendar,
+            })}
+        />
     );
 
     const dayEntries = entriesLoading ? (
@@ -180,36 +199,39 @@ export default function Diary() {
             <S2SButton
                 text="Finish"
                 width={{ base: "133px", md: "120px" }}
-                height={{ base: "42px", md: "48px" }}
+                height={{ base: "40px", md: "48px" }}
                 fontSize={{ base: "16", md: "20" }}
                 onClick={() => navigate("/")}
             />
         </Flex>
     );
 
-    // Figma: the cat and dog drawing, 305px wide, centred in a 346×260 frame under the calendar
+    // Figma: the cat and dog drawing, 305px wide, centred in a 346×260 frame under the calendar;
+    // 269×202 at the bottom of the mobile frame
     const illustration = (
         <Flex
             alignSelf="center"
-            w={isDesktop ? "346px" : "219px"}
-            h={isDesktop ? "260px" : "165px"}
+            w={isPhone ? "269px" : "346px"}
+            h={isPhone ? "202px" : "260px"}
             align="center"
             justify="center"
             pointerEvents="none"
             aria-hidden="true"
         >
-            <Image src="/assets/images/diary_cat_dog.png" alt="" w={isDesktop ? "305px" : "100%"} maxH="100%" objectFit="contain" />
+            <Image src="/assets/images/diary_cat_dog.png" alt="" w={isPhone ? "100%" : "305px"} maxH="100%" objectFit="contain" />
         </Flex>
     );
 
     return (
-        <Box width="100%" px={{ base: "30px", md: "9%" }}>
+        <Box width="100%" px={{ base: "24px", md: "9%" }}>
             <S2SPageTitle title="Pet Diary" />
 
             {isDesktop ? (
-                <Flex gap="40px" align="flex-start">
-                    {/* Figma: fixed 602px diary column; the finder/calendar column takes the rest */}
-                    <VStack flex="0 1 602px" minW="0" align="stretch" gap="32px">
+                <Flex gap="40px" align="flex-start" justify="center">
+                    {/* Figma: 602px diary column and 399px finder/calendar column. Between 1280px and the
+                        1440px design width the calendar column gives way first, so the pet card keeps
+                        room for its details beside the avatar */}
+                    <VStack flex="1 0 560px" maxW="602px" minW="0" align="stretch" gap="32px">
                         {petCard}
                         <VStack align="stretch" gap="16px">
                             {weekStrip}
@@ -218,7 +240,7 @@ export default function Diary() {
                         {finishButton}
                     </VStack>
 
-                    <VStack flex="1" minW="0" align="center" gap="32px">
+                    <VStack flex="0 1 399px" minW="0" align="center" gap="32px">
                         {finderCard}
                         <VStack w="100%" align="center" gap="8px">
                             {monthCalendar}
@@ -227,15 +249,28 @@ export default function Diary() {
                     </VStack>
                 </Flex>
             ) : (
-                // Mobile flow, following the Figma order: pet card, finder
-                // card, month calendar, week strip, then the day's entry.
-                <VStack mt="32px" gap="24px" align="stretch" w="100%">
+                // Single column, following the Figma mobile order: pet card, finder card, then the
+                // week (with the month calendar folded behind its button on a phone), the day's
+                // entry and Finish. Phone gaps from Figma: 40 under the title (the title's own 15px
+                // margin + 25), 24 between cards, 14 inside the week block, 20 above Finish.
+                <VStack
+                    mt={{ base: "25px", md: "0" }}
+                    gap="24px"
+                    align="stretch"
+                    w="100%"
+                    maxW={{ md: "602px" }}
+                    mx="auto"
+                >
                     {petCard}
                     {finderCard}
-                    {monthCalendar}
-                    {weekStrip}
-                    {dayEntries}
-                    {finishButton}
+                    <VStack align="stretch" gap="20px">
+                        <VStack align="stretch" gap={{ base: "14px", md: "24px" }}>
+                            {!isPhone && monthCalendar}
+                            {weekStrip}
+                            {dayEntries}
+                        </VStack>
+                        {finishButton}
+                    </VStack>
                     {illustration}
                 </VStack>
             )}
