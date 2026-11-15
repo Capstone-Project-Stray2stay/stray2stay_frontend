@@ -31,7 +31,7 @@ function AddressSelect({
 }) {
     return (
         <Box minW={0} pt={"0px"}>
-            <ProfileField label={label} labelColor="GreyText" labelSize="14">
+            <ProfileField label={label} labelColor="GreyText" labelSize="14" required>
                 <S2SDropDown
                     key={data.length === 0 ? "loading" : "loaded"}
                     {...ADDRESS_DROPDOWN}
@@ -89,7 +89,8 @@ export default function PersonalInfoFields({
             </Flex>
 
             <VStack align="stretch" gap="12px" w="100%">
-                <ProfileField label="FirstName">
+                {/* Every field here is required by personalInfoSchema, so each one is starred */}
+                <ProfileField label="FirstName" required>
                     <S2SInput
                         {...detailInputStyle}
                         value={value.firstName}
@@ -98,7 +99,7 @@ export default function PersonalInfoFields({
                     />
                 </ProfileField>
 
-                <ProfileField label="LastName">
+                <ProfileField label="LastName" required>
                     <S2SInput
                         {...detailInputStyle}
                         value={value.lastName}
@@ -107,7 +108,7 @@ export default function PersonalInfoFields({
                     />
                 </ProfileField>
 
-                <ProfileField label="Phone">
+                <ProfileField label="Phone" required>
                     <S2SInput
                         {...detailInputStyle}
                         type="tel"
@@ -152,7 +153,7 @@ export default function PersonalInfoFields({
                             }}
                         />
                         <Box minW={0}>
-                            <ProfileField label="Street" labelColor="GreyText" labelSize="14">
+                            <ProfileField label="Street" labelColor="GreyText" labelSize="14" required>
                                 <S2SInput
                                     {...detailInputStyle}
                                     value={value.street}

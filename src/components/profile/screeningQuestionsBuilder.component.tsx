@@ -17,8 +17,6 @@ import {
 } from "@chakra-ui/react";
 import { LuChevronDown, LuChevronUp, LuGripVertical, LuPlus, LuTrash2 } from "react-icons/lu";
 import { MdImage } from "react-icons/md";
-import { RiImageAiFill } from "react-icons/ri";
-import { IoCameraOutline } from "react-icons/io5";
 
 import { S2SButton, S2SIconButton } from "../S2S.components";
 import { OTHER_OPTION, type CustomQuestionType, type CustomScreeningQuestionDraft } from "../../types/profile.type";
@@ -26,6 +24,8 @@ import { MAX_PHOTOS } from "../../types/rehome.type";
 import { discardScreeningImage, stageScreeningImage } from "../../utils/screeningImages.util";
 import CameraCaptureModal from "../rehome/cameraCaptureModal.component";
 import CloseIcon from "../icons/closeIcon.component";
+import ImagesIcon from "../icons/imagesIcon.component";
+import CameraIcon from "../icons/cameraIcon.component";
 import ChevronDownIcon from "../icons/chevronDownIcon.component";
 
 const QUESTION_TYPES = createListCollection({
@@ -410,7 +410,10 @@ function ImageDropZone({ onFiles }: { onFiles: (files: File[]) => void }) {
                 }}
             >
                 <PhotoInput inputRef={inputRef} onFiles={onFiles} />
-                <Icon as={RiImageAiFill} w="65px" h="60px" color="SkyBlue" />
+                {/* Figma photos icon, same frame as the Home drop zone: 72px draws ~60px art like the old one */}
+                <Box color="SkyBlue" display="flex">
+                    <ImagesIcon size="72px" />
+                </Box>
                 <VStack gap="12px">
                     <Text fontSize="18" fontWeight="600" color="Blue" textAlign="center">
                         Drag and Drop Photos here
@@ -433,10 +436,16 @@ function ImageDropZone({ onFiles }: { onFiles: (files: File[]) => void }) {
                         <S2SButton
                             text="Take Photo"
                             variant="outline"
-                            icon={<Icon as={IoCameraOutline} boxSize="18px" />}
+                            // Figma camera at its 24px frame; the span keeps Chakra's button svg sizing from overriding it
+                            icon={
+                                <Box as="span" display="flex" boxSize="20px" css={{ "& svg": { width: "100%", height: "100%" } }}>
+                                    <CameraIcon />
+                                </Box>
+                            }
                             width="217px"
                             height="38px"
                             fontSize="16"
+                            gap="6px"  
                             onClick={() => setIsCameraOpen(true)}
                         />
                     </Flex>

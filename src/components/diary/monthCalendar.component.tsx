@@ -6,11 +6,14 @@ import { MONTHS_LONG, WEEKDAYS, buildMonthGrid, isSameDay, toDateKey } from "../
 export default function MonthCalendar({
     viewMonth,
     selectedDate,
+    entryDateKeys,
     onMonthChange,
     onSelect,
 }: {
     viewMonth: Date;
     selectedDate: Date;
+    /** Days the adopter wrote a diary entry: marked with an Orange dot under the number */
+    entryDateKeys: Set<string>;
     onMonthChange: (delta: number) => void;
     onSelect: (date: Date) => void;
 }) {
@@ -100,10 +103,12 @@ export default function MonthCalendar({
                                 );
 
                             const selected = isSameDay(day, selectedDate);
+                            const hasEntry = entryDateKeys.has(toDateKey(day));
                             return (
                                 <Text
                                     key={toDateKey(day)}
                                     as="button"
+                                    position="relative"
                                     w={{ base: "27.56px", md: "34px" }}
                                     textAlign="center"
                                     fontSize={{ base: "12", md: "14" }}
@@ -113,6 +118,21 @@ export default function MonthCalendar({
                                     onClick={() => onSelect(day)}
                                 >
                                     {day.getDate()}
+                                    {/* Same 6px dot as the week strip, in Orange (Cream was too faint). Absolutely
+                                        placed under the number so it never changes the Figma row spacing */}
+                                    {hasEntry && (
+                                        <Box
+                                            as="span"
+                                            position="absolute"
+                                            top="100%"
+                                            left="50%"
+                                            transform="translateX(-50%)"
+                                            mt="2px"
+                                            boxSize="6px"
+                                            borderRadius="full"
+                                            bg="Orange"
+                                        />
+                                    )}
                                 </Text>
                             );
                         })}

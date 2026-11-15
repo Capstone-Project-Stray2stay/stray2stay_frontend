@@ -49,7 +49,7 @@ function SpeciesPill({
             borderWidth="1px"
             borderColor="Blue"
             // Figma "Hover" variant: --blue (#C6E7F7) at 30%. Once picked, the pill keeps that blue
-            // (plus the darker icon circle) so the choice stays visible
+            // so the choice stays visible
             bg={selected ? "SkyBlueHover" : "transparent"}
             _hover={{ bg: "SkyBlueHover" }}
             transition="background 0.15s ease"
@@ -62,12 +62,11 @@ function SpeciesPill({
                 position="absolute"
                 left="-1px"
                 top="-1px"
-                // Figma yellow button sheet: default #FFEEC1 (Cream), pressed #F7E1A7 (Cream_active) for selected
-                bg={selected ? "Cream_active" : "Cream"}
-                transition="background 0.15s ease"
+                // Stays Cream when picked: the light-blue pill alone marks the choice
+                bg="Cream"
             >
-                {/* Original icon size, centred in the 44px circle */}
-                <Image src={icon} alt="" w="29.33px" h="26.67px" objectFit="contain" />
+                {/* Same 32px icon as the Pet Preferences card header, centred in the 44px circle */}
+                <Image src={icon} alt="" w="32px" h="32px" objectFit="contain" />
             </Circle>
             <Text fontSize="18" fontWeight="600" color="Grey">
                 {label}
@@ -306,7 +305,7 @@ export default function PhotoSearchModal({
                                                 width="170px"
                                                 height="38px"
                                                 fontSize="18"
-                                                gap="0px" 
+                                                gap="6px" 
                                                 disabled={isFull}
                                                 onClick={() => setIsCameraOpen(true)}
                                             />
@@ -334,7 +333,7 @@ export default function PhotoSearchModal({
                                                 position="absolute"
                                                 top="4px"
                                                 right="4px"
-                                                boxSize="14px"
+                                                boxSize="20px"
                                                 align="center"
                                                 justify="center"
                                                 bg="rgba(255,255,255,0.80)"
@@ -345,7 +344,7 @@ export default function PhotoSearchModal({
                                                     setPhotos((current) => current.filter((_, index) => index !== i));
                                                 }}
                                             >
-                                                <CloseIcon size={4.8} />
+                                                <CloseIcon size={10} />
                                             </Flex>
                                         </Box>
                                     ))}

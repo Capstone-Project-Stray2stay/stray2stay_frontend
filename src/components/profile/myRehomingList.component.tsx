@@ -9,13 +9,13 @@ import {
     LuClipboardList,
     LuEye,
     LuPencil,
-    LuPhone,
     LuTrash2,
 } from "react-icons/lu";
 
 import { S2SButton } from "../S2S.components";
 import { useDeletePet, useMyPetAdoptors, useScreeningAnswer, useSelectAdopter } from "../../hooks/query/pet.query";
 import RoundIconButton from "./roundIconButton.component";
+import PhoneIcon from "../icons/phoneIcon.component";
 import ScreeningAnswersModal from "./screeningAnswersModal.component";
 import StatusBadge from "./statusBadge.component";
 import type { RehomingInterest, RehomingPet } from "../../types/profile.type";
@@ -43,8 +43,10 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
                     <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey" truncate maxW="100%">
                         {interest.name}
                     </Text>
-                    <Flex align="center" gap="8px">
-                        <Icon as={LuPhone} boxSize="14px" color="GreyText" />
+                    <Flex align="center" gap="6px">
+                        <Flex color="GreyText" flexShrink={0}>
+                            <PhoneIcon />
+                        </Flex>
                         <Text fontSize={{ base: "13", md: "15" }} fontWeight="500" color="GreyMuted" whiteSpace="nowrap">
                             {interest.phone}
                         </Text>
@@ -53,13 +55,15 @@ function InterestRow({ pid, interest }: { pid: string; interest: RehomingInteres
             </Flex>
 
             {/* Figma: labelled Small "Line" buttons on desktop, icon-only circles on mobile */}
-            <Flex align="center" gap="16px" flexShrink={0} hideBelow="md">
+            {/* 12px between buttons, same as the pet row's pencil/trash pair */}
+            <Flex align="center" gap="12px" flexShrink={0} hideBelow="md">
                 <S2SButton
                     text="Screening Answers"
                     variant="outline"
                     bgColor="BlueText"
                     size="sm"
                     icon={<LuEye />}
+                    gap="6px"
                     onClick={() => setShowAnswers(true)}
                 />
                 {isAccepted ? (
@@ -185,11 +189,12 @@ function RehomingRow({
                         <Avatar.Fallback name={pet.name} />
                         <Avatar.Image src={pet.imageURL} />
                     </Avatar.Root>
-                    <VStack align="flex-start" gap="8px" minW={0}>
+                    {/* Same 4px name-to-status gap as the interested-adopter rows below */}
+                    <VStack align="flex-start" gap="4px" minW={0}>
                         <Text fontSize={{ base: "16", md: "18" }} fontWeight="500" color="Grey" truncate maxW="100%">
                             {pet.name}
                         </Text>
-                        <Flex align="center" gap="8px">
+                        <Flex align="center" gap="6px">
                             <Flex
                                 boxSize="8px"
                                 borderRadius="full"

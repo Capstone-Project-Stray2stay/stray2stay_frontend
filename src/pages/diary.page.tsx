@@ -152,6 +152,7 @@ export default function Diary() {
         <MonthCalendar
             viewMonth={viewMonth}
             selectedDate={selectedDate}
+            entryDateKeys={entryDateKeys}
             onMonthChange={(delta) => setViewMonth((month) => addMonths(month, delta))}
             onSelect={(date) => {
                 setSelectedDate(date);

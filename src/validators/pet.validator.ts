@@ -4,7 +4,8 @@ export const rehomeLocationSchema = z.object({
     state: z.string().trim().min(1),
     district: z.string().trim().min(1),
     subDistrict: z.string().trim().min(1),
-    street: z.string(),
+    // Every address field is required, people's and pets' alike
+    street: z.string().trim().min(1),
     lat: z.number().nullable(),
     long: z.number().nullable(),
 });

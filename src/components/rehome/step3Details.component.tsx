@@ -12,6 +12,7 @@ import { VACCINE_OPTIONS, type PetDetailsDraft, type PetType } from "../../types
 import type { S2SDropDownOption } from "../../types/component.type";
 import { toBreedOptions } from "../../hooks/query/pet.query";
 import VaccinationInfoModal from "./vaccinationInfoModal.component";
+import PlusIcon from "../icons/plusIcon.component";
 
 export default function Step3Details({
     draft,
@@ -192,7 +193,11 @@ export default function Step3Details({
                             borderColor="BlueText"
                             onClick={() => setIsAddingPersonality(true)}
                         >
-                            <Icon as={IoAdd} boxSize={{ base: "7.22px", md: "10.5px" }} color="Grey" />
+                            {/* Figma "+" (art fills its box, so 10.5px draws a 10.5px glyph); the span keeps
+                                Chakra's button svg sizing from overriding it */}
+                            <Box as="span" display="flex" boxSize={{ base: "7.22px", md: "10.5px" }} color="Grey" css={{ "& svg": { width: "100%", height: "100%" } }}>
+                                <PlusIcon />
+                            </Box>
                             <Text fontSize={{ base: "14", md: "16" }} fontWeight="500" color="Grey">
                                 Add
                             </Text>

@@ -105,7 +105,7 @@ export default function PetLocationSection({
                     />
                 </DetailField>
 
-                <DetailField label="Street">
+                <DetailField label="Street" required>
                     <S2SInput
                         {...detailInputStyle}
                         value={value.street}

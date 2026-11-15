@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Dialog, Flex, Icon, Portal, Text, VStack } from "@chakra-ui/react";
-import { LuBook, LuPhone, LuTrash2 } from "react-icons/lu";
+import { Avatar, Dialog, Flex, Portal, Text, VStack } from "@chakra-ui/react";
+import { LuBook, LuTrash2 } from "react-icons/lu";
+
+import PhoneIcon from "../icons/phoneIcon.component";
 
 import { S2SButton } from "../S2S.components";
 import { useCancelAdoptionRequest } from "../../hooks/query/pet.query";
@@ -21,12 +23,15 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
                     <Avatar.Fallback name={pet.name} />
                     <Avatar.Image src={pet.imageURL} />
                 </Avatar.Root>
-                <VStack align="flex-start" gap="12px">
+                {/* Same 4px name-to-detail gap as the My Rehoming rows */}
+                <VStack align="flex-start" gap="4px">
                     <Text fontSize="18" fontWeight="500" color="Grey">
                         {pet.name}
                     </Text>
-                    <Flex align="center" gap="8px">
-                        <Icon as={LuPhone} boxSize="14px" color="GreyText" />
+                    <Flex align="center" gap="6px">
+                        <Flex color="GreyText" flexShrink={0}>
+                            <PhoneIcon />
+                        </Flex>
                         <Text fontSize="15" fontWeight="500" color="GreyMuted">
                             {pet.phone}
                         </Text>
@@ -34,7 +39,8 @@ function AdoptedPetRow({ pet }: { pet: AdoptedPet }) {
                 </VStack>
             </Flex>
 
-            <Flex align="center" gap="16px">
+            {/* Same button spacing as My Rehoming's pencil/trash pair */}
+            <Flex align="center" gap={{ base: "8px", md: "12px" }}>
                 {pet.status === "success" && (
                     <RoundIconButton
                         icon={LuBook}

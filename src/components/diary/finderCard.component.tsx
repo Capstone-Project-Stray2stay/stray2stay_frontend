@@ -30,13 +30,17 @@ export default function FinderCard({ pet }: { pet: DiaryPet }) {
                     <Avatar.Image src={pet.counterpartImage} />
                 </Avatar.Root>
 
-                <VStack align="flex-start" gap={{ base: "8px", md: "7px" }} minW="0">
-                    <Text fontSize="20" fontWeight="600" color="Grey" truncate maxW="100%">
-                        {pet.counterpartName}
-                    </Text>
-                    <Text fontSize="15" fontWeight="500" color="GreyMuted">
-                        {pet.counterpartRole}
-                    </Text>
+                {/* Outer gap: role line → phone line */}
+                <VStack align="flex-start" gap={{ base: "6px", md: "4px" }} minW="0">
+                    {/* Inner gap: name → role line, set separately from the phone spacing */}
+                    <VStack align="flex-start" gap={{ base: "6px", md: "4px" }} minW="0" maxW="100%">
+                        <Text fontSize="20" fontWeight="600" color="Grey" truncate maxW="100%">
+                            {pet.counterpartName}
+                        </Text>
+                        <Text fontSize="15" fontWeight="500" color="GreyMuted">
+                            {pet.counterpartRole}
+                        </Text>
+                    </VStack>
                     {/* Plenty of accounts have never filled in a phone number. */}
                     {pet.counterpartPhone && (
                         <Flex align="center" gap={{ base: "7px", md: "8px" }}>
